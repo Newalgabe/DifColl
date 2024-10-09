@@ -1,0 +1,123 @@
+.book-search-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa; /* Light background for contrast */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+.search-input {
+    width: 70%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ced4da; /* Softer border */
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #80bdff; /* Highlight on focus */
+    outline: none; /* Remove default outline */
+}
+
+.search-button {
+    padding: 12px 24px;
+    margin-left: 10px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05); /* Slight scale on hover */
+}
+
+.results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.book-card {
+    border: 1px solid #e9ecef; /* Softer border */
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    background-color: white; /* Card background */
+}
+
+.book-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Deeper shadow on hover */
+    transform: translateY(-5px); /* Lift effect */
+}
+
+.book-image {
+    width: 150px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px; /* Rounded image corners */
+    margin-bottom: 15px;
+}
+
+.book-details {
+    text-align: center;
+}
+
+.description {
+    font-style: italic;
+    color: #6c757d; /* Softer gray */
+    margin-bottom: 10px; /* Spacing below description */
+}
+
+.add-button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-button:hover {
+    background-color: #218838;
+    transform: scale(1.05); /* Slight scale on hover */
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination-button {
+    padding: 10px 15px;
+    margin: 0 5px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: scale(1.05); /* Slight scale on hover */
+}

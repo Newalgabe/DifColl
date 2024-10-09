@@ -1,0 +1,6 @@
+@DifColl.Server_HostAddress = http://localhost:5064
+
+GET {{DifColl.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

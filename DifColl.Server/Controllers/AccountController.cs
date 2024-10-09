@@ -1,0 +1,145 @@
+﻿using DifColl.Server.Data;
+using DifColl.Server.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using DifColl.Server.DTOs;
+
+namespace DifCol.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AccountController : Controller
+    {
+
+        private readonly IWebHostEnvironment _environment; // Add this field to store environment information
+        private readonly ApplicationDbContext _context;
+
+        // Inject IWebHostEnvironment in the constructor
+        public AccountController(IWebHostEnvironment environment, ApplicationDbContext context)
+        {
+            _environment = environment;
+            _context = context;
+        }
+
+
+        [HttpGet("login")]
+        public IActionResult Login()
+        {
+            // This will trigger Google authentication
+            return Challenge(new AuthenticationProperties
+            {
+                RedirectUri = "/"
+            }, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok();
+        }
+
+        [HttpGet("userinfo")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userProfile = await _context.UserProfiles.FindAsync(userId);
+
+                if (userProfile == null)
+                {
+                    // If the user doesn't have a profile, return basic info
+                    var name = User.Identity.Name;
+                    var email = User.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
+                    var picture = User.FindFirst(c => c.Type == "urn:google:picture")?.Value;
+
+                    return Ok(new
+                    {
+                        Name = name,
+                        Email = email,
+                        PictureUrl = picture
+                    });
+                }
+                else
+                {
+                    // Return the profile data including the newly added fields
+                    return Ok(new
+                    {
+                        Name = userProfile.Name,
+                        Email = User.FindFirst(c => c.Type == ClaimTypes.Email)?.Value,
+                        PictureUrl = userProfile.PictureUrl,
+                        Bio = userProfile.Bio,
+                        Pronouns = userProfile.Pronouns,
+                        Location = userProfile.Location,
+                        Interests = userProfile.Interests,
+                        SocialMediaLinks = userProfile.SocialMediaLinks,
+                        DateOfBirth = userProfile.DateOfBirth,
+                        ContactInformation = userProfile.ContactInformation
+                    });
+                }
+            }
+
+            return Unauthorized();
+        }
+
+
+
+
+        [HttpPost("update-profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateUserProfileDto model) // Change FromForm to FromBody
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userProfile = await _context.UserProfiles.FindAsync(userId);
+
+            if (string.IsNullOrEmpty(model.PictureUrl))
+            {
+                return BadRequest("The Picture URL is required.");
+            }
+
+            if (userProfile == null)
+            {
+                // Create new user profile if not present
+                userProfile = new UserProfile
+                {
+                    UserId = userId,
+                    Name = model.Nickname,
+                    PictureUrl = model.PictureUrl,
+                    Bio = model.Bio,
+                    Pronouns = model.Pronouns,
+                    Location = model.Location,
+                    Interests = model.Interests,
+                    SocialMediaLinks = model.SocialMediaLinks,
+                    DateOfBirth = model.DateOfBirth,
+                    ContactInformation = model.ContactInformation
+                };
+                _context.UserProfiles.Add(userProfile);
+            }
+            else
+            {
+                // Update existing user profile
+                if (!string.IsNullOrEmpty(model.Nickname)) userProfile.Name = model.Nickname;
+                if (!string.IsNullOrEmpty(model.PictureUrl)) userProfile.PictureUrl = model.PictureUrl;
+                if (!string.IsNullOrEmpty(model.Bio)) userProfile.Bio = model.Bio;
+                if (!string.IsNullOrEmpty(model.Pronouns)) userProfile.Pronouns = model.Pronouns;
+                if (!string.IsNullOrEmpty(model.Location)) userProfile.Location = model.Location;
+                if (!string.IsNullOrEmpty(model.Interests)) userProfile.Interests = model.Interests;
+                if (!string.IsNullOrEmpty(model.SocialMediaLinks)) userProfile.SocialMediaLinks = model.SocialMediaLinks;
+                if (model.DateOfBirth.HasValue) userProfile.DateOfBirth = model.DateOfBirth;
+                if (!string.IsNullOrEmpty(model.ContactInformation)) userProfile.ContactInformation = model.ContactInformation;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Name = userProfile.Name, PictureUrl = userProfile.PictureUrl });
+        }
+
+    }
+}
