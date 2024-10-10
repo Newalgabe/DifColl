@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './BookSearch.css';
 
 const BookSearch = () => {
@@ -13,19 +13,56 @@ const BookSearch = () => {
     const [selectedBook, setSelectedBook] = useState(null);
     const [bookmarks, setBookmarks] = useState([]);
     const [relatedBooks, setRelatedBooks] = useState([]);
+    const [relatedBooksCache, setRelatedBooksCache] = useState({});
+    const [toastMessage, setToastMessage] = useState('');
 
-    const handleSearch = async (index = 0) => {
+    // Load state from localStorage on component mount
+    useEffect(() => {
+        const savedQuery = localStorage.getItem('query');
+        const savedCategory = localStorage.getItem('category');
+        const savedSortOrder = localStorage.getItem('sortOrder');
+        const savedStartIndex = parseInt(localStorage.getItem('startIndex'), 10) || 0;
+
+        if (savedQuery) setQuery(savedQuery);
+        if (savedCategory) setCategory(savedCategory);
+        if (savedSortOrder) setSortOrder(savedSortOrder);
+        if (savedStartIndex) setStartIndex(savedStartIndex);
+
+        // Fetch books if there's a saved query
+        if (savedQuery) {
+            handleSearch(savedStartIndex, savedQuery, savedCategory, savedSortOrder);
+        }
+    }, []);
+
+    // Save state to localStorage before unload
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            localStorage.setItem('query', query);
+            localStorage.setItem('category', category);
+            localStorage.setItem('sortOrder', sortOrder);
+            localStorage.setItem('startIndex', startIndex);
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [query, category, sortOrder, startIndex]);
+
+    const handleSearch = async (index = 0, searchQuery = query, searchCategory = category, searchSortOrder = sortOrder) => {
         setLoading(true);
         setError(null);
-        const categoryFilter = category ? `+subject:${category}` : '';
+        const categoryFilter = searchCategory ? `+subject:${encodeURIComponent(searchCategory)}` : '';
         try {
             const response = await fetch(
-                `https://www.googleapis.com/books/v1/volumes?q=${query}${categoryFilter}&startIndex=${index}&maxResults=10&orderBy=${sortOrder}`
+                `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}${categoryFilter}&startIndex=${index}&maxResults=10&orderBy=${searchSortOrder}`
             );
             if (response.ok) {
                 const data = await response.json();
                 setBooks(data.items || []);
                 setTotalItems(data.totalItems || 0);
+                setStartIndex(index);
             } else {
                 setError('Failed to fetch books');
             }
@@ -40,7 +77,6 @@ const BookSearch = () => {
     const handleNextPage = () => {
         const newIndex = startIndex + 10;
         if (newIndex < totalItems) {
-            setStartIndex(newIndex);
             handleSearch(newIndex);
         }
     };
@@ -48,48 +84,104 @@ const BookSearch = () => {
     const handlePreviousPage = () => {
         if (startIndex > 0) {
             const newIndex = startIndex - 10;
-            setStartIndex(newIndex);
             handleSearch(newIndex);
         }
     };
 
     const handleAddToCollection = (book) => {
         console.log('Book added to collection:', book);
-    };
-
-    const handleViewDetails = (book) => {
-        setSelectedBook(book);
-        handleRelatedBooks(book);
+        // Implement collection logic here
     };
 
     const handleRelatedBooks = async (book) => {
-        const relatedQuery = `subject:${book.volumeInfo.categories[0]}`;
         try {
-            const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${relatedQuery}`);
-            const data = await response.json();
-            setRelatedBooks(data.items || []);
+            // Check if related books are already cached
+            if (relatedBooksCache[book.id]) {
+                setRelatedBooks(relatedBooksCache[book.id]);
+                return;
+            }
+
+            // Extract authors or categories from the selected book
+            const authors = book.volumeInfo.authors;
+            const categories = book.volumeInfo.categories;
+
+            let query = '';
+
+            if (authors && authors.length > 0) {
+                // Use the first author for the related books search
+                query = `inauthor:"${encodeURIComponent(authors[0])}"`;
+            } else if (categories && categories.length > 0) {
+                // Use the first category if authors are not available
+                query = `subject:"${encodeURIComponent(categories[0])}"`;
+            } else {
+                // Fallback to a general search or handle accordingly
+                query = '';
+            }
+
+            if (!query) {
+                setRelatedBooks([]);
+                return;
+            }
+
+            // Perform a search with the new query to find related books
+            const response = await fetch(
+                `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5&orderBy=relevance`
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                const related = data.items || [];
+                setRelatedBooks(related);
+                setRelatedBooksCache(prev => ({ ...prev, [book.id]: related }));
+            } else {
+                setRelatedBooks([]);
+                console.error('Failed to fetch related books');
+            }
         } catch (error) {
-            console.error('Failed to fetch related books', error);
+            console.error("Error fetching related books:", error);
+            setRelatedBooks([]);
+        }
+    };
+
+    const handleViewDetails = (book) => {
+        // Check if book and its details exist before accessing
+        if (book && book.volumeInfo) {
+            const { title, authors, description } = book.volumeInfo;
+            console.log("Book Details:", title, authors, description);
+
+            // Set the selected book to display in the modal
+            setSelectedBook(book);
+
+            // Fetch related books
+            handleRelatedBooks(book);
+        } else {
+            console.warn("Book details not found");
         }
     };
 
     const handleBookmark = (book) => {
         setBookmarks((prev) => [...prev, book]);
+        showToast('Book bookmarked successfully!');
     };
 
     const handleShare = (book) => {
-        const shareUrl = `https://www.yourapp.com/book/${book.id}`;
+        const shareUrl = `https://books.google.com/books?id=${book.id}`;
         navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('Book link copied to clipboard!');
+            showToast('Book link copied to clipboard!');
+        }).catch((error) => {
+            console.error('Failed to copy: ', error);
+            showToast('Failed to copy link.');
         });
     };
 
     const highlightQuery = (text, query) => {
-        const parts = text.split(new RegExp(`(${query})`, 'gi'));
+        if (!query) return text;
+        const regex = new RegExp(`(${query})`, 'gi');
+        const parts = text.split(regex);
         return (
             <span>
                 {parts.map((part, i) =>
-                    part.toLowerCase() === query.toLowerCase() ? (
+                    regex.test(part) ? (
                         <span key={i} className="highlight">{part}</span>
                     ) : (
                         part
@@ -98,6 +190,26 @@ const BookSearch = () => {
             </span>
         );
     };
+
+    // Function to handle clicking on a related book
+    const handleRelatedBookClick = (book) => {
+        setSelectedBook(book);
+        handleRelatedBooks(book);
+    };
+
+    // Toast Notification Functions
+    const showToast = (message) => {
+        setToastMessage(message);
+        setTimeout(() => {
+            setToastMessage('');
+        }, 3000); // Toast disappears after 3 seconds
+    };
+
+    // Prevent page nullification on Ctrl + F5 by restoring state from localStorage
+    useEffect(() => {
+        // This is already handled in the first useEffect
+        // Additional logic can be added here if needed
+    }, []);
 
     return (
         <div className="book-search-container">
@@ -128,13 +240,13 @@ const BookSearch = () => {
             </div>
 
             {loading && <p>Loading...</p>}
-            {error && <p>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
             <div className="results-container">
                 {books.map((book) => {
                     const { title, authors, publishedDate, description, imageLinks, pageCount, publisher } = book.volumeInfo;
                     return (
-                        <article key={book.id} className="book-card">
+                        <article key={`${book.id}-${title}`} className="book-card">
                             <img
                                 src={imageLinks?.thumbnail || 'https://via.placeholder.com/150'}
                                 alt={title}
@@ -171,7 +283,6 @@ const BookSearch = () => {
                 })}
             </div>
 
-            {}
             <div className="pagination-controls">
                 <button
                     onClick={handlePreviousPage}
@@ -189,36 +300,59 @@ const BookSearch = () => {
                 </button>
             </div>
 
-            {}
             {selectedBook && (
-                <div className="modal">
-                    <div className="modal-content">
+                <div className="modal" onClick={() => setSelectedBook(null)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => setSelectedBook(null)} className="close-modal">X</button>
                         <h3>{selectedBook.volumeInfo.title}</h3>
-                        <p>{selectedBook.volumeInfo.description}</p>
-                        <p>Publisher: {selectedBook.volumeInfo.publisher}</p>
-                        <a href={selectedBook.volumeInfo.previewLink} target="_blank" rel="noopener noreferrer">
-                            Read more
-                        </a>
-                        <button onClick={() => setSelectedBook(null)} className="close-modal">Close</button>
+                        {selectedBook.volumeInfo.authors && (
+                            <p><strong>Author(s):</strong> {selectedBook.volumeInfo.authors.join(', ')}</p>
+                        )}
+                        {selectedBook.volumeInfo.publishedDate && (
+                            <p><strong>Published:</strong> {selectedBook.volumeInfo.publishedDate}</p>
+                        )}
+                        {selectedBook.volumeInfo.publisher && (
+                            <p><strong>Publisher:</strong> {selectedBook.volumeInfo.publisher}</p>
+                        )}
+                        {selectedBook.volumeInfo.pageCount && (
+                            <p><strong>Pages:</strong> {selectedBook.volumeInfo.pageCount}</p>
+                        )}
+                        {selectedBook.volumeInfo.description && (
+                            <p className="description">{selectedBook.volumeInfo.description}</p>
+                        )}
+                        {selectedBook.volumeInfo.previewLink && (
+                            <a href={selectedBook.volumeInfo.previewLink} target="_blank" rel="noopener noreferrer">
+                                Read more
+                            </a>
+                        )}
+
+                        {}
+                        <div className="related-books-container">
+                            <h3>Related Books</h3>
+                            {relatedBooks.length > 0 ? (
+                                <div className="related-books-list">
+                                    {relatedBooks.map((book) => (
+                                        <div key={book.id} className="related-book-card" onClick={() => handleRelatedBookClick(book)}>
+                                            <img
+                                                src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/100'}
+                                                alt={book.volumeInfo.title}
+                                                className="related-book-image"
+                                            />
+                                            <div className="related-book-info">
+                                                <h4>{book.volumeInfo.title}</h4>
+                                                {book.volumeInfo.authors && <p>{book.volumeInfo.authors.join(', ')}</p>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No related books could be found.</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
 
-            {}
-            {relatedBooks.length > 0 && (
-                <div className="related-books">
-                    <h4>Related Books:</h4>
-                    <div className="related-books-list">
-                        {relatedBooks.map((relatedBook) => (
-                            <div key={relatedBook.id} className="related-book-card">
-                                <h5>{relatedBook.volumeInfo.title}</h5>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {}
             {bookmarks.length > 0 && (
                 <div className="bookmarks">
                     <h4>Bookmarked Books:</h4>
@@ -231,8 +365,16 @@ const BookSearch = () => {
                     </div>
                 </div>
             )}
+
+            {}
+            {toastMessage && (
+                <div className="toast">
+                    <p>{toastMessage}</p>
+                </div>
+            )}
         </div>
     );
+
 };
 
 export default BookSearch;
