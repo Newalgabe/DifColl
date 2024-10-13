@@ -16,7 +16,6 @@ const BookSearch = () => {
     const [relatedBooksCache, setRelatedBooksCache] = useState({});
     const [toastMessage, setToastMessage] = useState('');
 
-    // Load state from localStorage on component mount
     useEffect(() => {
         const savedQuery = localStorage.getItem('query');
         const savedCategory = localStorage.getItem('category');
@@ -28,13 +27,11 @@ const BookSearch = () => {
         if (savedSortOrder) setSortOrder(savedSortOrder);
         if (savedStartIndex) setStartIndex(savedStartIndex);
 
-        // Fetch books if there's a saved query
         if (savedQuery) {
             handleSearch(savedStartIndex, savedQuery, savedCategory, savedSortOrder);
         }
     }, []);
 
-    // Save state to localStorage before unload
     useEffect(() => {
         const handleBeforeUnload = () => {
             localStorage.setItem('query', query);
@@ -90,31 +87,25 @@ const BookSearch = () => {
 
     const handleAddToCollection = (book) => {
         console.log('Book added to collection:', book);
-        // Implement collection logic here
     };
 
     const handleRelatedBooks = async (book) => {
         try {
-            // Check if related books are already cached
             if (relatedBooksCache[book.id]) {
                 setRelatedBooks(relatedBooksCache[book.id]);
                 return;
             }
 
-            // Extract authors or categories from the selected book
             const authors = book.volumeInfo.authors;
             const categories = book.volumeInfo.categories;
 
             let query = '';
 
             if (authors && authors.length > 0) {
-                // Use the first author for the related books search
                 query = `inauthor:"${encodeURIComponent(authors[0])}"`;
             } else if (categories && categories.length > 0) {
-                // Use the first category if authors are not available
                 query = `subject:"${encodeURIComponent(categories[0])}"`;
             } else {
-                // Fallback to a general search or handle accordingly
                 query = '';
             }
 
@@ -123,7 +114,6 @@ const BookSearch = () => {
                 return;
             }
 
-            // Perform a search with the new query to find related books
             const response = await fetch(
                 `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5&orderBy=relevance`
             );
@@ -144,15 +134,12 @@ const BookSearch = () => {
     };
 
     const handleViewDetails = (book) => {
-        // Check if book and its details exist before accessing
         if (book && book.volumeInfo) {
             const { title, authors, description } = book.volumeInfo;
             console.log("Book Details:", title, authors, description);
 
-            // Set the selected book to display in the modal
             setSelectedBook(book);
 
-            // Fetch related books
             handleRelatedBooks(book);
         } else {
             console.warn("Book details not found");
@@ -191,24 +178,19 @@ const BookSearch = () => {
         );
     };
 
-    // Function to handle clicking on a related book
     const handleRelatedBookClick = (book) => {
         setSelectedBook(book);
         handleRelatedBooks(book);
     };
 
-    // Toast Notification Functions
     const showToast = (message) => {
         setToastMessage(message);
         setTimeout(() => {
             setToastMessage('');
-        }, 3000); // Toast disappears after 3 seconds
+        }, 3000);
     };
 
-    // Prevent page nullification on Ctrl + F5 by restoring state from localStorage
     useEffect(() => {
-        // This is already handled in the first useEffect
-        // Additional logic can be added here if needed
     }, []);
 
     return (
@@ -245,10 +227,12 @@ const BookSearch = () => {
             <div className="results-container">
                 {books.map((book) => {
                     const { title, authors, publishedDate, description, imageLinks, pageCount, publisher } = book.volumeInfo;
+                    const bookImage = imageLinks?.thumbnail?.replace('http://', 'https://').replace('zoom=1', 'zoom=2') || 'https://via.placeholder.com/300x450?text=No+Image+Available';
+
                     return (
                         <article key={`${book.id}-${title}`} className="book-card">
                             <img
-                                src={imageLinks?.thumbnail || 'https://via.placeholder.com/150'}
+                                src={bookImage}
                                 alt={title}
                                 className="book-image"
                             />
@@ -282,6 +266,7 @@ const BookSearch = () => {
                     );
                 })}
             </div>
+
 
             <div className="pagination-controls">
                 <button

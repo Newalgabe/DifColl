@@ -19,7 +19,7 @@ namespace DifColl.Server.Controllers
             _googleBooksApiKey = configuration["GoogleBooks:ApiKey"];
         }
 
-        [HttpGet("search")]
+        [HttpGet("search/{query}")]
         public async Task<IActionResult> SearchBooks(string query)
         {
             var url = $"https://www.googleapis.com/books/v1/volumes?q={query}&key={_googleBooksApiKey}";

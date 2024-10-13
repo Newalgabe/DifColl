@@ -1,7 +1,8 @@
+// UserProfile.jsx
 import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import './UserProfile.css';  // Import the external stylesheet
+import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa'; // Importing icons for better visuals
 
 const UserProfile = ({ onLogout }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -103,18 +104,18 @@ const UserProfile = ({ onLogout }) => {
         }
     };
 
-
-
     const toggleDetails = () => {
         setIsExpanded(!isExpanded);
     };
 
     return (
-        <div className="profile-container">
+        <div className="profile-container" data-aos="fade-up">
+            <div className="background-overlay"></div> {/* Decorative background */}
             {isEditing ? (
-                <div className="form-container">
+                <div className="form-container" data-aos="zoom-in">
                     <h2>Edit Profile</h2>
                     <label>
+                        <FaUser className="input-icon" />
                         Nickname:
                         <input
                             type="text"
@@ -124,6 +125,7 @@ const UserProfile = ({ onLogout }) => {
                         />
                     </label>
                     <label>
+                        <FaInfoCircle className="input-icon" />
                         Profile Picture URL:
                         <input
                             type="text"
@@ -132,9 +134,10 @@ const UserProfile = ({ onLogout }) => {
                             className="input-field"
                         />
                     </label>
-                    {uploadStatus === 'success' && <p>URL Updated Successfully!</p>}
-                    {uploadStatus === 'failure' && <p>Failed to Update URL. Try Again!</p>}
+                    {uploadStatus === 'success' && <p className="success-message">URL Updated Successfully!</p>}
+                    {uploadStatus === 'failure' && <p className="error-message">Failed to Update URL. Try Again!</p>}
                     <label>
+                        <FaHeart className="input-icon" />
                         Bio:
                         <input
                             type="text"
@@ -144,6 +147,7 @@ const UserProfile = ({ onLogout }) => {
                         />
                     </label>
                     <label>
+                        <FaUser className="input-icon" />
                         Pronouns:
                         <select
                             value={pronouns}
@@ -159,6 +163,7 @@ const UserProfile = ({ onLogout }) => {
                         </select>
                     </label>
                     <label>
+                        <FaMapMarkerAlt className="input-icon" />
                         Location:
                         <input
                             type="text"
@@ -168,6 +173,7 @@ const UserProfile = ({ onLogout }) => {
                         />
                     </label>
                     <label>
+                        <FaHeart className="input-icon" />
                         Interests:
                         <input
                             type="text"
@@ -177,6 +183,7 @@ const UserProfile = ({ onLogout }) => {
                         />
                     </label>
                     <label>
+                        <FaHeart className="input-icon" />
                         Social Media Links:
                         <input
                             type="text"
@@ -186,6 +193,7 @@ const UserProfile = ({ onLogout }) => {
                         />
                     </label>
                     <label>
+                        <FaBirthdayCake className="input-icon" />
                         Date of Birth:
                         <input
                             type="date"
@@ -195,6 +203,7 @@ const UserProfile = ({ onLogout }) => {
                         />
                     </label>
                     <label>
+                        <FaInfoCircle className="input-icon" />
                         Contact Information:
                         <input
                             type="text"
@@ -203,15 +212,17 @@ const UserProfile = ({ onLogout }) => {
                             className="input-field"
                         />
                     </label>
-                    <button onClick={handleSave} className="save-button">
-                        Save Changes
-                    </button>
-                    <button onClick={() => setIsEditing(false)} className="cancel-button">
-                        Cancel
-                    </button>
+                    <div className="button-group">
+                        <button onClick={handleSave} className="save-button">
+                            Save Changes
+                        </button>
+                        <button onClick={() => setIsEditing(false)} className="cancel-button">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             ) : (
-                <div>
+                <div className="profile-details" data-aos="zoom-in">
                     <h2 className="profile-heading">Welcome, {nickname}</h2>
                     {pictureUrl ? (
                         <img
@@ -219,34 +230,47 @@ const UserProfile = ({ onLogout }) => {
                             alt="User Profile"
                             className="profile-picture"
                             referrerPolicy="no-referrer"
+                            loading="lazy"
                         />
                     ) : (
                         <p>No profile picture available</p>
                     )}
                     <p className="profile-email">Email: {email}</p>
+                    <div className="stats-container">
+                        <div className="stat-card" data-aos="fade-right" data-aos-delay="200">
+                            <FaHeart className="stat-icon" />
+                            <p>Interests</p>
+                            <span>{interests || "N/A"}</span>
+                        </div>
+                        <div className="stat-card" data-aos="fade-right" data-aos-delay="400">
+                            <FaMapMarkerAlt className="stat-icon" />
+                            <p>Location</p>
+                            <span>{location || "N/A"}</span>
+                        </div>
+                        <div className="stat-card" data-aos="fade-right" data-aos-delay="600">
+                            <FaBirthdayCake className="stat-icon" />
+                            <p>Age</p>
+                            <span>{dateOfBirth ? calculateAge(dateOfBirth) : "N/A"}</span>
+                        </div>
+                    </div>
                     <button onClick={toggleDetails} className="show-more-button">
                         {isExpanded ? "Show Less" : "Show More"}
                     </button>
-                    <div className={`collapsible ${isExpanded ? 'expanded' : ''}`}>
-                        <p>Bio: {bio}</p>
-                        <p>Pronouns: {pronouns}</p>
-                        <p>Location: {location}</p>
-                        <p>Interests: {interests}</p>
+                    <div className={`collapsible ${isExpanded ? 'expanded' : ''}`} data-aos="fade-up" data-aos-delay="800">
+                        <p><strong>Bio:</strong> {bio || "N/A"}</p>
+                        <p><strong>Pronouns:</strong> {pronouns || "N/A"}</p>
                         <p>
-                            Social Media: <a href={socialMediaLinks} target="_blank" rel="noopener noreferrer">{socialMediaLinks}</a>
+                            <strong>Social Media:</strong> {socialMediaLinks ? <a href={socialMediaLinks} target="_blank" rel="noopener noreferrer">{socialMediaLinks}</a> : "N/A"}
                         </p>
-                        <p>Date of Birth: {dateOfBirth}</p>
-                        <p>Contact: {contactInfo}</p>
+                        <p><strong>Contact:</strong> {contactInfo || "N/A"}</p>
                     </div>
-                    <button onClick={() => setIsEditing(true)} className="edit-button">
-                        Edit Profile
-                    </button>
-                    <button onClick={onLogout} className="logout-button">
-                        Logout
-                    </button>
-                    <div className="links-container">
-                        <Link to="/search-books" className="profile-link">Search Books</Link>
-                        <Link to="/my-books" className="profile-link">My Book Collection</Link>
+                    <div className="button-group">
+                        <button onClick={() => setIsEditing(true)} className="edit-button">
+                            <FaEdit className="button-icon" /> Edit Profile
+                        </button>
+                        <button onClick={onLogout} className="logout-button">
+                            <FaSignOutAlt className="button-icon" /> Logout
+                        </button>
                     </div>
                 </div>
             )}
@@ -254,8 +278,19 @@ const UserProfile = ({ onLogout }) => {
     );
 };
 
-UserProfile.propTypes = {
-    onLogout: PropTypes.func.isRequired
-};
+    UserProfile.propTypes = {
+        onLogout: PropTypes.func.isRequired
+    };
 
-export default UserProfile;
+    const calculateAge = (dob) => {
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+    export default UserProfile;
