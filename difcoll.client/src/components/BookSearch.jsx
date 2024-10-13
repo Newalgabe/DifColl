@@ -1,3 +1,4 @@
+// BookSearch.jsx
 import { useState, useEffect } from 'react';
 import './BookSearch.css';
 
@@ -47,7 +48,35 @@ const BookSearch = () => {
         };
     }, [query, category, sortOrder, startIndex]);
 
+    const escapeRegExp = (string) => {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escapes special characters
+    };
+
+    const highlightQuery = (text, query) => {
+        if (!text || !query) return text; // Ensure text and query are defined
+
+        const escapedQuery = escapeRegExp(query.trim());
+        if (escapedQuery === '') return text; // If query is empty after trimming, return text
+
+        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+        const parts = text.split(regex);
+
+        return parts.map((part, index) => (
+            <span
+                key={index}
+                style={part.toLowerCase() === query.toLowerCase().trim() ? { fontWeight: 'bold', backgroundColor: 'yellow' } : {}}
+            >
+                {part}
+            </span>
+        ));
+    };
+
     const handleSearch = async (index = 0, searchQuery = query, searchCategory = category, searchSortOrder = sortOrder) => {
+        if (searchQuery.trim() === '') {
+            setError('Please enter a search query.');
+            return;
+        }
+
         setLoading(true);
         setError(null);
         const categoryFilter = searchCategory ? `+subject:${encodeURIComponent(searchCategory)}` : '';
@@ -62,10 +91,14 @@ const BookSearch = () => {
                 setStartIndex(index);
             } else {
                 setError('Failed to fetch books');
+                setBooks([]);
+                setTotalItems(0);
             }
         } catch (err) {
             console.error('Error:', err);
             setError('Error fetching books');
+            setBooks([]);
+            setTotalItems(0);
         } finally {
             setLoading(false);
         }
@@ -87,6 +120,7 @@ const BookSearch = () => {
 
     const handleAddToCollection = (book) => {
         console.log('Book added to collection:', book);
+        showToast('Book added to collection!');
     };
 
     const handleRelatedBooks = async (book) => {
@@ -161,23 +195,6 @@ const BookSearch = () => {
         });
     };
 
-    const highlightQuery = (text, query) => {
-        if (!query) return text;
-        const regex = new RegExp(`(${query})`, 'gi');
-        const parts = text.split(regex);
-        return (
-            <span>
-                {parts.map((part, i) =>
-                    regex.test(part) ? (
-                        <span key={i} className="highlight">{part}</span>
-                    ) : (
-                        part
-                    )
-                )}
-            </span>
-        );
-    };
-
     const handleRelatedBookClick = (book) => {
         setSelectedBook(book);
         handleRelatedBooks(book);
@@ -190,9 +207,6 @@ const BookSearch = () => {
         }, 3000);
     };
 
-    useEffect(() => {
-    }, []);
-
     return (
         <div className="book-search-container">
             <h2>Search Books</h2>
@@ -203,6 +217,11 @@ const BookSearch = () => {
                     placeholder="Enter book name..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(0);
+                        }
+                    }}
                     className="search-input"
                 />
                 <input
@@ -210,9 +229,23 @@ const BookSearch = () => {
                     placeholder="Category (optional)"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(0);
+                        }
+                    }}
                     className="category-input"
                 />
-                <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="sort-select">
+                <select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(0);
+                        }
+                    }}
+                    className="sort-select"
+                >
                     <option value="relevance">Relevance</option>
                     <option value="newest">Newest</option>
                 </select>
@@ -226,7 +259,8 @@ const BookSearch = () => {
 
             <div className="results-container">
                 {books.map((book) => {
-                    const { title, authors, publishedDate, description, imageLinks, pageCount, publisher } = book.volumeInfo;
+                    const { title = '', authors, publishedDate, description, imageLinks, pageCount, publisher } = book.volumeInfo || {};
+
                     const bookImage = imageLinks?.thumbnail?.replace('http://', 'https://').replace('zoom=1', 'zoom=2') || 'https://via.placeholder.com/300x450?text=No+Image+Available';
 
                     return (
@@ -266,7 +300,6 @@ const BookSearch = () => {
                     );
                 })}
             </div>
-
 
             <div className="pagination-controls">
                 <button
@@ -311,7 +344,6 @@ const BookSearch = () => {
                             </a>
                         )}
 
-                        {}
                         <div className="related-books-container">
                             <h3>Related Books</h3>
                             {relatedBooks.length > 0 ? (
@@ -351,7 +383,6 @@ const BookSearch = () => {
                 </div>
             )}
 
-            {}
             {toastMessage && (
                 <div className="toast">
                     <p>{toastMessage}</p>

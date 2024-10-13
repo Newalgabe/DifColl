@@ -7,7 +7,7 @@ const MyNexus = () => {
     return (
         <div className="nexus-container" data-aos="fade-up">
             <h2 className="nexus-heading">Welcome to Your Nexus</h2>
-            <p className="nexus-description">Manage all your collections seamlessly in one place.</p>
+            <p className="nexus-description">Manage all your books, movies, and games seamlessly in one place.</p>
             <div className="nexus-options">
                 <Link to="/my-books" className="nexus-option-card">
                     <FaBook className="nexus-icon" />

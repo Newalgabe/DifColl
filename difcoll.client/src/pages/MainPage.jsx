@@ -1,6 +1,7 @@
+// MainPage.jsx
 import { Link } from 'react-router-dom';
-import './MainPage.css';
-import { FaBook, FaUsers, FaStar, FaChartBar, FaUsersCog } from 'react-icons/fa';
+import './MainPage.css'; // Add styles for the main page
+import { FaBook, FaUsers, FaStar, FaChartBar, FaUsersCog } from 'react-icons/fa'; // Using react-icons for additional icons
 
 const MainPage = () => {
     const testimonials = [
@@ -47,7 +48,7 @@ const MainPage = () => {
                         <div className="auth-section" data-aos="fade-up" data-aos-delay="200">
                             <p>Get started by signing in with your Google account:</p>
                             <a
-                                href="/login"
+                                href="/login" // Using href instead of Link to maintain functionality with external authentication
                                 className="btn btn-google"
                             >
                                 <img
@@ -61,7 +62,7 @@ const MainPage = () => {
                     </div>
                     <div className="hero-image" data-aos="zoom-in" data-aos-delay="400">
                         <img
-                            src="https://www.apple.com/newsroom/images/tile-images/Apple_unveils_best_of_2017.jpg.og.jpg?202408200426"
+                            src="https://www.apple.com/newsroom/images/tile-images/Apple_unveils_best_of_2017.jpg.og.jpg?202408200426" // Replace with a valid URL
                             alt="Illustration of managing collections"
                         />
                     </div>
@@ -118,7 +119,27 @@ const MainPage = () => {
                 </div>
             </section>
 
-            {/* Statistics and Features Overlay */}
+            {/* Main Content */}
+            <div className="main-content">
+                {/* Search Section */}
+                <div className="search-section" data-aos="fade-up">
+                    <h2><FaBook className="section-icon" /> Search the Collection</h2>
+                    <div className="search-buttons">
+                        <Link to="/search-books" className="btn btn-primary">Search Books</Link>
+                        <Link to="/search-movies" className="btn btn-primary">Search Movies</Link>
+                        <Link to="/search-games" className="btn btn-primary">Search Games</Link>
+                    </div>
+                </div>
+
+                {/* Unified Community Section */}
+                <div className="community-section" data-aos="fade-up">
+                    <h2><FaUsers className="section-icon" /> Explore Nexus</h2>
+                    <p>Access and manage your entire collection of books, movies, and games in one place.</p>
+                    <Link to="/my-nexus" className="btn btn-secondary">Manage Your Nexus</Link>
+                </div>
+            </div>
+
+            {/* Overlay Section */}
             <section className="overlay-section" data-aos="fade-up">
                 <div className="overlay-content">
                     <h2>Join the DifColl Community</h2>

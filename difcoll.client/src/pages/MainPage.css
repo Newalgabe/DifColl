@@ -1,13 +1,19 @@
+/* MainPage.css */
+
+/* Import AOS styles */
 @import 'aos/dist/aos.css';
+
+/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto:wght@400;500&display=swap');
 
+/* Root Variables for Easy Theme Management */
 :root {
-    --color-primary: #2C3E50;
-    --color-secondary: #1ABC9C;
-    --color-accent: #E74C3C;
-    --color-accent-alt: #F1C40F;
-    --color-neutral-light: #ECF0F1;
-    --color-neutral-dark: #95A5A6;
+    --color-primary: #2C3E50; /* Dark Slate Blue */
+    --color-secondary: #1ABC9C; /* Soft Teal */
+    --color-accent: #E74C3C; /* Coral */
+    --color-accent-alt: #F1C40F; /* Sunflower Yellow */
+    --color-neutral-light: #ECF0F1; /* Light Gray */
+    --color-neutral-dark: #95A5A6; /* Dark Gray */
     --color-background: #FFFFFF;
     --color-text: #2C3E50;
     --color-text-secondary: #95A5A6;
@@ -23,11 +29,13 @@ body {
     padding: 0;
 }
 
+/* Container */
 .main-page {
     padding: 20px;
     text-align: center;
 }
 
+/* Hero Section */
 .hero-section {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
     color: #ffffff;
@@ -125,6 +133,7 @@ body {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
+/* Statistics Section */
 .statistics-section {
     padding: 40px 20px;
     background-color: var(--color-background);
@@ -176,6 +185,7 @@ body {
     margin: 5px 0 0 0;
 }
 
+/* Features Section */
 .features-section {
     padding: 40px 20px;
     background-color: var(--color-background);
@@ -232,6 +242,7 @@ body {
     line-height: 1.6;
 }
 
+/* Testimonials Section */
 .testimonials-section {
     padding: 40px 20px;
     background-color: var(--color-background);
@@ -283,6 +294,102 @@ body {
         text-align: right;
     }
 
+/* Main Content */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 0 20px;
+}
+
+/* Search Section */
+.search-section {
+    width: 100%;
+    max-width: 800px;
+    padding: 40px 20px;
+    background-color: var(--color-neutral-light);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 1s ease-out;
+}
+
+    .search-section h2 {
+        font-family: var(--font-secondary);
+        font-size: 2rem;
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+.section-icon {
+    color: var(--color-secondary);
+}
+
+.search-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+    .search-buttons .btn {
+        flex: 1 1 220px;
+        max-width: 280px;
+    }
+
+/* Community Section */
+.community-section {
+    width: 100%;
+    max-width: 800px;
+    padding: 40px 20px;
+    background-color: var(--color-neutral-light);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 1s ease-out;
+}
+
+    .community-section h2 {
+        font-family: var(--font-secondary);
+        font-size: 2rem;
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .community-section p {
+        font-size: 1.2rem;
+        color: var(--color-text-secondary);
+        margin-bottom: 30px;
+    }
+
+    .community-section .btn-secondary {
+        background-color: var(--color-secondary);
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        font-family: var(--font-secondary);
+        font-size: 1.1rem;
+    }
+
+        .community-section .btn-secondary:hover {
+            background-color: #13856A;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+/* Overlay Section */
 .overlay-section {
     position: relative;
     background: linear-gradient(135deg, var(--color-accent-alt) 0%, var(--color-accent) 100%);
@@ -332,6 +439,7 @@ body {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
+/* Footer */
 .main-footer {
     margin-top: 50px;
     background-color: var(--color-background);
@@ -347,6 +455,7 @@ body {
         margin: 0;
     }
 
+/* Responsive Design */
 @media (max-width: 1200px) {
     .hero-text h1 {
         font-size: 3rem;
@@ -457,6 +566,7 @@ body {
     }
 }
 
+/* Interactive Elements */
 .btn:active {
     transform: scale(0.98);
 }

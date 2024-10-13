@@ -23,7 +23,8 @@ const App = () => {
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<UserContainer />} />
             <Route path="/search-books" element={<BookSearch />} />
-            <Route path="/my-books" element={<BookCollection />} />
+            <Route path="/search-movies" element={<BookCollection />} />
+            <Route path="/search-games" element={<BookCollection />} />
             <Route path="/my-nexus" element={<MyNexus />} /> {/* New Route */}
         </Routes>
     );
