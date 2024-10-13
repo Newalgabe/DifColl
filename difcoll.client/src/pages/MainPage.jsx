@@ -130,13 +130,6 @@ const MainPage = () => {
                         <Link to="/search-games" className="btn btn-primary">Search Games</Link>
                     </div>
                 </div>
-
-                {/* Unified Community Section */}
-                <div className="community-section" data-aos="fade-up">
-                    <h2><FaUsers className="section-icon" /> Explore Nexus</h2>
-                    <p>Access and manage your entire collection of books, movies, and games in one place.</p>
-                    <Link to="/my-nexus" className="btn btn-secondary">Manage Your Nexus</Link>
-                </div>
             </div>
 
             {/* Overlay Section */}
