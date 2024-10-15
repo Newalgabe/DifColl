@@ -1,0 +1,431 @@
+/* GameSearch.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto:wght@400;500&display=swap');
+
+:root {
+    --color-primary: #2C3E50;
+    --color-secondary: #1ABC9C;
+    --color-accent: #E74C3C;
+    --color-accent-alt: #F1C40F;
+    --color-neutral-light: #ECF0F1;
+    --color-neutral-dark: #95A5A6;
+    --color-background: #FFFFFF;
+    --color-text: #2C3E50;
+    --color-text-secondary: #95A5A6;
+    --font-primary: 'Roboto', sans-serif;
+    --font-secondary: 'Montserrat', sans-serif;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--color-neutral-light);
+    color: var(--color-text);
+}
+
+/* Game Search Container */
+.game-search-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 25px;
+    background-color: var(--color-background);
+    border-radius: 12px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    /* Heading */
+    .game-search-container h2 {
+        font-family: var(--font-secondary);
+        font-size: 2rem;
+        color: var(--color-primary);
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+/* Search Controls */
+.search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+    justify-content: center;
+}
+
+.search-input,
+.genre-input,
+.sort-select {
+    padding: 14px 18px;
+    font-size: 16px;
+    border: 2px solid var(--color-neutral-dark);
+    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    flex: 1 1 250px;
+}
+
+    .search-input:focus,
+    .genre-input:focus,
+    .sort-select:focus {
+        border-color: var(--color-secondary);
+        box-shadow: 0 0 8px rgba(26, 188, 156, 0.5);
+        outline: none;
+    }
+
+.search-button {
+    padding: 14px 28px;
+    font-size: 16px;
+    background-color: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex: 1 1 100%;
+    max-width: 200px;
+    align-self: center;
+}
+
+    .search-button:hover {
+        background-color: #16A085;
+        transform: translateY(-2px);
+    }
+
+/* Results Grid */
+.results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+}
+
+/* Game Card */
+.game-card {
+    padding: 20px;
+    background-color: var(--color-neutral-light);
+    border-radius: 10px;
+    border: 1px solid var(--color-neutral-dark);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+    .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+.game-image {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-image {
+    transform: scale(1.05);
+}
+
+.game-details {
+    text-align: center;
+}
+
+    .game-details h3 {
+        font-family: var(--font-secondary);
+        font-size: 1.5rem;
+        color: var(--color-primary);
+    }
+
+    .game-details p {
+        color: var(--color-text-secondary);
+        font-size: 0.95rem;
+    }
+
+.description {
+    font-style: italic;
+    color: var(--color-text-secondary);
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+    .actions button {
+        padding: 10px 0;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        color: white;
+        flex: 1;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+.add-button {
+    background-color: var(--color-secondary);
+}
+
+.bookmark-button {
+    background-color: var(--color-accent-alt);
+}
+
+.share-button {
+    background-color: var(--color-accent);
+}
+
+.details-button {
+    background-color: var(--color-neutral-dark);
+}
+
+.add-button:hover {
+    background-color: #16A085;
+}
+
+.bookmark-button:hover {
+    background-color: #F39C12;
+}
+
+.share-button:hover {
+    background-color: #C0392B;
+}
+
+.details-button:hover {
+    background-color: #7F8C8D;
+}
+
+/* Pagination */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    gap: 15px;
+}
+
+.pagination-button {
+    padding: 12px 20px;
+    background-color: var(--color-secondary);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 16px;
+}
+
+    .pagination-button:hover:not(:disabled) {
+        background-color: #16A085;
+        transform: translateY(-2px);
+    }
+
+    .pagination-button:disabled {
+        background-color: var(--color-neutral-dark);
+        cursor: not-allowed;
+    }
+
+/* Modal */
+.modal {
+    background-color: rgba(44, 62, 80, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--color-neutral-light);
+    padding: 25px;
+    border-radius: 12px;
+    width: 95%;
+    max-width: 850px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+    .close-modal:hover {
+        background-color: #C0392B;
+    }
+
+/* Related Games */
+.related-games-container {
+    margin-top: 25px;
+}
+
+.related-games-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+}
+
+.related-game-card {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: var(--color-neutral-light);
+    border: 1px solid var(--color-neutral-dark);
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+    .related-game-card:hover {
+        transform: translateY(-3px);
+        background-color: var(--color-neutral-light);
+    }
+
+.related-game-image {
+    width: 100px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.related-game-info h4 {
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+    color: var(--color-primary);
+    margin-bottom: 3px;
+}
+
+.related-game-info p {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+/* Bookmarks */
+.bookmarks {
+    margin-top: 35px;
+}
+
+    .bookmarks h4 {
+        font-family: var(--font-secondary);
+        color: var(--color-primary);
+        margin-bottom: 15px;
+    }
+
+.bookmarks-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.bookmark-card {
+    background-color: var(--color-accent-alt);
+    padding: 12px 18px;
+    border-radius: 8px;
+    flex: 1 1 45%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .bookmark-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .bookmark-card h5 {
+        margin: 0;
+        font-size: 1rem;
+        color: white;
+    }
+
+/* Toast Notifications */
+.toast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: var(--color-secondary);
+    color: white;
+    padding: 18px 24px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeInOut 3s forwards;
+    z-index: 1100;
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+}
+
+/* Highlighted Text */
+.highlight {
+    background-color: var(--color-accent-alt);
+    color: white;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* Scrollbar Styling for Modal Content */
+.modal-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--color-neutral-light);
+    border-radius: 5px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--color-neutral-dark);
+    border-radius: 5px;
+}
+
+    .modal-content::-webkit-scrollbar-thumb:hover {
+        background: var(--color-primary);
+    }

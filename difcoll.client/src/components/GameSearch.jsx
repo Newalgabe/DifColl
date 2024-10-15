@@ -1,20 +1,56 @@
+// GameSearch.jsx
 import { useState, useEffect } from 'react';
+import './GameSearch.css';
 
 const GameSearch = () => {
     const [query, setQuery] = useState('');
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [selectedGame, setSelectedGame] = useState(null);
+    const [bookmarks, setBookmarks] = useState([]);
+    const [relatedGames, setRelatedGames] = useState([]);
+    const [relatedGamesCache, setRelatedGamesCache] = useState({});
+    const [toastMessage, setToastMessage] = useState('');
+    const [sortOrder, setSortOrder] = useState('relevance'); // New sortOrder state
+    const [genre, setGenre] = useState(''); // New genre state
 
+    // Load saved search parameters from localStorage on component mount
     useEffect(() => {
-        if (query) {
-            handleSearch();
+        const savedQuery = localStorage.getItem('gameQuery');
+        const savedPage = parseInt(localStorage.getItem('gamePage'), 10) || 1;
+        const savedSortOrder = localStorage.getItem('gameSortOrder') || 'relevance';
+        const savedGenre = localStorage.getItem('gameGenre') || '';
+
+        if (savedQuery) {
+            setQuery(savedQuery);
+            setSortOrder(savedSortOrder);
+            setGenre(savedGenre);
+            handleSearch(savedQuery, savedPage, savedSortOrder, savedGenre);
         }
     }, []);
 
-    const handleSearch = async () => {
-        if (query.trim() === '') {
+    // Save search parameters to localStorage before unloading
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            localStorage.setItem('gameQuery', query);
+            localStorage.setItem('gamePage', page);
+            localStorage.setItem('gameSortOrder', sortOrder);
+            localStorage.setItem('gameGenre', genre);
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [query, page, sortOrder, genre]);
+
+    // Function to handle game search
+    const handleSearch = async (searchQuery = query, searchPage = 1, searchSortOrder = sortOrder, searchGenre = genre) => {
+        if (searchQuery.trim() === '') {
             setError('Please enter a search query.');
             return;
         }
@@ -23,32 +59,200 @@ const GameSearch = () => {
         setError(null);
 
         try {
-            const response = await fetch(
-                `https://api.rawg.io/api/games?search=${encodeURIComponent(query)}&key=YOUR_API_KEY`
-            );
-            if (response.ok) {
-                const data = await response.json();
-                setGames(data.results || []);
-            } else {
-                setError('Failed to fetch games');
-                setGames([]);
+            // Construct the API URL with query, page, sortOrder, and genre
+            let apiUrl = `https://localhost:7113/api/Game/search/${encodeURIComponent(searchQuery)}?page=${searchPage}`;
+
+            if (searchSortOrder) {
+                apiUrl += `&sortOrder=${encodeURIComponent(searchSortOrder)}`;
             }
+
+            if (searchGenre) {
+                apiUrl += `&genre=${encodeURIComponent(searchGenre)}`;
+            }
+
+            console.log("Sending request to:", apiUrl);
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            console.log("Response status:", response.status);
+
+            if (!response.ok) {
+                const errorMessage = await response.json();
+                console.error("Error response:", errorMessage);
+                throw new Error(errorMessage.message || 'Failed to fetch games.');
+            }
+
+            const data = await response.json();
+            console.log('Fetched Games:', data);
+            setGames(data.games || []);
+            setTotalPages(data.totalPages || 1);
+            setPage(data.currentPage || 1);
         } catch (err) {
-            console.error('Error fetching games:', err);  // Log the error
-            setError('Error fetching games');
+            console.error('Fetch error:', err);
+            setError(err.message || 'Failed to fetch games. Please try again.');
             setGames([]);
+            setTotalPages(1);
+            setPage(1);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAddToCollection = (game) => {
-        console.log('Game added to collection:', game);
-        // Logic for adding game to collection
+    // Function to handle moving to the next page
+    const handleNextPage = () => {
+        if (page < totalPages) {
+            handleSearch(query, page + 1, sortOrder, genre);
+        }
     };
 
+    // Function to handle moving to the previous page
+    const handlePreviousPage = () => {
+        if (page > 1) {
+            handleSearch(query, page - 1, sortOrder, genre);
+        }
+    };
+
+    // Function to add a game to the user's collection
+    const handleAddToCollection = async (game) => {
+        try {
+            const apiUrl = 'https://localhost:7113/api/Game/add'; // Relative URL
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(game),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to add game to collection.');
+            }
+
+            const result = await response.json();
+            console.log(result.message);
+            showToast(result.message || 'Game added to collection!');
+        } catch (err) {
+            console.error('Error adding game to collection:', err);
+            setError(err.message || 'Failed to add game to collection.');
+        }
+    };
+
+    // Function to fetch related games based on genre
+    const handleRelatedGames = async (game) => {
+        try {
+            if (relatedGamesCache[game.id]) {
+                setRelatedGames(relatedGamesCache[game.id]);
+                return;
+            }
+
+            const genres = game.genres.split(', ').map(g => g.trim());
+
+            if (genres.length === 0) {
+                setRelatedGames([]);
+                return;
+            }
+
+            // Fetch related games based on the first genre
+            const genreQuery = encodeURIComponent(genres[0]);
+            const apiUrl = `https://localhost:7113/api/Game/search/${genreQuery}?page=1&sortOrder=relevance&genre=${encodeURIComponent(genres[0])}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const related = data.games.filter(g => g.id !== game.id).slice(0, 5);
+                setRelatedGames(related);
+                setRelatedGamesCache(prev => ({ ...prev, [game.id]: related }));
+            } else {
+                setRelatedGames([]);
+                console.error('Failed to fetch related games');
+            }
+        } catch (error) {
+            console.error("Error fetching related games:", error);
+            setRelatedGames([]);
+        }
+    };
+
+    // Function to view detailed information about a game
     const handleViewDetails = (game) => {
+        console.log("Game Details:", game);
         setSelectedGame(game);
+        handleRelatedGames(game);
+    };
+
+    // Function to bookmark a game
+    const handleBookmark = (game) => {
+        // Prevent duplicate bookmarks
+        if (!bookmarks.some(b => b.id === game.id)) {
+            setBookmarks((prev) => [...prev, game]);
+            showToast('Game bookmarked successfully!');
+        } else {
+            showToast('Game is already bookmarked.');
+        }
+    };
+
+    // Function to share a game link
+    const handleShare = (game) => {
+        const shareUrl = `https://www.rawg.io/games/${game.id}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast('Game link copied to clipboard!');
+        }).catch((error) => {
+            console.error('Failed to copy: ', error);
+            showToast('Failed to copy link.');
+        });
+    };
+
+    // Function to handle clicking on a related game
+    const handleRelatedGameClick = (game) => {
+        setSelectedGame(game);
+        handleRelatedGames(game);
+    };
+
+    // Function to display toast notifications
+    const showToast = (message) => {
+        setToastMessage(message);
+        setTimeout(() => {
+            setToastMessage('');
+        }, 3000);
+    };
+
+    // Function to escape special characters for regex
+    const escapeRegExp = (string) => {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escapes special characters
+    };
+
+    // Function to highlight the search query in game titles
+    const highlightQuery = (text, query) => {
+        if (!text || !query) return text; // Ensure text and query are defined
+
+        const escapedQuery = escapeRegExp(query.trim());
+        if (escapedQuery === '') return text; // If query is empty after trimming, return text
+
+        const regex = new RegExp(`(${escapedQuery})`, 'gi'); // Corrected syntax with backticks
+        const parts = text.split(regex);
+
+        return parts.map((part, index) => (
+            <span
+                key={index}
+                style={part.toLowerCase() === query.toLowerCase().trim() ? { fontWeight: 'bold', backgroundColor: 'yellow' } : {}}
+            >
+                {part}
+            </span>
+        ));
     };
 
     return (
@@ -56,6 +260,7 @@ const GameSearch = () => {
             <h2>Search Games</h2>
 
             <div className="search-controls">
+                {/* Game Name Input */}
                 <input
                     type="text"
                     placeholder="Enter game name..."
@@ -63,46 +268,109 @@ const GameSearch = () => {
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            handleSearch();
+                            handleSearch(query, 1, sortOrder, genre);
                         }
                     }}
                     className="search-input"
                 />
-                <button onClick={handleSearch} className="search-button">
+
+                {/* Sort Order Dropdown */}
+                <select
+                    value={sortOrder}
+                    onChange={(e) => {
+                        setSortOrder(e.target.value);
+                        handleSearch(query, 1, e.target.value, genre);
+                    }}
+                    className="sort-select"
+                >
+                    <option value="relevance">Relevance</option>
+                    <option value="newest">Newest</option>
+                </select>
+
+                {/* Genre Input (Optional) */}
+                <input
+                    type="text"
+                    placeholder="Genre (optional)"
+                    value={genre}
+                    onChange={(e) => setGenre(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(query, 1, sortOrder, e.target.value);
+                        }
+                    }}
+                    className="genre-input"
+                />
+
+                {/* Search Button */}
+                <button onClick={() => handleSearch(query, 1, sortOrder, genre)} className="search-button">
                     Search
                 </button>
             </div>
 
+            {/* Loading Indicator */}
             {loading && <p>Loading...</p>}
+
+            {/* Error Message */}
             {error && <p className="error">{error}</p>}
 
+            {/* Search Results */}
             <div className="results-container">
-                {games.map((game) => {
-                    const { name, released, background_image, rating } = game;
-                    const gameImage = background_image || 'https://via.placeholder.com/300x450?text=No+Image+Available';
+                {games.map((game) => (
+                    <article key={`${game.id}-${game.name}`} className="game-card">
+                        <img
+                            src={game.backgroundImage}
+                            alt={game.name}
+                            className="game-image"
+                        />
+                        <div className="game-details">
+                            <h3>{highlightQuery(game.name, query)}</h3>
+                            {game.released && <p><strong>Released:</strong> {game.released}</p>}
+                            {game.rating && <p><strong>Rating:</strong> {game.rating}</p>}
+                            {game.genres && <p><strong>Genres:</strong> {game.genres}</p>}
+                            {game.description && <p className="description">{game.description.slice(0, 150)}...</p>}
 
-                    return (
-                        <article key={game.id} className="game-card">
-                            <img src={gameImage} alt={name} className="game-image" />
-                            <div className="game-details">
-                                <h3>{name}</h3>
-                                {released && <p><strong>Released:</strong> {released}</p>}
-                                {rating && <p><strong>Rating:</strong> {rating}</p>}
-
-                                <div className="actions">
-                                    <button onClick={() => handleAddToCollection(game)} className="add-button">
-                                        Add to Collection
-                                    </button>
-                                    <button onClick={() => handleViewDetails(game)} className="details-button">
-                                        View Details
-                                    </button>
-                                </div>
+                            <div className="actions">
+                                <button
+                                    onClick={() => handleAddToCollection(game)}
+                                    className="add-button"
+                                >
+                                    Add to Collection
+                                </button>
+                                <button onClick={() => handleBookmark(game)} className="bookmark-button">
+                                    Bookmark
+                                </button>
+                                <button onClick={() => handleShare(game)} className="share-button">
+                                    Share
+                                </button>
+                                <button onClick={() => handleViewDetails(game)} className="details-button">
+                                    View Details
+                                </button>
                             </div>
-                        </article>
-                    );
-                })}
+                        </div>
+                    </article>
+                ))}
             </div>
 
+            {/* Pagination Controls */}
+            <div className="pagination-controls">
+                <button
+                    onClick={handlePreviousPage}
+                    disabled={page === 1}
+                    className="pagination-button"
+                >
+                    Previous
+                </button>
+                <span>Page {page} of {totalPages}</span>
+                <button
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                    className="pagination-button"
+                >
+                    Next
+                </button>
+            </div>
+
+            {/* Game Details Modal */}
             {selectedGame && (
                 <div className="modal" onClick={() => setSelectedGame(null)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -114,11 +382,66 @@ const GameSearch = () => {
                         {selectedGame.rating && (
                             <p><strong>Rating:</strong> {selectedGame.rating}</p>
                         )}
+                        {selectedGame.genres && (
+                            <p><strong>Genres:</strong> {selectedGame.genres}</p>
+                        )}
+                        {selectedGame.description && (
+                            <p className="description">{selectedGame.description}</p>
+                        )}
+                        <a href={`https://www.rawg.io/games/${selectedGame.id}`} target="_blank" rel="noopener noreferrer">
+                            View on RAWG
+                        </a>
+
+                        {/* Related Games */}
+                        <div className="related-games-container">
+                            <h3>Related Games</h3>
+                            {relatedGames.length > 0 ? (
+                                <div className="related-games-list">
+                                    {relatedGames.map((game) => (
+                                        <div key={game.id} className="related-game-card" onClick={() => handleRelatedGameClick(game)}>
+                                            <img
+                                                src={game.backgroundImage || 'https://via.placeholder.com/100x150?text=No+Image'}
+                                                alt={game.name}
+                                                className="related-game-image"
+                                            />
+                                            <div className="related-game-info">
+                                                <h4>{highlightQuery(game.name, query)}</h4>
+                                                {game.released && <p>{game.released}</p>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No related games could be found.</p>
+                            )}
+                        </div>
                     </div>
+                </div>
+            )}
+
+            {/* Bookmarks Section */}
+            {bookmarks.length > 0 && (
+                <div className="bookmarks">
+                    <h4>Bookmarked Games:</h4>
+                    <div className="bookmarks-list">
+                        {bookmarks.map((bookmark) => (
+                            <div key={bookmark.id} className="bookmark-card">
+                                <h5>{bookmark.name}</h5>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Toast Notifications */}
+            {toastMessage && (
+                <div className="toast">
+                    <p>{toastMessage}</p>
                 </div>
             )}
         </div>
     );
+
 };
 
 export default GameSearch;
