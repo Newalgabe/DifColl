@@ -1,0 +1,442 @@
+// MovieSearch.jsx
+import { useState, useEffect } from 'react';
+import './MovieSearch.css';
+
+const MovieSearch = () => {
+    const [query, setQuery] = useState('');
+    const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [selectedMovie, setSelectedMovie] = useState(null);
+    const [bookmarks, setBookmarks] = useState([]);
+    const [relatedMovies, setRelatedMovies] = useState([]);
+    const [relatedMoviesCache, setRelatedMoviesCache] = useState({});
+    const [toastMessage, setToastMessage] = useState('');
+    const [sortOrder, setSortOrder] = useState('relevance'); // Updated sortOrder state
+    const [genre, setGenre] = useState(''); // New genre state
+
+    // Load saved search parameters from localStorage on component mount
+    useEffect(() => {
+        const savedQuery = localStorage.getItem('movieQuery');
+        const savedPage = parseInt(localStorage.getItem('moviePage'), 10) || 1;
+        const savedSortOrder = localStorage.getItem('movieSortOrder') || 'relevance';
+        const savedGenre = localStorage.getItem('movieGenre') || '';
+
+        if (savedQuery) {
+            setQuery(savedQuery);
+            setSortOrder(savedSortOrder);
+            setGenre(savedGenre);
+            handleSearch(savedQuery, savedPage, savedSortOrder, savedGenre);
+        }
+    }, []);
+
+    // Save search parameters to localStorage before unloading
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            localStorage.setItem('movieQuery', query);
+            localStorage.setItem('moviePage', page);
+            localStorage.setItem('movieSortOrder', sortOrder);
+            localStorage.setItem('movieGenre', genre);
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [query, page, sortOrder, genre]);
+
+    // Function to escape special characters for regex
+    const escapeRegExp = (string) => {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escapes special characters
+    };
+
+    // Function to highlight the search query in movie titles
+    const highlightQuery = (text, query) => {
+        if (!text || !query) return text; // Ensure text and query are defined
+
+        const escapedQuery = escapeRegExp(query.trim());
+        if (escapedQuery === '') return text; // If query is empty after trimming, return text
+
+        const regex = new RegExp(`(${escapedQuery})`, 'gi'); // Corrected syntax with backticks
+        const parts = text.split(regex);
+
+        return parts.map((part, index) => (
+            <span
+                key={index}
+                style={part.toLowerCase() === query.toLowerCase().trim() ? { fontWeight: 'bold', backgroundColor: 'yellow' } : {}}
+            >
+                {part}
+            </span>
+        ));
+    };
+
+    // Function to handle movie search
+    const handleSearch = async (searchQuery = query, searchPage = 1, searchSortOrder = sortOrder, searchGenre = genre) => {
+        if (searchQuery.trim() === '') {
+            setError('Please enter a search query.');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            // Construct the API URL with query, page, sortOrder, and genre
+            let apiUrl = `https://localhost:7113/api/Movie/search/${encodeURIComponent(searchQuery)}?page=${searchPage}`;
+
+            if (searchSortOrder) {
+                apiUrl += `&sortOrder=${encodeURIComponent(searchSortOrder)}`;
+            }
+
+            if (searchGenre) {
+                apiUrl += `&genre=${encodeURIComponent(searchGenre)}`;
+            }
+
+            console.log("Sending request to:", apiUrl);
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            console.log("Response status:", response.status);
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                console.error("Error response:", errorMessage);
+                throw new Error(`Error: ${errorMessage}`);
+            }
+
+            const data = await response.json();
+            console.log('Fetched Movies:', data);
+            setMovies(data.movies || []);
+            setTotalPages(data.totalPages || 1);
+            setPage(data.currentPage || 1);
+        } catch (err) {
+            console.error('Fetch error:', err);
+            setError('Failed to fetch movies. Please try again.');
+            setMovies([]);
+            setTotalPages(1);
+            setPage(1);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Function to handle moving to the next page
+    const handleNextPage = () => {
+        if (page < totalPages) {
+            handleSearch(query, page + 1, sortOrder, genre);
+        }
+    };
+
+    // Function to handle moving to the previous page
+    const handlePreviousPage = () => {
+        if (page > 1) {
+            handleSearch(query, page - 1, sortOrder, genre);
+        }
+    };
+
+    // Function to add a movie to the user's collection
+    const handleAddToCollection = async (movie) => {
+        try {
+            const apiUrl = 'https://localhost:7113/api/Movie/add'; // Corrected URL with quotes
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(movie),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to add movie to collection.');
+            }
+
+            const result = await response.json();
+            console.log(result.message);
+            showToast(result.message || 'Movie added to collection!');
+        } catch (err) {
+            console.error('Error adding movie to collection:', err);
+            setError(err.message || 'Failed to add movie to collection.');
+        }
+    };
+
+    // Function to fetch related movies based on genre
+    const handleRelatedMovies = async (movie) => {
+        try {
+            if (relatedMoviesCache[movie.id]) {
+                setRelatedMovies(relatedMoviesCache[movie.id]);
+                return;
+            }
+
+            const genres = movie.genres.split(', ').map(g => g.trim());
+
+            if (genres.length === 0) {
+                setRelatedMovies([]);
+                return;
+            }
+
+            // Fetch related movies based on the first genre
+            const genreQuery = encodeURIComponent(genres[0]);
+            const apiUrl = `https://localhost:7113/api/Movie/search/${genreQuery}?page=1&sortOrder=relevance&genre=${encodeURIComponent(genres[0])}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const related = data.movies.filter(m => m.id !== movie.id).slice(0, 5);
+                setRelatedMovies(related);
+                setRelatedMoviesCache(prev => ({ ...prev, [movie.id]: related }));
+            } else {
+                setRelatedMovies([]);
+                console.error('Failed to fetch related movies');
+            }
+        } catch (error) {
+            console.error("Error fetching related movies:", error);
+            setRelatedMovies([]);
+        }
+    };
+
+    // Function to view detailed information about a movie
+    const handleViewDetails = (movie) => {
+        console.log("Movie Details:", movie);
+        setSelectedMovie(movie);
+        handleRelatedMovies(movie);
+    };
+
+    // Function to bookmark a movie
+    const handleBookmark = (movie) => {
+        setBookmarks((prev) => [...prev, movie]);
+        showToast('Movie bookmarked successfully!');
+    };
+
+    // Function to share a movie link
+    const handleShare = (movie) => {
+        const shareUrl = `https://www.themoviedb.org/movie/${movie.id}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast('Movie link copied to clipboard!');
+        }).catch((error) => {
+            console.error('Failed to copy: ', error);
+            showToast('Failed to copy link.');
+        });
+    };
+
+    // Function to handle clicking on a related movie
+    const handleRelatedMovieClick = (movie) => {
+        setSelectedMovie(movie);
+        handleRelatedMovies(movie);
+    };
+
+    // Function to display toast notifications
+    const showToast = (message) => {
+        setToastMessage(message);
+        setTimeout(() => {
+            setToastMessage('');
+        }, 3000);
+    };
+
+    return (
+        <div className="movie-search-container">
+            <h2>Search Movies</h2>
+
+            <div className="search-controls">
+                {/* Movie Name Input */}
+                <input
+                    type="text"
+                    placeholder="Enter movie name..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(query, 1, sortOrder, genre);
+                        }
+                    }}
+                    className="search-input"
+                />
+
+                {/* Sort Order Dropdown */}
+                <select
+                    value={sortOrder}
+                    onChange={(e) => {
+                        setSortOrder(e.target.value);
+                        handleSearch(query, 1, e.target.value, genre);
+                    }}
+                    className="sort-select"
+                >
+                    <option value="relevance">Relevance</option>
+                    <option value="newest">Newest</option>
+                </select>
+
+                {/* Genre Input (Optional) */}
+                <input
+                    type="text"
+                    placeholder="Genre (optional)"
+                    value={genre}
+                    onChange={(e) => setGenre(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(query, 1, sortOrder, e.target.value);
+                        }
+                    }}
+                    className="genre-input"
+                />
+
+                {/* Search Button */}
+                <button onClick={() => handleSearch(query, 1, sortOrder, genre)} className="search-button">
+                    Search
+                </button>
+            </div>
+
+            {/* Loading Indicator */}
+            {loading && <p>Loading...</p>}
+
+            {/* Error Message */}
+            {error && <p className="error">{error}</p>}
+
+            {/* Search Results */}
+            <div className="results-container">
+                {movies.map((movie) => (
+                    <article key={`${movie.id}-${movie.title}`} className="movie-card">
+                        <img
+                            src={movie.posterPath}
+                            alt={movie.title}
+                            className="movie-image"
+                        />
+                        <div className="movie-details">
+                            <h3>{highlightQuery(movie.title, query)}</h3>
+                            {movie.releaseDate && <p><strong>Release Date:</strong> {movie.releaseDate}</p>}
+                            {movie.genres && <p><strong>Genres:</strong> {movie.genres}</p>}
+                            {movie.directors && <p><strong>Directors:</strong> {movie.directors}</p>}
+                            {movie.overview && <p className="overview">{movie.overview.slice(0, 150)}...</p>}
+
+                            <div className="actions">
+                                <button
+                                    onClick={() => handleAddToCollection(movie)}
+                                    className="add-button"
+                                >
+                                    Add to Collection
+                                </button>
+                                <button onClick={() => handleBookmark(movie)} className="bookmark-button">
+                                    Bookmark
+                                </button>
+                                <button onClick={() => handleShare(movie)} className="share-button">
+                                    Share
+                                </button>
+                                <button onClick={() => handleViewDetails(movie)} className="details-button">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                ))}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="pagination-controls">
+                <button
+                    onClick={handlePreviousPage}
+                    disabled={page === 1}
+                    className="pagination-button"
+                >
+                    Previous
+                </button>
+                <span>Page {page} of {totalPages}</span>
+                <button
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                    className="pagination-button"
+                >
+                    Next
+                </button>
+            </div>
+
+            {/* Movie Details Modal */}
+            {selectedMovie && (
+                <div className="modal" onClick={() => setSelectedMovie(null)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => setSelectedMovie(null)} className="close-modal">X</button>
+                        <h3>{selectedMovie.title}</h3>
+                        {selectedMovie.releaseDate && (
+                            <p><strong>Release Date:</strong> {selectedMovie.releaseDate}</p>
+                        )}
+                        {selectedMovie.genres && (
+                            <p><strong>Genres:</strong> {selectedMovie.genres}</p>
+                        )}
+                        {selectedMovie.directors && (
+                            <p><strong>Directors:</strong> {selectedMovie.directors}</p>
+                        )}
+                        {selectedMovie.overview && (
+                            <p className="overview">{selectedMovie.overview}</p>
+                        )}
+                        <a href={`https://www.themoviedb.org/movie/${selectedMovie.id}`} target="_blank" rel="noopener noreferrer">
+                            View on TMDb
+                        </a>
+
+                        {/* Related Movies */}
+                        <div className="related-movies-container">
+                            <h3>Related Movies</h3>
+                            {relatedMovies.length > 0 ? (
+                                <div className="related-movies-list">
+                                    {relatedMovies.map((movie) => (
+                                        <div key={movie.id} className="related-movie-card" onClick={() => handleRelatedMovieClick(movie)}>
+                                            <img
+                                                src={movie.posterPath || 'https://via.placeholder.com/100x150?text=No+Image'}
+                                                alt={movie.title}
+                                                className="related-movie-image"
+                                            />
+                                            <div className="related-movie-info">
+                                                <h4>{movie.title}</h4>
+                                                {movie.releaseDate && <p>{movie.releaseDate}</p>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No related movies could be found.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Bookmarks Section */}
+            {bookmarks.length > 0 && (
+                <div className="bookmarks">
+                    <h4>Bookmarked Movies:</h4>
+                    <div className="bookmarks-list">
+                        {bookmarks.map((bookmark) => (
+                            <div key={bookmark.id} className="bookmark-card">
+                                <h5>{bookmark.title}</h5>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Toast Notifications */}
+            {toastMessage && (
+                <div className="toast">
+                    <p>{toastMessage}</p>
+                </div>
+            )}
+        </div>
+    );
+
+};
+
+export default MovieSearch;

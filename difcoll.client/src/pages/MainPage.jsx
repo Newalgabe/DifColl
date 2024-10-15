@@ -1,7 +1,6 @@
-// MainPage.jsx
 import { Link } from 'react-router-dom';
 import './MainPage.css'; // Add styles for the main page
-import { FaBook, FaUsers, FaStar, FaChartBar, FaUsersCog } from 'react-icons/fa'; // Using react-icons for additional icons
+import { FaBook, FaUsers, FaStar, FaChartBar, FaUsersCog, FaFilm, FaGamepad } from 'react-icons/fa'; // Added icons for movies and games
 
 const MainPage = () => {
     const testimonials = [
@@ -126,8 +125,8 @@ const MainPage = () => {
                     <h2><FaBook className="section-icon" /> Search the Collection</h2>
                     <div className="search-buttons">
                         <Link to="/search-books" className="btn btn-primary">Search Books</Link>
-                        <Link to="/search-movies" className="btn btn-primary">Search Movies</Link>
-                        <Link to="/search-games" className="btn btn-primary">Search Games</Link>
+                        <Link to="/search-movies" className="btn btn-primary"><FaFilm /> Search Movies</Link>
+                        <Link to="/search-games" className="btn btn-primary"><FaGamepad /> Search Games</Link>
                     </div>
                 </div>
             </div>
@@ -149,7 +148,6 @@ const MainPage = () => {
             </footer>
         </div>
     );
-
 };
 
 export default MainPage;

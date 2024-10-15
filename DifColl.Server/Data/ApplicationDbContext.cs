@@ -1,6 +1,6 @@
-﻿using DifColl.Server.Models;
+﻿// Data/ApplicationDbContext.cs
+using DifColl.Server.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace DifColl.Server.Data
 {
@@ -12,5 +12,11 @@ namespace DifColl.Server.Data
 
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Book> Books { get; set; }
+
+        // New DbSets
+        public DbSet<Movie> Movies { get; set; }
+        public DbSet<Game> Games { get; set; }
+
+        // Optional: Configure composite keys, relationships, etc.
     }
 }
