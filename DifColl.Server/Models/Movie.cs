@@ -1,5 +1,4 @@
-﻿// Models/Movie.cs
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DifColl.Server.Models
 {
@@ -20,6 +19,8 @@ namespace DifColl.Server.Models
 
         public string Overview { get; set; }
 
-        public string UserId { get; set; } // Assuming user authentication is implemented
+        public float Rating { get; set; } // New
+
+        public string UserId { get; set; }
     }
 }

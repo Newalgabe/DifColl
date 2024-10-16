@@ -1,4 +1,3 @@
-// BookSearch.jsx
 import { useState, useEffect } from 'react';
 import './BookSearch.css';
 
@@ -16,12 +15,20 @@ const BookSearch = () => {
     const [relatedBooks, setRelatedBooks] = useState([]);
     const [relatedBooksCache, setRelatedBooksCache] = useState({});
     const [toastMessage, setToastMessage] = useState('');
+    const [ratingStats, setRatingStats] = useState({ averageRating: null, ratingsCount: null });
+    const [ratings, setRatings] = useState({});
+    const [language, setLanguage] = useState('');
+    const [isbn, setIsbn] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [previewLink, setPreviewLink] = useState('');
+    const [description, setDescription] = useState(''); // Added description state
 
     useEffect(() => {
         const savedQuery = localStorage.getItem('query');
         const savedCategory = localStorage.getItem('category');
         const savedSortOrder = localStorage.getItem('sortOrder');
         const savedStartIndex = parseInt(localStorage.getItem('startIndex'), 10) || 0;
+
 
         if (savedQuery) setQuery(savedQuery);
         if (savedCategory) setCategory(savedCategory);
@@ -71,24 +78,34 @@ const BookSearch = () => {
         ));
     };
 
-    const handleSearch = async (index = 0, searchQuery = query, searchCategory = category, searchSortOrder = sortOrder) => {
-        if (searchQuery.trim() === '') {
-            setError('Please enter a search query.');
-            return;
+    const handleSearch = async (index) => {
+        if (!query.trim()) {
+            setError('Please enter a search term.');
+            return; // Exit the function if the query is empty
         }
 
         setLoading(true);
         setError(null);
-        const categoryFilter = searchCategory ? `+subject:${encodeURIComponent(searchCategory)}` : '';
+        const categoryFilter = category ? `+subject:${encodeURIComponent(category)}` : '';
         try {
             const response = await fetch(
-                `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}${categoryFilter}&startIndex=${index}&maxResults=10&orderBy=${searchSortOrder}`
+                `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}${categoryFilter}&startIndex=${index}&maxResults=10&orderBy=${sortOrder}`
             );
             if (response.ok) {
                 const data = await response.json();
                 setBooks(data.items || []);
                 setTotalItems(data.totalItems || 0);
                 setStartIndex(index);
+
+                // Extract ratings and new fields
+                const ratingsMap = {};
+                data.items.forEach((book) => {
+                    const { averageRating } = book.volumeInfo || {};
+                    if (averageRating) {
+                        ratingsMap[book.id] = averageRating;
+                    }
+                });
+                setRatings(ratingsMap);
             } else {
                 setError('Failed to fetch books');
                 setBooks([]);
@@ -169,11 +186,19 @@ const BookSearch = () => {
 
     const handleViewDetails = (book) => {
         if (book && book.volumeInfo) {
-            const { title, authors, description } = book.volumeInfo;
-            console.log("Book Details:", title, authors, description);
+            const { title, authors, description, averageRating, ratingsCount, language, industryIdentifiers, categories, previewLink } = book.volumeInfo;
+
+            // Set new fields
+            setRatingStats({ averageRating, ratingsCount });
+            setLanguage(language);
+            setIsbn(industryIdentifiers?.[0]?.identifier || 'N/A');
+            setCategories(categories || []);
+            setPreviewLink(previewLink || '');
+            setDescription(description || 'No description available.'); // Added line
+
+            console.log("Book Details:", title, authors, description, averageRating, ratingsCount, language, isbn, categories, previewLink);
 
             setSelectedBook(book);
-
             handleRelatedBooks(book);
         } else {
             console.warn("Book details not found");
@@ -276,6 +301,10 @@ const BookSearch = () => {
                                 {publishedDate && <p><strong>Published:</strong> {publishedDate}</p>}
                                 {publisher && <p><strong>Publisher:</strong> {publisher}</p>}
                                 {pageCount && <p><strong>Pages:</strong> {pageCount}</p>}
+                                {ratingStats.averageRating && <p><strong>Average Rating:</strong> {ratingStats.averageRating}</p>}
+                                {ratingStats.ratingsCount && <p><strong>Ratings Count:</strong> {ratingStats.ratingsCount}</p>}
+                                {ratings[book.id] && <p><strong>User Rating:</strong> {ratings[book.id]}</p>} {/* Updated line */}
+                                {language && <p><strong>Language:</strong> {language}</p>}
                                 {description && <p className="description">{description.slice(0, 150)}...</p>}
 
                                 <div className="actions">
@@ -335,11 +364,26 @@ const BookSearch = () => {
                         {selectedBook.volumeInfo.pageCount && (
                             <p><strong>Pages:</strong> {selectedBook.volumeInfo.pageCount}</p>
                         )}
-                        {selectedBook.volumeInfo.description && (
-                            <p className="description">{selectedBook.volumeInfo.description}</p>
+                        {selectedBook.volumeInfo.averageRating && (
+                            <p><strong>Average Rating:</strong> {selectedBook.volumeInfo.averageRating}</p>
                         )}
-                        {selectedBook.volumeInfo.previewLink && (
-                            <a href={selectedBook.volumeInfo.previewLink} target="_blank" rel="noopener noreferrer">
+                        {selectedBook.volumeInfo.ratingsCount && (
+                            <p><strong>Ratings Count:</strong> {selectedBook.volumeInfo.ratingsCount}</p>
+                        )}
+                        {language && (
+                            <p><strong>Language:</strong> {language}</p>
+                        )}
+                        {isbn && (
+                            <p><strong>ISBN:</strong> {isbn}</p>
+                        )}
+                        {categories.length > 0 && (
+                            <p><strong>Categories:</strong> {categories.join(', ')}</p>
+                        )}
+                        {description && (
+                            <p className="description">{description}</p>
+                        )}
+                        {previewLink && (
+                            <a href={previewLink} target="_blank" rel="noopener noreferrer">
                                 Read more
                             </a>
                         )}
@@ -357,13 +401,13 @@ const BookSearch = () => {
                                             />
                                             <div className="related-book-info">
                                                 <h4>{book.volumeInfo.title}</h4>
-                                                {book.volumeInfo.authors && <p>{book.volumeInfo.authors.join(', ')}</p>}
+                                                {book.volumeInfo.authors && <p>by {book.volumeInfo.authors.join(', ')}</p>}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <p>No related books could be found.</p>
+                                <p>No related books found.</p>
                             )}
                         </div>
                     </div>

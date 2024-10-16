@@ -120,7 +120,8 @@ namespace DifColl.Server.Controllers
                             PosterPath = string.IsNullOrEmpty(item["poster_path"]?.ToString())
                                 ? "https://via.placeholder.com/500x750?text=No+Image+Available"
                                 : $"https://image.tmdb.org/t/p/w500{item["poster_path"]}",
-                            Overview = item["overview"]?.ToString()
+                            Overview = item["overview"]?.ToString(),
+                            Rating = item["vote_average"]?.ToObject<float>() ?? 0 // New
                         };
 
                         dto = await FetchMovieDetails(dto);
@@ -281,8 +282,10 @@ namespace DifColl.Server.Controllers
                 ReleaseDate = movieDto.ReleaseDate,
                 PosterPath = movieDto.PosterPath,
                 Overview = movieDto.Overview,
+                Rating = movieDto.Rating, // New
                 UserId = userId
             };
+
 
             _context.Movies.Add(movie);
             await _context.SaveChangesAsync();

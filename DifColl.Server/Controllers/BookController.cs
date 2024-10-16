@@ -50,7 +50,11 @@ namespace DifColl.Server.Controllers
                         Id = item["id"]?.ToString(),
                         Title = item["volumeInfo"]["title"]?.ToString() ?? "No Title",
                         Authors = item["volumeInfo"]["authors"]?.ToObject<string[]>() ?? new string[] { "Unknown" },
-                        Thumbnail = item["volumeInfo"]["imageLinks"]?["thumbnail"]?.ToString() ?? "https://via.placeholder.com/128x195?text=No+Image"
+                        Thumbnail = item["volumeInfo"]["imageLinks"]?["thumbnail"]?.ToString() ?? "https://via.placeholder.com/128x195?text=No+Image",
+                        PublishedDate = item["volumeInfo"]["publishedDate"]?.ToString() ?? "Unknown", // New
+                        Description = item["volumeInfo"]["description"]?.ToString() ?? "No Description", // New
+                        Genres = item["volumeInfo"]["categories"]?.ToObject<string[]>() ?? new string[] { "Unknown" }, // New
+                        Rating = item["volumeInfo"]["averageRating"]?.ToObject<float>() ?? 0 // New
                     };
 
                     bookDtos.Add(dto);
@@ -61,6 +65,7 @@ namespace DifColl.Server.Controllers
 
             return BadRequest("Failed to fetch data from Google Books.");
         }
+
 
         [HttpPost("add")]
         public async Task<IActionResult> AddBookToCollection([FromBody] BookDto bookDto, [FromQuery] string userId)
@@ -79,8 +84,13 @@ namespace DifColl.Server.Controllers
                 Title = bookDto.Title,
                 Authors = string.Join(", ", bookDto.Authors),
                 Thumbnail = bookDto.Thumbnail,
+                PublishedDate = bookDto.PublishedDate, // New
+                Description = bookDto.Description, // New
+                Genres = string.Join(", ", bookDto.Genres), // New
+                Rating = bookDto.Rating, // New
                 UserId = userId
             };
+
 
             _context.Books.Add(book);
             await _context.SaveChangesAsync();

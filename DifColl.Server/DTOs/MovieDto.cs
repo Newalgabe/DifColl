@@ -1,5 +1,4 @@
-﻿// DTOs/MovieDto.cs
-namespace DifColl.Server.DTOs
+﻿namespace DifColl.Server.DTOs
 {
     public class MovieDto
     {
@@ -16,5 +15,7 @@ namespace DifColl.Server.DTOs
         public string PosterPath { get; set; }
 
         public string Overview { get; set; }
+
+        public float Rating { get; set; } // New
     }
 }

@@ -13,6 +13,14 @@ namespace DifColl.Server.Models
 
         public string Thumbnail { get; set; }
 
+        public string PublishedDate { get; set; } // New
+
+        public string Description { get; set; } // New
+
+        public string Genres { get; set; } // New
+
+        public float Rating { get; set; } // New
+
         public string UserId { get; set; }
     }
 }

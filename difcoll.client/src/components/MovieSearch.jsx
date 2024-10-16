@@ -324,6 +324,10 @@ const MovieSearch = () => {
                             {movie.directors && <p><strong>Directors:</strong> {movie.directors}</p>}
                             {movie.overview && <p className="overview">{movie.overview.slice(0, 150)}...</p>}
 
+                            {movie.rating && (
+                                <p><strong>Rating:</strong> {movie.rating} / 10</p>
+                            )}
+
                             <div className="actions">
                                 <button
                                     onClick={() => handleAddToCollection(movie)}
