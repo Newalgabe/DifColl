@@ -147,7 +147,7 @@ namespace DifColl.Server.Controllers
                         BackgroundImage = item["background_image"]?.ToString(),
                         Description = string.Empty,
                         Genres = string.Empty,
-                        Rating = item["rating"]?.ToObject<double>() ?? 0.0
+                        Rating = (float)(item["rating"]?.ToObject<double>() ?? 0.0)
                     };
 
                     dto = await FetchGameDetails(dto);

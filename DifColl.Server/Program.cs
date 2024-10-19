@@ -1,6 +1,7 @@
 using DifColl.Server.Controllers;
 using DifColl.Server.Data;
 using DifColl.Server.Models;
+using DifColl.Server.Repositories; // Make sure to include the namespace for your repositories
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -56,6 +57,12 @@ builder.Services.AddAuthentication(options =>
 
 // Enable authorization
 builder.Services.AddAuthorization();
+
+// Register your NexusCollectionRepository
+builder.Services.AddScoped<INexusCollectionRepository, NexusCollectionRepository>();
+
+// Register your NexusCollectionService
+builder.Services.AddScoped<INexusCollectionService, NexusCollectionService>();
 
 var app = builder.Build();
 

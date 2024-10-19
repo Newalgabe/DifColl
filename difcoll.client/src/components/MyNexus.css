@@ -1,102 +1,90 @@
-/* MyNexus.css */
-
 .nexus-container {
-    padding: 60px 20px;
-    max-width: 800px;
-    margin: auto;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    animation: fadeIn 1s ease-out;
+    padding: 2rem;
+    background-color: #f9f9f9;
 }
 
 .nexus-heading {
-    font-family: var(--font-secondary);
     font-size: 2.5rem;
-    color: var(--color-primary);
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
+    color: #333;
+    text-align: center;
 }
 
-.nexus-description {
-    font-size: 1.2rem;
-    color: var(--color-text-secondary);
-    margin-bottom: 40px;
-}
-
-.nexus-options {
+.filter-buttons {
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 30px;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
-.nexus-option-card {
-    background-color: var(--color-neutral-light);
-    padding: 30px 20px;
-    border-radius: 12px;
-    width: 220px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration: none;
-    color: var(--color-text);
-}
-
-    .nexus-option-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-
-.nexus-icon {
-    font-size: 2.5rem;
-    color: var(--color-secondary);
-    margin-bottom: 15px;
-}
-
-.nexus-option-card h3 {
-    font-family: var(--font-secondary);
-    font-size: 1.5rem;
-    color: var(--color-primary);
-    margin: 0;
-}
-
-@media (max-width: 1024px) {
-    .nexus-container {
-        padding: 40px 15px;
-    }
-
-    .nexus-options {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .nexus-option-card {
-        width: 90%;
-    }
-}
-
-@media (max-width: 768px) {
-    .nexus-container {
-        padding: 30px 10px;
-    }
-
-    .nexus-heading {
-        font-size: 2rem;
-    }
-
-    .nexus-description {
+    .filter-buttons button {
+        padding: 0.5rem 1.5rem;
+        border: none;
+        border-radius: 20px;
+        background-color: #ececec;
+        cursor: pointer;
+        transition: background-color 0.3s;
         font-size: 1rem;
     }
 
-    .nexus-option-card {
-        padding: 25px 15px;
+        .filter-buttons button.active, .filter-buttons button:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+.nexus-collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.nexus-item {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+    .nexus-item:hover {
+        transform: translateY(-5px);
     }
 
-    .nexus-icon {
-        font-size: 2rem;
-    }
+.nexus-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
 
-    .nexus-option-card h3 {
-        font-size: 1.3rem;
-    }
+.nexus-thumbnail {
+    width: 128px;
+    height: 195px;
+    margin-bottom: 0.5rem;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.nexus-rating, .nexus-type {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.loading {
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+}
+
+.no-items-found {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #555;
 }

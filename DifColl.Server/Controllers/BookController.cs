@@ -49,13 +49,19 @@ namespace DifColl.Server.Controllers
                     {
                         Id = item["id"]?.ToString(),
                         Title = item["volumeInfo"]["title"]?.ToString() ?? "No Title",
-                        Authors = item["volumeInfo"]["authors"]?.ToObject<string[]>() ?? new string[] { "Unknown" },
-                        Thumbnail = item["volumeInfo"]["imageLinks"]?["thumbnail"]?.ToString() ?? "https://via.placeholder.com/128x195?text=No+Image",
+                        Authors = item["volumeInfo"]["authors"]?.ToObject<string[]>() != null
+        ? string.Join(", ", item["volumeInfo"]["authors"].ToObject<string[]>())
+        : "Unknown", // Join authors into a single string
+                        Thumbnail = item["volumeInfo"]["imageLinks"]?["thumbnail"]?.ToString()
+        ?? "https://via.placeholder.com/128x195?text=No+Image",
                         PublishedDate = item["volumeInfo"]["publishedDate"]?.ToString() ?? "Unknown", // New
                         Description = item["volumeInfo"]["description"]?.ToString() ?? "No Description", // New
-                        Genres = item["volumeInfo"]["categories"]?.ToObject<string[]>() ?? new string[] { "Unknown" }, // New
+                        Genres = item["volumeInfo"]["categories"]?.ToObject<string[]>() != null
+        ? string.Join(", ", item["volumeInfo"]["categories"].ToObject<string[]>())
+        : "Unknown", // Join genres into a single string
                         Rating = item["volumeInfo"]["averageRating"]?.ToObject<float>() ?? 0 // New
                     };
+
 
                     bookDtos.Add(dto);
                 }

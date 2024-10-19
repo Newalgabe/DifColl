@@ -1,12 +1,13 @@
-// UserProfile.jsx
 import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 import './UserProfile.css';  // Import the external stylesheet
+import MyNexus from './MyNexus';  // Import MyNexus component
 import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa'; // Importing icons for better visuals
 
 const UserProfile = ({ onLogout }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showNexus, setShowNexus] = useState(false); // State to show My Nexus
     const [uploadStatus, setUploadStatus] = useState("");
     const [nickname, setNickname] = useState("");
     const [pictureUrl, setPictureUrl] = useState("");
@@ -20,6 +21,9 @@ const UserProfile = ({ onLogout }) => {
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [contactInfo, setContactInfo] = useState("");
 
+    // **New State for User ID**
+    const [userId, setUserId] = useState(""); // Add userId state
+
     const availablePronouns = ['They/Them', 'She/Her', 'He/Him', 'Other'];
 
     useEffect(() => {
@@ -32,6 +36,10 @@ const UserProfile = ({ onLogout }) => {
 
                 if (response.ok) {
                     const userData = await response.json();
+
+                    console.log('User data:', userData); // Log the full response
+
+                    setUserId(userData.id || "");  // Set userId from response
                     setNickname(userData.name || "");
                     setEmail(userData.email || "");
                     setPictureUrl(userData.pictureUrl || "");
@@ -42,7 +50,7 @@ const UserProfile = ({ onLogout }) => {
                     setSocialMediaLinks(userData.socialMediaLinks || "");
                     setDateOfBirth(userData.dateOfBirth || "");
                     setContactInfo(userData.contactInformation || "");
-                    setNewPictureUrl(userData.pictureUrl || "https://default-profile-url.com/default-image.png"); // Set default URL
+                    setNewPictureUrl(userData.pictureUrl || "https://default-profile-url.com/default-image.png");
                 } else {
                     console.error('Failed to load user info');
                 }
@@ -53,6 +61,8 @@ const UserProfile = ({ onLogout }) => {
 
         fetchUserInfo();
     }, []);
+
+
 
     const handleSave = async () => {
         const profileData = {
@@ -106,6 +116,11 @@ const UserProfile = ({ onLogout }) => {
 
     const toggleDetails = () => {
         setIsExpanded(!isExpanded);
+    };
+
+    // Toggle My Nexus view
+    const handleShowNexus = () => {
+        setShowNexus(!showNexus);
     };
 
     return (
@@ -249,48 +264,42 @@ const UserProfile = ({ onLogout }) => {
                         </div>
                         <div className="stat-card" data-aos="fade-right" data-aos-delay="600">
                             <FaBirthdayCake className="stat-icon" />
-                            <p>Age</p>
-                            <span>{dateOfBirth ? calculateAge(dateOfBirth) : "N/A"}</span>
+                            <p>Date of Birth</p>
+                            <span>{dateOfBirth || "N/A"}</span>
                         </div>
                     </div>
-                    <button onClick={toggleDetails} className="show-more-button">
-                        {isExpanded ? "Show Less" : "Show More"}
+                    <button onClick={() => setIsEditing(true)} className="edit-button">
+                        <FaEdit /> Edit Profile
                     </button>
-                    <div className={`collapsible ${isExpanded ? 'expanded' : ''}`} data-aos="fade-up" data-aos-delay="800">
-                        <p><strong>Bio:</strong> {bio || "N/A"}</p>
-                        <p><strong>Pronouns:</strong> {pronouns || "N/A"}</p>
-                        <p>
-                            <strong>Social Media:</strong> {socialMediaLinks ? <a href={socialMediaLinks} target="_blank" rel="noopener noreferrer">{socialMediaLinks}</a> : "N/A"}
-                        </p>
-                        <p><strong>Contact:</strong> {contactInfo || "N/A"}</p>
-                    </div>
-                    <div className="button-group">
-                        <button onClick={() => setIsEditing(true)} className="edit-button">
-                            <FaEdit className="button-icon" /> Edit Profile
-                        </button>
-                        <button onClick={onLogout} className="logout-button">
-                            <FaSignOutAlt className="button-icon" /> Logout
-                        </button>
-                    </div>
+                    <button onClick={toggleDetails} className="details-button">
+                        {isExpanded ? 'Hide Details' : 'View Details'}
+                    </button>
+                    {isExpanded && (
+                        <div className="expanded-details" data-aos="fade-left" data-aos-delay="200">
+                            <p><FaUser /> Pronouns: {pronouns || "N/A"}</p>
+                            <p><FaInfoCircle /> Bio: {bio || "No bio provided"}</p>
+                            <p><FaInfoCircle /> Contact Info: {contactInfo || "No contact info provided"}</p>
+                            <p><FaInfoCircle /> Social Links: {socialMediaLinks || "N/A"}</p>
+                        </div>
+                    )}
+                        <div className="profile-footer">
+                            <button onClick={onLogout} className="logout-button">
+                                <FaSignOutAlt /> Logout
+                            </button>
+                            <button onClick={handleShowNexus} className="nexus-button">
+                                {showNexus ? 'Hide My Nexus' : 'View My Nexus'}
+                            </button>
+                            {showNexus && <MyNexus userId={userId} />} {/* Pass userId to MyNexus */}
+                        </div>
+
                 </div>
             )}
         </div>
     );
 };
 
-    UserProfile.propTypes = {
-        onLogout: PropTypes.func.isRequired
-    };
+UserProfile.propTypes = {
+    onLogout: PropTypes.func.isRequired,
+};
 
-    const calculateAge = (dob) => {
-        const birthDate = new Date(dob);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    };
-
-    export default UserProfile;
+export default UserProfile;

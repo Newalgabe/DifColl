@@ -62,6 +62,7 @@ namespace DifCol.Controllers
 
                     return Ok(new
                     {
+                        Id = userId,  // Include UserId
                         Name = name,
                         Email = email,
                         PictureUrl = picture
@@ -72,6 +73,7 @@ namespace DifCol.Controllers
                     // Return the profile data including the newly added fields
                     return Ok(new
                     {
+                        Id = userId,  // Include UserId
                         Name = userProfile.Name,
                         Email = User.FindFirst(c => c.Type == ClaimTypes.Email)?.Value,
                         PictureUrl = userProfile.PictureUrl,
@@ -88,6 +90,7 @@ namespace DifCol.Controllers
 
             return Unauthorized();
         }
+
 
 
 

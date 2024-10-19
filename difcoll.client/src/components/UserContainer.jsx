@@ -15,7 +15,6 @@ const UserContainer = () => {
 
                 if (response.ok) {
                     const userData = await response.json();
-                    console.log(userData); // Inspect userData to ensure it has all the profile fields
                     setUser(userData);
                 } else if (response.status === 401) {
                     setUser(null);

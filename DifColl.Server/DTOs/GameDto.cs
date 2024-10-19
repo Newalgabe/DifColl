@@ -9,6 +9,6 @@ namespace DifColl.Server.DTOs
         public string BackgroundImage { get; set; }
         public string Description { get; set; }
         public string Genres { get; set; }
-        public double Rating { get; set; } // New Rating Property
+        public float Rating { get; set; } // New Rating Property
     }
 }

@@ -3,19 +3,12 @@
     public class BookDto
     {
         public string Id { get; set; }
-
         public string Title { get; set; }
-
-        public string[] Authors { get; set; }
-
+        public string Authors { get; set; } // Keep as string[]
         public string Thumbnail { get; set; }
-
-        public string PublishedDate { get; set; } // New
-
-        public string Description { get; set; } // New
-
-        public string[] Genres { get; set; } // New
-
-        public float Rating { get; set; } // New
+        public string PublishedDate { get; set; }
+        public string Description { get; set; }
+        public string Genres { get; set; } // Keep as string[]
+        public float Rating { get; set; }
     }
 }
