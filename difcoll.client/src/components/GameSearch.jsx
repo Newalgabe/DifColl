@@ -121,14 +121,26 @@ const GameSearch = () => {
     // Function to add a game to the user's collection
     const handleAddToCollection = async (game) => {
         try {
-            const apiUrl = 'https://localhost:7113/api/Game/add'; // Relative URL
+            const apiUrl = 'https://localhost:7113/api/Game/add';
+
+            // Create a GameDto object with all required properties
+            const gameDto = {
+                id: game.id,
+                name: game.name,
+                genres: game.genres,
+                released: game.released,
+                backgroundImage: game.backgroundImage,
+                description: game.description || 'No description available',
+                rating: game.rating || 0.0,  // Ensure a valid rating value is provided
+            };
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify(game),
+                body: JSON.stringify(gameDto), // Send the correctly structured gameDto
             });
 
             if (!response.ok) {
@@ -138,12 +150,13 @@ const GameSearch = () => {
 
             const result = await response.json();
             console.log(result.message);
-            showToast(result.message || 'Game added to collection!');
+            showToast(result.message || 'Game added to collection!');  // Display success message
         } catch (err) {
             console.error('Error adding game to collection:', err);
-            setError(err.message || 'Failed to add game to collection.');
+            setError(err.message || 'Failed to add game to collection.');  // Handle and display the error
         }
     };
+
 
     // Function to fetch related games based on genre
     const handleRelatedGames = async (game) => {

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 import './UserProfile.css';  // Import the external stylesheet
-import MyNexus from './MyNexus';  // Import MyNexus component
 import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa'; // Importing icons for better visuals
 
 const UserProfile = ({ onLogout }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [showNexus, setShowNexus] = useState(false); // State to show My Nexus
     const [uploadStatus, setUploadStatus] = useState("");
     const [nickname, setNickname] = useState("");
     const [pictureUrl, setPictureUrl] = useState("");
@@ -22,7 +20,6 @@ const UserProfile = ({ onLogout }) => {
     const [contactInfo, setContactInfo] = useState("");
 
     // **New State for User ID**
-    const [userId, setUserId] = useState(""); // Add userId state
 
     const availablePronouns = ['They/Them', 'She/Her', 'He/Him', 'Other'];
 
@@ -39,7 +36,6 @@ const UserProfile = ({ onLogout }) => {
 
                     console.log('User data:', userData); // Log the full response
 
-                    setUserId(userData.id || "");  // Set userId from response
                     setNickname(userData.name || "");
                     setEmail(userData.email || "");
                     setPictureUrl(userData.pictureUrl || "");
@@ -61,8 +57,6 @@ const UserProfile = ({ onLogout }) => {
 
         fetchUserInfo();
     }, []);
-
-
 
     const handleSave = async () => {
         const profileData = {
@@ -116,11 +110,6 @@ const UserProfile = ({ onLogout }) => {
 
     const toggleDetails = () => {
         setIsExpanded(!isExpanded);
-    };
-
-    // Toggle My Nexus view
-    const handleShowNexus = () => {
-        setShowNexus(!showNexus);
     };
 
     return (
@@ -282,16 +271,11 @@ const UserProfile = ({ onLogout }) => {
                             <p><FaInfoCircle /> Social Links: {socialMediaLinks || "N/A"}</p>
                         </div>
                     )}
-                        <div className="profile-footer">
-                            <button onClick={onLogout} className="logout-button">
-                                <FaSignOutAlt /> Logout
-                            </button>
-                            <button onClick={handleShowNexus} className="nexus-button">
-                                {showNexus ? 'Hide My Nexus' : 'View My Nexus'}
-                            </button>
-                            {showNexus && <MyNexus userId={userId} />} {/* Pass userId to MyNexus */}
-                        </div>
-
+                    <div className="profile-footer">
+                        <button onClick={onLogout} className="logout-button">
+                            <FaSignOutAlt /> Logout
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
@@ -303,3 +287,6 @@ UserProfile.propTypes = {
 };
 
 export default UserProfile;
+
+
+

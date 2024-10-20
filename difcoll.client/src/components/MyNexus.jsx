@@ -1,104 +1,105 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import NexusService from './NexusService';
 import PropTypes from 'prop-types';
-import './MyNexus.css'; // Custom CSS for enhanced visuals
+import './MyNexus.css';
 
 const MyNexus = ({ userId }) => {
-    const [collections, setCollections] = useState([]);
-    const [filter, setFilter] = useState('all');
+    const [nexusItems, setNexusItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [expandedItemIds, setExpandedItemIds] = useState([]); // Track which items are expanded
 
-    // Fetch the Nexus collections on component mount
     useEffect(() => {
-        if (!userId) {
-            setError("User ID is missing");
-            setLoading(false);
-            return;
-        }
-
-        const fetchCollections = async () => {
+        const fetchNexusItems = async () => {
+            setLoading(true); // Reset loading state on fetch
             try {
-                const response = await fetch(`/api/nexus/collections?userId=${userId}`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch collections: ${response.statusText}`);
-                }
-                const data = await response.json();
-                setCollections(data);
-                setLoading(false);
-            } catch (err) {
-                setError(err.message);
+                const items = await NexusService.getNexusCollections(userId);
+                console.log('Fetched Nexus Items:', items);
+                setNexusItems(items);
+            } catch (error) {
+                setError(error.message || 'Failed to load Nexus collections.');
+            } finally {
                 setLoading(false);
             }
         };
-        fetchCollections();
+
+        fetchNexusItems();
     }, [userId]);
 
-    // Filter collections based on selected type
-    const filteredCollections = collections.filter(item => {
-        if (filter === 'all') return true;
-        if (filter === 'books' && item.type === 'Book') return true;
-        if (filter === 'movies' && item.type === 'Movie') return true;
-        if (filter === 'games' && item.type === 'Game') return true;
-        return false;
-    });
+    const toggleReadMore = (id) => {
+        setExpandedItemIds((prevExpandedIds) =>
+            prevExpandedIds.includes(id)
+                ? prevExpandedIds.filter((itemId) => itemId !== id)
+                : [...prevExpandedIds, id]
+        );
+    };
 
-    if (loading) return <div className="loading">Loading...</div>;
-    if (error) return <div className="error-message">Error: {error}</div>;
+    if (loading) {
+        return <div>Loading your collections...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
-        <div className="nexus-container" data-aos="fade-up">
-            <h1 className="nexus-heading">My Nexus</h1>
-            <div className="filter-buttons">
-                <button
-                    onClick={() => setFilter('all')}
-                    className={filter === 'all' ? 'active' : ''}
-                >
-                    All
-                </button>
-                <button
-                    onClick={() => setFilter('books')}
-                    className={filter === 'books' ? 'active' : ''}
-                >
-                    Books
-                </button>
-                <button
-                    onClick={() => setFilter('movies')}
-                    className={filter === 'movies' ? 'active' : ''}
-                >
-                    Movies
-                </button>
-                <button
-                    onClick={() => setFilter('games')}
-                    className={filter === 'games' ? 'active' : ''}
-                >
-                    Games
-                </button>
-            </div>
-            <div className="nexus-collection">
-                {filteredCollections.length > 0 ? (
-                    filteredCollections.map((item, index) => (
-                        <div key={index} className="nexus-item" data-aos="fade-right" data-aos-delay={`${index * 100}`}>
-                            <h3 className="nexus-title">{item.title}</h3>
-                            <img
-                                src={item.thumbnail || 'https://via.placeholder.com/128x195?text=No+Image'}
-                                alt={item.title}
-                                className="nexus-thumbnail"
-                            />
-                            <p className="nexus-rating">Rating: {item.rating || 'N/A'}</p>
-                            <p className="nexus-type">Type: {item.type}</p>
-                        </div>
-                    ))
-                ) : (
-                    <div className="no-items-found">No items found in your collection</div>
-                )}
-            </div>
+        <div className="nexus-collection">
+            <h2>My Nexus Collection</h2>
+            {nexusItems.length === 0 ? (
+                <p>You have no items in your collection yet.</p>
+            ) : (
+                <div className="nexus-items-grid">
+                    {nexusItems.map((item) => {
+                        const isExpanded = expandedItemIds.includes(item.id);
+                        const descriptionPreview = item.description
+                            ? item.description.slice(0, 100) + '...'
+                            : '';
+
+                        return (
+                            <div
+                                key={`${item.id}-${item.type}`} // Ensure unique key by combining id and type
+                                className="nexus-item"
+                            >
+                                <img
+                                    src={item.thumbnail}
+                                    alt={item.title}
+                                    className="item-thumbnail"
+                                />
+                                <div className="item-details">
+                                    <h3>{item.title}</h3>
+                                    <p>Type: {item.type}</p>
+                                    <p>Rating: {item.rating || 'N/A'}</p>
+                                    <p>Released: {item.publishedDate || 'N/A'}</p>
+                                    <p>
+                                        Author/Creator: {item.authors || 'N/A'}
+                                    </p>
+                                    <p>
+                                        Genres: {item.genres || 'N/A'}
+                                    </p>
+                                    <p>
+                                        Description:{' '}
+                                        {isExpanded ? item.description : descriptionPreview}
+                                        {item.description && (
+                                            <button
+                                                onClick={() => toggleReadMore(item.id)}
+                                                className="read-more-btn"
+                                            >
+                                                {isExpanded ? 'Read less' : 'Read more'}
+                                            </button>
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 };
 
-// Prop-types validation
 MyNexus.propTypes = {
-    userId: PropTypes.string.isRequired
+    userId: PropTypes.string.isRequired,
 };
 
 export default MyNexus;

@@ -144,31 +144,93 @@ const MovieSearch = () => {
     };
 
     // Function to add a movie to the user's collection
+    // Fetch userId function (as with books)
+    const fetchUserId = async () => {
+        try {
+            const response = await fetch('https://localhost:7113/api/account/userinfo', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                console.log('Fetched userId:', userData.id); // Check the userId value
+                return userData.id;
+            } else {
+                console.error('Failed to load user info');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            return null;
+        }
+    };
+
+    // Add movie to collection function
     const handleAddToCollection = async (movie) => {
         try {
-            const apiUrl = 'https://localhost:7113/api/Movie/add'; // Corrected URL with quotes
-            const response = await fetch(apiUrl, {
+            const userId = await fetchUserId();  // Fetch the user ID
+
+            if (!userId) {
+                showToast('Unable to fetch user information');
+                return;
+            }
+
+            console.log('Adding movie to collection for userId:', userId);
+
+            // Ensure required fields are included with fallbacks
+            const directors = movie.credits?.crew
+                ?.filter(member => member.job === "Director")
+                ?.map(director => director.name)
+                .join(', ') || 'Unknown'; // Default to 'Unknown' if no directors are found
+
+            const genres = Array.isArray(movie.genres)
+                ? movie.genres.map(genre => genre.name).join(', ')
+                : 'Unknown'; // Handle case where genres might not be an array
+
+            const posterPath = movie.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : ''; // Default to an empty string if no poster path
+
+            const releaseDate = movie.release_date || "Unknown"; // Default to "Unknown" if release date is missing
+            const overview = movie.overview || "No description available"; // Default description
+
+            // Send the request to add the movie
+            const response = await fetch(`https://localhost:7113/api/Nexus/add/movie/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
                 },
-                body: JSON.stringify(movie),
+                body: JSON.stringify({
+                    id: movie.id,
+                    title: movie.title,
+                    directors,           // Corresponds to Directors
+                    genres,              // Corresponds to Genres
+                    releaseDate,         // Corresponds to ReleaseDate
+                    posterPath,          // Corresponds to PosterPath
+                    overview,            // Corresponds to Overview
+                    rating: movie.vote_average || 0,  // Corresponds to Rating
+                }),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to add movie to collection.');
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Movie added to collection:', result);
+                showToast(result.message || 'Movie added to collection!');
+            } else {
+                const errorData = await response.json().catch(() => ({})); // Handle empty or non-JSON response
+                console.error('Failed to add movie:', errorData);
+                showToast('Failed to add movie to collection');
             }
-
-            const result = await response.json();
-            console.log(result.message);
-            showToast(result.message || 'Movie added to collection!');
-        } catch (err) {
-            console.error('Error adding movie to collection:', err);
-            setError(err.message || 'Failed to add movie to collection.');
+        } catch (error) {
+            console.error('Error adding movie to collection:', error);
+            showToast('An error occurred while adding the movie.');
         }
     };
+
+
+
+
 
     // Function to fetch related movies based on genre
     const handleRelatedMovies = async (movie) => {

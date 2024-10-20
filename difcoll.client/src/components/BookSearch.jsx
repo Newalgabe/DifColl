@@ -135,10 +135,76 @@ const BookSearch = () => {
         }
     };
 
-    const handleAddToCollection = (book) => {
-        console.log('Book added to collection:', book);
-        showToast('Book added to collection!');
+    // Fetch user ID function
+    const fetchUserId = async () => {
+        try {
+            const response = await fetch('https://localhost:7113/api/account/userinfo', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                console.log('Fetched userId:', userData.id);  // Check the userId value
+                return userData.id;
+            } else {
+                console.error('Failed to load user info');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            return null;
+        }
     };
+
+
+    // Add book to collection function
+    const handleAddToCollection = async (book) => {
+        try {
+            const userId = await fetchUserId();  // Assuming fetchUserId gets and returns the correct user ID
+
+            if (!userId) {
+                showToast('Unable to fetch user information');
+                return;
+            }
+
+            console.log('Adding to collection for userId:', userId);
+
+            const response = await fetch(`https://localhost:7113/api/Nexus/add/book/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: book.id,
+                    title: book.volumeInfo.title,
+                    authors: book.volumeInfo.authors?.join(', '),
+                    description: book.volumeInfo.description,
+                    thumbnail: book.volumeInfo.imageLinks?.thumbnail || "", // Ensure thumbnail is not empty
+                    publishedDate: book.volumeInfo.publishedDate || "Unknown", // Ensure you send published date
+                    genres: book.volumeInfo.categories?.join(', ') || "Unknown", // Ensure you send genre
+                    rating: book.volumeInfo.averageRating || 0 // Ensure you send rating
+                }),
+
+            });
+
+            if (response.ok) {
+                console.log('Book added to collection:', book);
+                showToast('Book added to collection!');
+            } else {
+                const errorData = await response.json().catch(() => ({})); // Handle empty or non-JSON response
+                console.error('Failed to add book:', errorData);
+                showToast('Failed to add book to collection');
+            }
+        } catch (error) {
+            console.error('Error adding book to collection:', error);
+            showToast('An error occurred while adding the book.');
+        }
+    };
+
+
+
+
 
     const handleRelatedBooks = async (book) => {
         try {

@@ -40,7 +40,11 @@ public class NexusCollectionService : INexusCollectionService
             Title = book.Title,
             Thumbnail = book.Thumbnail,
             Rating = book.Rating,
-            Type = "Book"
+            Type = "Book",
+            Authors = string.Join(", ", book.Authors), // Joining authors into a string
+            PublishedDate = book.PublishedDate,
+            Genres = string.Join(", ", book.Genres), // Joining genres into a string
+            Description = book.Description
         }));
 
         // Map movies to NexusItemDto
@@ -50,7 +54,11 @@ public class NexusCollectionService : INexusCollectionService
             Title = movie.Title,
             Thumbnail = movie.PosterPath,
             Rating = movie.Rating,
-            Type = "Movie"
+            Type = "Movie",
+            Authors = movie.Directors, // Assuming Directors is a string
+            PublishedDate = movie.ReleaseDate,
+            Genres = movie.Genres, // Assuming Genres is a string
+            Description = movie.Overview // Using Overview for description
         }));
 
         // Map games to NexusItemDto
@@ -60,7 +68,11 @@ public class NexusCollectionService : INexusCollectionService
             Title = game.Name,
             Thumbnail = game.BackgroundImage,
             Rating = game.Rating,
-            Type = "Game"
+            Type = "Game",
+            Authors = "N/A", // Assuming games don't have an authors field
+            PublishedDate = game.Released, // Assuming Released is a string
+            Genres = game.Genres, // Assuming Genres is a string
+            Description = game.Description
         }));
 
         return nexusItems;
