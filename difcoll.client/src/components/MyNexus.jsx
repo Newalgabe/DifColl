@@ -70,9 +70,20 @@ const MyNexus = ({ userId }) => {
                                     <p>Type: {item.type}</p>
                                     <p>Rating: {item.rating || 'N/A'}</p>
                                     <p>Released: {item.publishedDate || 'N/A'}</p>
-                                    <p>
-                                        Author/Creator: {item.authors || 'N/A'}
-                                    </p>
+
+                                    {/* Conditionally render details based on type */}
+                                    {item.type === 'book' && (
+                                        <>
+                                            <p>Author: {item.authors || 'N/A'}</p>
+                                        </>
+                                    )}
+
+                                    {item.type === 'movie' && (
+                                        <>
+                                            <p>Directors: {item.directors || 'N/A'}</p>
+                                        </>
+                                    )}
+
                                     <p>
                                         Genres: {item.genres || 'N/A'}
                                     </p>

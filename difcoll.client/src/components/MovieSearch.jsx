@@ -196,7 +196,7 @@ const MovieSearch = () => {
             const overview = movie.overview || "No description available"; // Default description
 
             // Send the request to add the movie
-            const response = await fetch(`https://localhost:7113/api/Nexus/add/movie/${userId}`, {
+            const response = await fetch(`https://localhost:7113/api/Movie/add/movie/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -213,13 +213,13 @@ const MovieSearch = () => {
                 }),
             });
 
+            // Check if response is ok
             if (response.ok) {
-                const result = await response.json();
-                console.log('Movie added to collection:', result);
-                showToast(result.message || 'Movie added to collection!');
+                console.log('Movie added to collection!');
+                showToast('Movie added to collection!'); // Success notification
             } else {
-                const errorData = await response.json().catch(() => ({})); // Handle empty or non-JSON response
-                console.error('Failed to add movie:', errorData);
+                // Handle error response
+                console.error('Failed to add movie:', response.status);
                 showToast('Failed to add movie to collection');
             }
         } catch (error) {

@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Newtonsoft.Json;
 
 namespace DifColl.Server.Controllers
 {
@@ -259,20 +260,20 @@ namespace DifColl.Server.Controllers
         /// </summary>
         /// <param name="movieDto">Movie DTO.</param>
         /// <returns>Result message.</returns>
-        [HttpPost("add")]
-        public async Task<IActionResult> AddMovieToCollection([FromBody] MovieDto movieDto)
+        [HttpPost("add/movie/{userId}")]
+        public async Task<IActionResult> AddMovieToCollection(string userId, [FromBody] MovieDto movieDto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (movieDto == null || string.IsNullOrEmpty(userId))
-                return BadRequest(new { message = "Invalid data." });
+                return BadRequest(); // No message, just a bad request status
 
+            // Check if the movie already exists in the user's collection
             var existingMovie = await _context.Movies
                 .FirstOrDefaultAsync(m => m.Id == movieDto.Id && m.UserId == userId);
 
             if (existingMovie != null)
-                return BadRequest(new { message = "Movie already exists in your collection." });
+                return BadRequest(); // No message, just a bad request status
 
+            // Map DTO to entity
             var movie = new Movie
             {
                 Id = movieDto.Id,
@@ -282,16 +283,18 @@ namespace DifColl.Server.Controllers
                 ReleaseDate = movieDto.ReleaseDate,
                 PosterPath = movieDto.PosterPath,
                 Overview = movieDto.Overview,
-                Rating = movieDto.Rating, // New
+                Rating = movieDto.Rating,
                 UserId = userId
             };
 
-
+            // Add movie to the context
             _context.Movies.Add(movie);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Movie added to your collection." });
+            // Simply return Ok with no message
+            return Ok();
         }
+
 
         // Optional: Implement endpoints to retrieve, update, or delete movies from the collection
     }

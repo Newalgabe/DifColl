@@ -15,6 +15,7 @@ namespace DifColl.Server.Models
 
         public string ReleaseDate { get; set; }
 
+
         public string PosterPath { get; set; }
 
         public string Overview { get; set; }
