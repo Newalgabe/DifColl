@@ -23,12 +23,15 @@ const App = () => {
             try {
                 const response = await fetch('https://localhost:7113/api/account/userinfo', {
                     method: 'GET',
-                    credentials: 'include',
+                    credentials: 'include', // Ensure cookies are included in the request
                 });
 
-                if (response.ok) {
+                if (response.status === 401) {
+                    // If user is unauthorized, redirect to Google login
+                    window.location.href = 'https://localhost:7113/api/account/login'; // Adjust this based on your login endpoint
+                } else if (response.ok) {
                     const userData = await response.json();
-                    setUserId(userData.id); // Set the user ID from the fetched data
+                    setUserId(userData.id);
                 } else {
                     console.error('Failed to load user info');
                 }
@@ -39,6 +42,7 @@ const App = () => {
 
         fetchUserId();
     }, []);
+
 
     if (!userId) {
         return <div>Loading...</div>; // Add a loading state until userId is available

@@ -65,6 +65,7 @@ namespace DifColl.Server.Repositories
                 .ToListAsync();
         }
 
+
         // Retrieve all games for a specific user
         public async Task<List<GameDto>> GetGamesAsync(string userId)
         {
