@@ -159,68 +159,49 @@ const BookSearch = () => {
 
 
     // Add book to collection function
-    const handleAddToCollection = async (movie) => {
+    const handleAddToCollection = async (book) => {
         try {
-            const userId = await fetchUserId();  // Fetch the user ID
+            const userId = await fetchUserId();  // Assuming fetchUserId gets and returns the correct user ID
 
             if (!userId) {
                 showToast('Unable to fetch user information');
                 return;
             }
 
-            console.log('Adding movie to collection for userId:', userId);
+            console.log('Adding to collection for userId:', userId);
 
-            // Ensure required fields are included with fallbacks
-            const directors = movie.credits?.crew
-                ?.filter(member => member.job === "Director")
-                ?.map(director => director.name)
-                .join(', ') || 'Unknown';
-
-            const genres = Array.isArray(movie.genres)
-                ? movie.genres.map(genre => genre.name).join(', ')
-                : 'Unknown';
-
-            const posterPath = movie.poster_path
-                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                : '';
-
-            const releaseDate = movie.release_date || "Unknown";
-            const overview = movie.overview || "No description available";
-
-            // Send the request to add the movie
-            const response = await fetch(`https://localhost:7113/api/Nexus/add/movie/${userId}`, {
+            const response = await fetch(`https://localhost:7113/api/Nexus/add/book/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    id: movie.id,
-                    title: movie.title,
-                    directors,
-                    genres,
-                    releaseDate,
-                    posterPath,
-                    overview,
-                    rating: movie.vote_average || 0,
+                    id: book.id,
+                    title: book.volumeInfo.title,
+                    authors: book.volumeInfo.authors?.join(', '),
+                    description: book.volumeInfo.description,
+                    thumbnail: book.volumeInfo.imageLinks?.thumbnail || "", // Ensure thumbnail is not empty
+                    publishedDate: book.volumeInfo.publishedDate || "Unknown", // Ensure you send published date
+                    genres: book.volumeInfo.categories?.join(', ') || "Unknown", // Ensure you send genre
+                    rating: book.volumeInfo.averageRating || 0 // Ensure you send rating
                 }),
+
             });
 
-            // Check if response is ok
             if (response.ok) {
-                // Try parsing the response if it's JSON, otherwise handle empty response
-                const result = await response.json().catch(() => ({}));
-                console.log('Movie added to collection:', result);
-                showToast(result.message || 'Movie added to collection!');
+                console.log('Book added to collection:', book);
+                showToast('Book added to collection!');
             } else {
-                const errorData = await response.json().catch(() => ({}));
-                console.error('Failed to add movie:', errorData);
-                showToast('Failed to add movie to collection');
+                const errorData = await response.json().catch(() => ({})); // Handle empty or non-JSON response
+                console.error('Failed to add book:', errorData);
+                showToast('Failed to add book to collection');
             }
         } catch (error) {
-            console.error('Error adding movie to collection:', error);
-            showToast('An error occurred while adding the movie.');
+            console.error('Error adding book to collection:', error);
+            showToast('An error occurred while adding the book.');
         }
     };
+
 
 
 

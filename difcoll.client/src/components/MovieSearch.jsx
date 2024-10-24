@@ -1,6 +1,7 @@
 // MovieSearch.jsx
 import { useState, useEffect } from 'react';
 import './MovieSearch.css';
+import MovieDto from './MovieDto'; 
 
 const MovieSearch = () => {
     const [query, setQuery] = useState('');
@@ -176,49 +177,42 @@ const MovieSearch = () => {
                 return;
             }
 
+            console.log('Movie data:', movie);
+
             console.log('Adding movie to collection for userId:', userId);
 
-            // Ensure required fields are included with fallbacks
-            const directors = movie.credits?.crew
-                ?.filter(member => member.job === "Director")
-                ?.map(director => director.name)
-                .join(', ') || 'Unknown'; // Default to 'Unknown' if no directors are found
+            // Create an instance of MovieDto
+            const movieDto = new MovieDto({
+                id: movie.id,
+                title: movie.title,
+                directors: movie.credits?.crew
+                    ?.filter(member => member.job === "Director")
+                    ?.map(director => director.name)
+                    .join(', ') || 'Unknown',  // Fallback to 'Unknown' if not found
+                genres: Array.isArray(movie.genres)
+                    ? movie.genres.map(genre => genre.name).join(', ')
+                    : 'Unknown',
+                releaseDate: movie.release_date || 'Unknown',
+                posterPath: movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    : '',
+                overview: movie.overview || 'No description available',
+                rating: movie.vote_average || 0,
+            });
 
-            const genres = Array.isArray(movie.genres)
-                ? movie.genres.map(genre => genre.name).join(', ')
-                : 'Unknown'; // Handle case where genres might not be an array
-
-            const posterPath = movie.poster_path
-                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                : ''; // Default to an empty string if no poster path
-
-            const releaseDate = movie.release_date || "Unknown"; // Default to "Unknown" if release date is missing
-            const overview = movie.overview || "No description available"; // Default description
-
-            // Send the request to add the movie
-            const response = await fetch(`https://localhost:7113/api/Movie/add/movie/${userId}`, {
+            // Send the request to add the movie using the movieDto
+            const response = await fetch(`https://localhost:7113/api/Nexus/add/movie/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    id: movie.id,
-                    title: movie.title,
-                    directors,           // Corresponds to Directors
-                    genres,              // Corresponds to Genres
-                    releaseDate,         // Corresponds to ReleaseDate
-                    posterPath,          // Corresponds to PosterPath
-                    overview,            // Corresponds to Overview
-                    rating: movie.vote_average || 0,  // Corresponds to Rating
-                }),
+                body: JSON.stringify(movieDto),  // Send the movie DTO
             });
 
-            // Check if response is ok
             if (response.ok) {
                 console.log('Movie added to collection!');
-                showToast('Movie added to collection!'); // Success notification
+                showToast('Movie added to collection!');  // Success notification
             } else {
-                // Handle error response
                 console.error('Failed to add movie:', response.status);
                 showToast('Failed to add movie to collection');
             }
@@ -227,6 +221,7 @@ const MovieSearch = () => {
             showToast('An error occurred while adding the movie.');
         }
     };
+
 
 
 
