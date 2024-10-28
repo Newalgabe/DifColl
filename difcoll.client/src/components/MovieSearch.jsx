@@ -1,7 +1,7 @@
 // MovieSearch.jsx
 import { useState, useEffect } from 'react';
 import './MovieSearch.css';
-import MovieDto from './MovieDto'; 
+
 
 const MovieSearch = () => {
     const [query, setQuery] = useState('');
@@ -170,48 +170,70 @@ const MovieSearch = () => {
     // Add movie to collection function
     const handleAddToCollection = async (movie) => {
         try {
-            const userId = await fetchUserId();  // Fetch the user ID
+            const userId = await fetchUserId();
 
             if (!userId) {
                 showToast('Unable to fetch user information');
                 return;
             }
 
-            console.log('Movie data:', movie);
+            console.log('Movie data received:', movie);
 
-            console.log('Adding movie to collection for userId:', userId);
 
-            // Create an instance of MovieDto
-            const movieDto = new MovieDto({
+            const directors = typeof movie.directors === 'string' && movie.directors.trim() !== ''
+                ? movie.directors.split(',').map(director => director.trim()).join(', ')
+                : 'Unknown';
+
+            console.log('Directors:', directors);
+
+            const genres = typeof movie.genres === 'string' && movie.genres.trim() !== ''
+                ? movie.genres.split(',').map(genre => genre.trim()).join(', ')
+                : 'Unknown';
+
+            console.log('Genres:', genres);
+
+            const releaseDate = typeof movie.releaseDate === 'string' && movie.releaseDate.trim() !== ''
+                ? movie.releaseDate
+                : 'Unknown';
+
+            console.log('Release Date:', releaseDate);
+
+            const posterPath = movie.posterPath
+                ? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
+                : '';
+            console.log('Poster Path:', posterPath);
+
+            const overview = movie.overview || 'No description available';
+
+            // Ensure rating is processed as a float
+            const rating = typeof movie.rating === 'number'
+                ? parseFloat(movie.rating.toFixed(1))
+                : 0;
+
+            const movieDto = {
                 id: movie.id,
                 title: movie.title,
-                directors: movie.credits?.crew
-                    ?.filter(member => member.job === "Director")
-                    ?.map(director => director.name)
-                    .join(', ') || 'Unknown',  // Fallback to 'Unknown' if not found
-                genres: Array.isArray(movie.genres)
-                    ? movie.genres.map(genre => genre.name).join(', ')
-                    : 'Unknown',
-                releaseDate: movie.release_date || 'Unknown',
-                posterPath: movie.poster_path
-                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                    : '',
-                overview: movie.overview || 'No description available',
-                rating: movie.vote_average || 0,
-            });
+                directors,
+                genres,
+                releaseDate,
+                posterPath,
+                overview,
+                rating,
+            };
 
-            // Send the request to add the movie using the movieDto
+            console.log('Final movieDto to send:', movieDto);
+
             const response = await fetch(`https://localhost:7113/api/Nexus/add/movie/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(movieDto),  // Send the movie DTO
+                body: JSON.stringify(movieDto),
             });
 
             if (response.ok) {
                 console.log('Movie added to collection!');
-                showToast('Movie added to collection!');  // Success notification
+                showToast('Movie added to collection!');
             } else {
                 console.error('Failed to add movie:', response.status);
                 showToast('Failed to add movie to collection');
@@ -221,7 +243,6 @@ const MovieSearch = () => {
             showToast('An error occurred while adding the movie.');
         }
     };
-
 
 
 

@@ -102,6 +102,49 @@ const NexusService = {
             throw error;
         }
     },
+
+
+    removeBookFromNexus: async (userId, bookId) => {
+        try {
+            const response = await fetch(`https://localhost:7113/api/Nexus/remove/book/${userId}/${bookId}`, {
+                method: "DELETE",
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error("Failed to remove book from Nexus.");
+        } catch (error) {
+            console.error("Error removing book from Nexus:", error);
+            throw error;
+        }
+    },
+
+    async removeMovieFromNexus(userId, movieId) {
+        try {
+            const response = await fetch(`https://localhost:7113/api/Nexus/remove/movie/${userId}/${movieId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to remove movie from Nexus.");
+            }
+        } catch (error) {
+            console.error("Error removing movie from Nexus:", error);
+            throw error;
+        }
+    },
+
+    removeGameFromNexus: async (userId, gameId) => {
+        try {
+            const response = await fetch(`https://localhost:7113/api/Nexus/remove/game/${userId}/${gameId}`, {
+                method: "DELETE",
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error("Failed to remove game from Nexus.");
+        } catch (error) {
+            console.error("Error removing game from Nexus:", error);
+            throw error;
+        }
+    },
 };
 
 export default NexusService;

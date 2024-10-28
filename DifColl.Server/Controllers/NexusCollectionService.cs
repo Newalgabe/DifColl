@@ -13,6 +13,9 @@ public interface INexusCollectionService
     Task AddBookToNexusAsync(string userId, BookDto book);
     Task AddMovieToNexusAsync(string userId, MovieDto movie);
     Task AddGameToNexusAsync(string userId, GameDto game);
+    Task RemoveBookFromNexusAsync(string userId, string bookId);
+    Task RemoveMovieFromNexusAsync(string userId, string movieId);
+    Task RemoveGameFromNexusAsync(string userId, string gameId);
 }
 
 public class NexusCollectionService : INexusCollectionService
@@ -107,4 +110,20 @@ public class NexusCollectionService : INexusCollectionService
     {
         await _repository.AddGameAsync(userId, game);
     }
+
+    public async Task RemoveBookFromNexusAsync(string userId, string bookId)
+    {
+        await _repository.RemoveBookAsync(userId, bookId);
+    }
+
+    public async Task RemoveMovieFromNexusAsync(string userId, string movieId)
+    {
+        await _repository.RemoveMovieAsync(userId, movieId);
+    }
+
+    public async Task RemoveGameFromNexusAsync(string userId, string gameId)
+    {
+        await _repository.RemoveGameAsync(userId, gameId);
+    }
+
 }
