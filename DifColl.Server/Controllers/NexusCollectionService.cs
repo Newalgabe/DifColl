@@ -72,11 +72,14 @@ public class NexusCollectionService : INexusCollectionService
             Thumbnail = game.BackgroundImage,
             Rating = game.Rating,
             Type = "Game",
-            Authors = "N/A", // Assuming games don't have an authors field
-            PublishedDate = game.Released, // Assuming Released is a string
-            Genres = game.Genres, // Assuming Genres is a string
-            Description = game.Description
+            Authors = "N/A",
+            PublishedDate = game.Released,
+            Genres = game.Genres,
+            Description = game.Description,
+            Developer = game.Developer, // Add Developer field
+            Publisher = game.Publisher  // Add Publisher field
         }));
+
 
         return nexusItems;
     }

@@ -104,6 +104,7 @@ const GameSearch = () => {
         }
     };
 
+
     // Function to handle moving to the next page
     const handleNextPage = () => {
         if (page < totalPages) {
@@ -118,49 +119,117 @@ const GameSearch = () => {
         }
     };
 
-    // Function to add a game to the user's collection
+    const fetchUserId = async () => {
+        try {
+            const response = await fetch('https://localhost:7113/api/account/userinfo', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                console.log('Fetched userId:', userData.id); // Check the userId value
+                return userData.id;
+            } else {
+                console.error('Failed to load user info');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            return null;
+        }
+    };
+
+
+    // Add movie to collection function
     const handleAddToCollection = async (game) => {
         try {
-            const apiUrl = 'https://localhost:7113/api/Game/add';
+            const userId = await fetchUserId();
 
-            // Create a GameDto object with all required properties
+            if (!userId) {
+                showToast('Unable to fetch user information');
+                return;
+            }
+
+            console.log('Game data received:', game);
+
+            // Process developer and publisher, defaulting to 'Unknown' if not available
+            const developer = game.developer || 'Unknown';
+            console.log('Developer:', developer);
+
+            const publisher = game.publisher || 'Unknown';
+            console.log('Publisher:', publisher);
+
+            // Process genres as a string, splitting if necessary
+            const genres = typeof game.genres === 'string' && game.genres.trim() !== ''
+                ? game.genres.split(',').map(genre => genre.trim()).join(', ')
+                : 'Unknown';
+            console.log('Genres:', genres);
+
+            // Use provided release date, or default to 'Unknown'
+            const releaseDate = typeof game.released === 'string' && game.released.trim() !== ''
+                ? game.released
+                : 'Unknown';
+            console.log('Release Date:', releaseDate);
+
+            // Background image URL setup, or an empty string if missing
+            const backgroundImage = game.backgroundImage
+                ? game.backgroundImage
+                : '';
+            console.log('Background Image:', backgroundImage);
+
+            // Game description fallback
+            const description = game.description || 'No description available';
+
+            // Ensure rating is processed as a float
+            const rating = typeof game.rating === 'number'
+                ? parseFloat(game.rating.toFixed(1))
+                : 0;
+
+            // Build the final GameDto object
             const gameDto = {
                 id: game.id,
                 name: game.name,
-                genres: game.genres,
-                released: game.released,
-                backgroundImage: game.backgroundImage,
-                description: game.description || 'No description available',
-                rating: game.rating || 0.0,  // Ensure a valid rating value is provided
+                developer,
+                publisher,
+                genres,
+                released: releaseDate,
+                backgroundImage,
+                description,
+                rating,
             };
 
-            const response = await fetch(apiUrl, {
+            console.log('Final gameDto to send:', gameDto);
+
+            // Send the request to add the game to the collection
+            const response = await fetch(`https://localhost:7113/api/Nexus/add/game/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
                 },
-                body: JSON.stringify(gameDto), // Send the correctly structured gameDto
+                body: JSON.stringify(gameDto),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to add game to collection.');
+            if (response.ok) {
+                console.log('Game added to collection!');
+                showToast('Game added to collection!');
+            } else {
+                console.error('Failed to add game:', response.status);
+                showToast('Failed to add game to collection');
             }
-
-            const result = await response.json();
-            console.log(result.message);
-            showToast(result.message || 'Game added to collection!');  // Display success message
-        } catch (err) {
-            console.error('Error adding game to collection:', err);
-            setError(err.message || 'Failed to add game to collection.');  // Handle and display the error
+        } catch (error) {
+            console.error('Error adding game to collection:', error);
+            showToast('An error occurred while adding the game.');
         }
     };
+
+
 
 
     // Function to fetch related games based on genre
     const handleRelatedGames = async (game) => {
         try {
+            // Check if related games are cached
             if (relatedGamesCache[game.id]) {
                 setRelatedGames(relatedGamesCache[game.id]);
                 return;
@@ -175,7 +244,7 @@ const GameSearch = () => {
 
             // Fetch related games based on the first genre
             const genreQuery = encodeURIComponent(genres[0]);
-            const apiUrl = `https://localhost:7113/api/Game/search/${genreQuery}?page=1&sortOrder=relevance&genre=${encodeURIComponent(genres[0])}`;
+            const apiUrl = `https://localhost:7113/api/Game/search/${genreQuery}?page=1&sortOrder=rating&genre=${encodeURIComponent(genres[0])}`;
 
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -187,9 +256,24 @@ const GameSearch = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                const related = data.games.filter(g => g.id !== game.id).slice(0, 5);
-                setRelatedGames(related);
-                setRelatedGamesCache(prev => ({ ...prev, [game.id]: related }));
+
+                // Filter out the current game
+                const otherGames = data.games.filter(g => g.id !== game.id);
+
+                // Separate same series games and others
+                const sameSeriesGames = otherGames.filter(g => g.series === game.series); // Assuming 'series' is a property in your game objects
+                const otherRelatedGames = otherGames.filter(g => g.series !== game.series);
+
+                // Sort both arrays by rating
+                const sortedSameSeriesGames = sameSeriesGames.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                const sortedOtherRelatedGames = otherRelatedGames.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+                // Combine and limit to top 5
+                const combinedGames = [...sortedSameSeriesGames, ...sortedOtherRelatedGames];
+                const topRatedRelatedGames = combinedGames.slice(0, 5); // Get the top 5
+
+                setRelatedGames(topRatedRelatedGames);
+                setRelatedGamesCache(prev => ({ ...prev, [game.id]: topRatedRelatedGames }));
             } else {
                 setRelatedGames([]);
                 console.error('Failed to fetch related games');
@@ -199,6 +283,9 @@ const GameSearch = () => {
             setRelatedGames([]);
         }
     };
+
+
+
 
     // Function to view detailed information about a game
     const handleViewDetails = (game) => {
@@ -327,6 +414,7 @@ const GameSearch = () => {
             {error && <p className="error">{error}</p>}
 
             {/* Search Results */}
+            {/* Search Results */}
             <div className="results-container">
                 {games.map((game) => (
                     <article key={`${game.id}-${game.name}`} className="game-card">
@@ -340,6 +428,8 @@ const GameSearch = () => {
                             {game.released && <p><strong>Released:</strong> {game.released}</p>}
                             {game.rating && <p><strong>Rating:</strong> {game.rating}</p>}
                             {game.genres && <p><strong>Genres:</strong> {game.genres}</p>}
+                            {game.developer && <p><strong>Developer:</strong> {game.developer}</p>}
+                            {game.publisher && <p><strong>Publisher:</strong> {game.publisher}</p>}
                             {game.description && <p className="description">{game.description.slice(0, 150)}...</p>}
 
                             <div className="actions">
@@ -364,6 +454,7 @@ const GameSearch = () => {
                 ))}
             </div>
 
+
             {/* Pagination Controls */}
             <div className="pagination-controls">
                 <button
@@ -383,7 +474,6 @@ const GameSearch = () => {
                 </button>
             </div>
 
-            {/* Game Details Modal */}
             {selectedGame && (
                 <div className="modal" onClick={() => setSelectedGame(null)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -397,6 +487,12 @@ const GameSearch = () => {
                         )}
                         {selectedGame.genres && (
                             <p><strong>Genres:</strong> {selectedGame.genres}</p>
+                        )}
+                        {selectedGame.developer && (
+                            <p><strong>Developer:</strong> {selectedGame.developer}</p>
+                        )}
+                        {selectedGame.publisher && (
+                            <p><strong>Publisher:</strong> {selectedGame.publisher}</p>
                         )}
                         {selectedGame.description && (
                             <p className="description">{selectedGame.description}</p>

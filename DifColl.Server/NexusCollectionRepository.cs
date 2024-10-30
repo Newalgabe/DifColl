@@ -79,10 +79,13 @@ namespace DifColl.Server.Repositories
                     BackgroundImage = g.BackgroundImage,
                     Description = g.Description,
                     Genres = g.Genres,
-                    Rating = (float)g.Rating
+                    Rating = (float)g.Rating,
+                    Developer = g.Developer, // Add Developer field
+                    Publisher = g.Publisher  // Add Publisher field
                 })
                 .ToListAsync();
         }
+
 
         // Add a book to the user's collection
         public async Task AddBookAsync(string userId, BookDto book)
@@ -136,7 +139,9 @@ namespace DifColl.Server.Repositories
                 Description = game.Description,
                 Genres = game.Genres,
                 Rating = game.Rating,
-                UserId = userId // Associate the game with the user
+                UserId = userId,
+                Developer = game.Developer,
+                Publisher = game.Publisher
             };
 
             _context.Games.Add(newGame);
