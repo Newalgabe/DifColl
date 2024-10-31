@@ -1,8 +1,11 @@
-// NexusItems.jsx
 import { useEffect, useState } from 'react';
 import NexusService from './NexusService';
 import PropTypes from 'prop-types';
 import './MyNexus.css';
+// Import Font Awesome icons
+import { FaList, FaTh, FaStar, FaRegStar } from 'react-icons/fa';
+
+
 
 const NexusItems = ({ userId }) => {
     const [nexusItems, setNexusItems] = useState([]);
@@ -12,6 +15,7 @@ const NexusItems = ({ userId }) => {
     const [sortType, setSortType] = useState('All');
     const [sortOrder, setSortOrder] = useState('Type');
     const [favorites, setFavorites] = useState([]);
+    const [viewMode, setViewMode] = useState('catalog'); // New state for view mode
     const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -128,68 +132,88 @@ const NexusItems = ({ userId }) => {
                     <option value="Rating">Rating</option>
                 </select>
 
-                <label>
+                {/* Show Favorites Only Checkbox */}
+                <label className="show-favorites-only-checkbox">
                     <input
                         type="checkbox"
                         checked={showFavoritesOnly}
                         onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
                     />
-                    Show Favorites Only
+                    <FaStar /> {/* Star icon */}
                 </label>
             </div>
 
+            {/* View Mode Toggle */}
+            <div className="view-toggle">
+                <button onClick={() => setViewMode('catalog')}>
+                    <FaTh /> Catalog View
+                </button>
+                <button onClick={() => setViewMode('list')}>
+                    <FaList /> List View
+                </button>
+            </div>
+
+            {/* Display items based on view mode */}
             {sortedItems.length === 0 ? (
                 <p>No items found.</p>
             ) : (
-                <div className="nexus-items-grid">
-                    {sortedItems.map((item) => (
-                        <div
-                            key={`${item.id}-${item.type}`}
-                            className="nexus-item"
-                        >
-                            <img
-                                src={item.thumbnail}
-                                alt={item.title}
-                                className="item-thumbnail"
-                            />
-                            <div className="item-details">
-                                <h3>{item.title}</h3>
-                                <p>Type: {item.type}</p>
-                                <p>Rating: {item.rating || 'N/A'}</p>
-                                <p>Released: {item.publishedDate || 'N/A'}</p>
-
-                                {item.type === 'Book' && (
-                                    <p>Author: {item.authors || 'N/A'}</p>
-                                )}
-                                {item.type === 'Movie' && (
-                                    <p>Directors: {item.authors || 'N/A'}</p>
-                                )}
-                                {item.type === 'Game' && (
-                                    <>
-                                        <p>Developer: {item.developer || 'N/A'}</p>
-                                        <p>Publisher: {item.publisher || 'N/A'}</p>
-                                    </>
-                                )}
-
-                                <p>Genres: {item.genres || 'N/A'}</p>
-                                <button onClick={() => openModal(item)} className="read-more-btn">Read more</button>
-
-                                <button
-                                    onClick={() => handleRemoveItem(item)}
-                                    className="remove-item-btn"
-                                >
-                                    Remove from Nexus
-                                </button>
-                                <button
-                                    onClick={() => toggleFavorite(item)}
-                                    className="favorite-item-btn"
-                                >
-                                    {favorites.includes(item.id) ? 'Unfavorite' : 'Favorite'}
-                                </button>
+                viewMode === 'catalog' ? (
+                    <div className="nexus-items-grid">
+                        {sortedItems.map((item) => (
+                            <div key={`${item.id}-${item.type}`} className="nexus-item">
+                                <img src={item.thumbnail} alt={item.title} className="item-thumbnail" />
+                                <div className="item-details">
+                                    <h3>{item.title}</h3>
+                                    <p>Type: {item.type}</p>
+                                    <p>Rating: {item.rating || 'N/A'}</p>
+                                    <p>Released: {item.publishedDate || 'N/A'}</p>
+                                    {item.type === 'Book' && <p>Author: {item.authors || 'N/A'}</p>}
+                                    {item.type === 'Movie' && <p>Directors: {item.authors || 'N/A'}</p>}
+                                    {item.type === 'Game' && (
+                                        <>
+                                            <p>Developer: {item.developer || 'N/A'}</p>
+                                            <p>Publisher: {item.publisher || 'N/A'}</p>
+                                        </>
+                                    )}
+                                    <p>Genres: {item.genres || 'N/A'}</p>
+                                    <button onClick={() => openModal(item)} className="read-more-btn">Read more</button>
+                                    <button onClick={() => handleRemoveItem(item)} className="remove-item-btn">Remove from Nexus</button>
+                                    <button onClick={() => toggleFavorite(item)} className="favorite-item-btn">
+                                        {favorites.includes(item.id) ? <FaStar color="gold" /> : <FaRegStar />}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <ul className="nexus-items-list">
+                        {sortedItems.map((item) => (
+                            <li key={`${item.id}-${item.type}`} className="nexus-item-list">
+                                <img src={item.thumbnail} alt={item.title} className="item-thumbnail" />
+                                <div className="item-details">
+                                    <h3>{item.title}</h3>
+                                    <p>Type: {item.type}</p>
+                                    <p>Rating: {item.rating || 'N/A'}</p>
+                                    <p>Released: {item.publishedDate || 'N/A'}</p>
+                                    {item.type === 'Book' && <p>Author: {item.authors || 'N/A'}</p>}
+                                    {item.type === 'Movie' && <p>Directors: {item.authors || 'N/A'}</p>}
+                                    {item.type === 'Game' && (
+                                        <>
+                                            <p>Developer: {item.developer || 'N/A'}</p>
+                                            <p>Publisher: {item.publisher || 'N/A'}</p>
+                                        </>
+                                    )}
+                                    <p>Genres: {item.genres || 'N/A'}</p>
+                                    <button onClick={() => openModal(item)} className="read-more-btn">Read more</button>
+                                    <button onClick={() => handleRemoveItem(item)} className="remove-item-btn">Remove from Nexus</button>
+                                    <button onClick={() => toggleFavorite(item)} className="favorite-item-btn">
+                                        {favorites.includes(item.id) ? <FaStar color="gold" /> : <FaRegStar />}
+                                    </button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )
             )}
 
             {/* Modal for Read More */}
@@ -204,6 +228,7 @@ const NexusItems = ({ userId }) => {
             )}
         </div>
     );
+
 };
 
 NexusItems.propTypes = {
