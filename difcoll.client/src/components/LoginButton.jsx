@@ -1,4 +1,3 @@
-
 const LoginButton = () => {
     const handleLogin = () => {
         // Trigger navigation to the backend login endpoint

@@ -254,48 +254,5 @@ namespace DifColl.Server.Controllers
 
             return dto;
         }
-
-        /// <summary>
-        /// Adds a movie to the user's collection.
-        /// </summary>
-        /// <param name="movieDto">Movie DTO.</param>
-        /// <returns>Result message.</returns>
-        [HttpPost("add/movie/{userId}")]
-        public async Task<IActionResult> AddMovieToCollection(string userId, [FromBody] MovieDto movieDto)
-        {
-            if (movieDto == null || string.IsNullOrEmpty(userId))
-                return BadRequest(); // No message, just a bad request status
-
-            // Check if the movie already exists in the user's collection
-            var existingMovie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Id == movieDto.Id && m.UserId == userId);
-
-            if (existingMovie != null)
-                return BadRequest(); // No message, just a bad request status
-
-            // Map DTO to entity
-            var movie = new Movie
-            {
-                Id = movieDto.Id,
-                Title = movieDto.Title,
-                Directors = movieDto.Directors,
-                Genres = movieDto.Genres,
-                ReleaseDate = movieDto.ReleaseDate,
-                PosterPath = movieDto.PosterPath,
-                Overview = movieDto.Overview,
-                Rating = movieDto.Rating,
-                UserId = userId
-            };
-
-            // Add movie to the context
-            _context.Movies.Add(movie);
-            await _context.SaveChangesAsync();
-
-            // Simply return Ok with no message
-            return Ok();
-        }
-
-
-        // Optional: Implement endpoints to retrieve, update, or delete movies from the collection
     }
 }

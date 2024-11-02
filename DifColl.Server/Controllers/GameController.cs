@@ -211,43 +211,5 @@ namespace DifColl.Server.Controllers
 
             return dto;
         }
-
-
-
-        [HttpPost("add")]
-        public async Task<IActionResult> AddGameToCollection([FromBody] GameDto gameDto)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (gameDto == null || string.IsNullOrEmpty(userId))
-                return BadRequest(new { message = "Invalid data." });
-
-            var existingGame = await _context.Games
-                .FirstOrDefaultAsync(m => m.Id == gameDto.Id && m.UserId == userId);
-
-            if (existingGame != null)
-                return BadRequest(new { message = "Game already exists in your collection." });
-
-            var game = new Game
-            {
-                Id = gameDto.Id,
-                Name = gameDto.Name,
-                Released = gameDto.Released,
-                BackgroundImage = gameDto.BackgroundImage,
-                Description = gameDto.Description,
-                Genres = gameDto.Genres,
-                Rating = gameDto.Rating,
-                Developer = gameDto.Developer, // Add Developer field
-                Publisher = gameDto.Publisher, // Add Publisher field
-                UserId = userId
-            };
-
-            _context.Games.Add(game);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Game '{game.Name}' added to user '{userId}' collection.");
-
-            return Ok(new { message = "Game added to your collection." });
-        }
     }
 }

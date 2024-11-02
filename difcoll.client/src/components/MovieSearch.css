@@ -28,15 +28,21 @@ body {
     background-color: var(--color-background);
     border-radius: 12px;
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease; /* Smooth shadow transition */
 }
+
+    .movie-search-container:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+    }
 
     /* Heading */
     .movie-search-container h2 {
         font-family: var(--font-secondary);
-        font-size: 2rem;
+        font-size: 2.5rem; /* Increased size for better visibility */
         color: var(--color-primary);
         text-align: center;
         margin-bottom: 25px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
     }
 
 /* Search Controls */
@@ -55,6 +61,7 @@ body {
     border-radius: 8px;
     flex: 1 1 250px;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
     .search-input:focus {
@@ -73,11 +80,14 @@ body {
     cursor: pointer;
     max-width: 200px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold; /* Make button text stand out */
+    letter-spacing: 0.5px; /* Slight spacing for clarity */
 }
 
     .search-button:hover {
         background-color: #16A085;
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Shadow on hover for depth */
     }
 
 /* Results Grid */
@@ -85,16 +95,17 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
-    margin-top: 25px;
+    margin-top: 30px; /* Slight increase for spacing */
+    padding: 10px; /* Padding around results for better layout */
 }
 
 /* Movie Card */
 .movie-card {
     padding: 20px;
     background-color: var(--color-neutral-light);
-    border-radius: 10px;
+    border-radius: 12px; /* Slightly more rounded for a modern look */
     border: 1px solid var(--color-neutral-dark);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Softer shadow */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -103,54 +114,65 @@ body {
 
     .movie-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* More pronounced shadow on hover */
     }
 
+/* Movie Image */
 .movie-image {
-    width: 150px;
+    width: 180px; /* Larger image for better visibility on desktop */
     height: auto;
-    border-radius: 8px;
+    border-radius: 10px; /* Increased radius for smooth appearance */
     margin-bottom: 15px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .movie-card:hover .movie-image {
-    transform: scale(1.05);
+    transform: scale(1.07);
+    filter: brightness(1.05); /* Slight brightening on hover */
 }
 
+/* Movie Details */
 .movie-details {
     text-align: center;
+    margin-top: 10px;
 }
 
     .movie-details h3 {
         font-family: var(--font-secondary);
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         color: var(--color-primary);
+        margin-bottom: 8px;
+        line-height: 1.4; /* Better readability */
     }
 
     .movie-details p {
         color: var(--color-text-secondary);
-        font-size: 0.95rem;
+        font-size: 1rem; /* Increased size for clarity */
+        line-height: 1.5;
+        margin: 5px 0; /* Consistent spacing */
     }
 
 /* Actions */
 .actions {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
     .actions button {
-        padding: 10px 0;
+        padding: 12px 0;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 15px;
         color: white;
         flex: 1;
         transition: background-color 0.3s ease, transform 0.2s ease;
+        font-weight: 600; /* Bolder text for action buttons */
+        letter-spacing: 0.5px;
     }
 
+/* Button Variants */
 .add-button {
     background-color: var(--color-secondary);
 }
@@ -163,39 +185,47 @@ body {
     background-color: var(--color-neutral-dark);
 }
 
+/* Button Hover Effects */
 .add-button:hover {
     background-color: #16A085;
+    transform: scale(1.03);
 }
 
 .bookmark-button:hover {
     background-color: #F39C12;
+    transform: scale(1.03);
 }
 
 .details-button:hover {
     background-color: #7F8C8D;
+    transform: scale(1.03);
 }
 
-/* Pagination */
+
+/* Pagination Controls */
 .pagination-controls {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    align-items: center;
     gap: 15px;
+    margin-top: 30px;
 }
 
 .pagination-button {
-    padding: 12px 20px;
+    padding: 12px 24px;
     background-color: var(--color-secondary);
     color: white;
+    font-weight: bold;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-size: 1rem;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    font-size: 16px;
 }
 
     .pagination-button:hover:not(:disabled) {
         background-color: #16A085;
-        transform: translateY(-2px);
+        transform: translateY(-3px); /* Enhanced lift for hover */
     }
 
     .pagination-button:disabled {
@@ -203,37 +233,61 @@ body {
         cursor: not-allowed;
     }
 
-/* Modal */
+/* Modal Styling */
 .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: rgba(44, 62, 80, 0.85);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
 .modal-content {
     background-color: var(--color-neutral-light);
-    padding: 25px;
-    border-radius: 12px;
-    width: 95%;
+    padding: 30px;
+    width: 90%;
     max-width: 850px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    font-family: var(--font-primary);
+    animation: slideIn 0.3s ease-out; /* Adds animation */
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .close-modal {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
     background-color: var(--color-accent);
     color: white;
     border: none;
-    padding: 10px;
+    padding: 8px;
     border-radius: 50%;
+    font-size: 1.2rem;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
     .close-modal:hover {
         background-color: #C0392B;
+        transform: rotate(90deg); /* Adds dynamic rotation */
     }
 
 /* Related Movies */
@@ -243,17 +297,124 @@ body {
 
 .related-movies-list {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     overflow-x: auto;
+    padding-bottom: 10px; /* Space for easier scroll */
 }
 
 .related-movie-card {
-    padding: 10px;
-    border-radius: 8px;
+    width: 180px; /* Consistent sizing for better layout */
+    padding: 12px;
     background-color: var(--color-neutral-light);
     border: 1px solid var(--color-neutral-dark);
+    border-radius: 10px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
 }
 
     .related-movie-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-5px);
     }
+
+
+/* Media Queries for Larger Screens */
+@media (min-width: 1200px) {
+    /* Increase max width and padding for search container */
+    .movie-search-container {
+        max-width: 1100px;
+        padding: 30px;
+    }
+
+    /* Enlarged search controls for desktop */
+    .search-input {
+        padding: 16px 20px;
+        font-size: 18px;
+        flex: 1 1 300px;
+    }
+
+    .search-button {
+        padding: 16px 32px;
+        font-size: 18px;
+    }
+
+    /* Adjust results grid spacing for better layout on wide screens */
+    .results-container {
+        gap: 30px;
+        padding: 15px;
+    }
+
+    /* Increase movie card size for larger screens */
+    .movie-card {
+        padding: 24px;
+        border-radius: 15px;
+    }
+
+    .movie-image {
+        width: 200px;
+    }
+
+    .movie-details h3 {
+        font-size: 1.8rem;
+    }
+
+    .movie-details p {
+        font-size: 1.1rem;
+    }
+
+    /* Adjust actions buttons on desktop */
+    .actions button {
+        font-size: 16px;
+        padding: 14px 0;
+    }
+
+    /* Pagination controls for desktop */
+    .pagination-controls {
+        gap: 20px;
+    }
+
+    .pagination-button {
+        padding: 14px 28px;
+        font-size: 1.1rem;
+    }
+
+    /* Modal */
+    .modal-content {
+        padding: 35px;
+        max-width: 1000px;
+    }
+
+    /* Related Movies on larger screens */
+    .related-movies-list {
+        gap: 20px;
+        padding-bottom: 15px;
+    }
+
+    .related-movie-card {
+        width: 200px;
+    }
+}
+
+/* Slightly larger font sizes on smaller desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .movie-details h3 {
+        font-size: 1.7rem;
+    }
+
+    .movie-details p {
+        font-size: 1.05rem;
+    }
+
+    .search-button {
+        padding: 15px 30px;
+        font-size: 17px;
+    }
+
+    .pagination-button {
+        padding: 13px 26px;
+        font-size: 1.05rem;
+    }
+
+    .related-movie-card {
+        width: 190px;
+    }
+}

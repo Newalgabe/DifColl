@@ -19,36 +19,46 @@ body {
     font-family: var(--font-primary);
     background-color: var(--color-neutral-light);
     color: var(--color-text);
+    line-height: 1.6;
+    transition: background-color 0.3s ease;
+    overflow-x: hidden;
 }
 
 /* Game Search Container */
 .game-search-container {
     max-width: 900px;
     margin: 30px auto;
-    padding: 25px;
+    padding: 30px;
     background-color: var(--color-background);
-    border-radius: 12px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     position: relative;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+    /* Hover effect on container */
+    .game-search-container:hover {
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+    }
+
     /* Heading */
     .game-search-container h2 {
         font-family: var(--font-secondary);
-        font-size: 2rem;
+        font-size: 2.2rem;
         color: var(--color-primary);
         text-align: center;
         margin-bottom: 25px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     }
 
 /* Search Controls */
 .search-controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 25px;
+    gap: 20px;
+    margin-bottom: 30px;
     justify-content: center;
+    align-items: center;
 }
 
 .search-input,
@@ -57,37 +67,56 @@ body {
     padding: 14px 18px;
     font-size: 16px;
     border: 2px solid var(--color-neutral-dark);
-    border-radius: 8px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     flex: 1 1 250px;
+    background-color: #f8f9fa;
+    color: var(--color-text);
 }
 
     .search-input:focus,
     .genre-input:focus,
     .sort-select:focus {
         border-color: var(--color-secondary);
-        box-shadow: 0 0 8px rgba(26, 188, 156, 0.5);
+        box-shadow: 0 0 10px rgba(26, 188, 156, 0.5);
         outline: none;
+        background-color: #ffffff;
+    }
+
+    /* Style for disabled or placeholder state */
+    .search-input::placeholder,
+    .genre-input::placeholder,
+    .sort-select::placeholder {
+        color: var(--color-neutral-medium);
+        opacity: 0.7;
     }
 
 .search-button {
     padding: 14px 28px;
-    font-size: 16px;
+    font-size: 17px;
     background-color: var(--color-secondary);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     flex: 1 1 100%;
     max-width: 200px;
     align-self: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
     .search-button:hover {
         background-color: #16A085;
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
+
+    .search-button:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
 
 /* Results Grid */
 .results-container {
@@ -95,47 +124,60 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 25px;
     margin-top: 25px;
+    padding: 20px;
+    background-color: var(--color-background);
+    border-radius: 10px;
 }
 
 /* Game Card */
 .game-card {
     padding: 20px;
     background-color: var(--color-neutral-light);
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1px solid var(--color-neutral-dark);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
     .game-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        background-color: var(--color-neutral-lighter);
     }
 
 .game-image {
-    width: 150px;
+    width: 160px;
     height: auto;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-bottom: 15px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .game-card:hover .game-image {
-    transform: scale(1.05);
+    transform: scale(1.07);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .game-details {
     text-align: center;
+    padding: 10px 0;
 }
 
     .game-details h3 {
         font-family: var(--font-secondary);
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         color: var(--color-primary);
+        margin-bottom: 5px;
+        transition: color 0.3s ease;
     }
+
+        .game-details h3:hover {
+            color: var(--color-secondary);
+        }
 
     .game-details p {
         color: var(--color-text-secondary);
@@ -147,24 +189,27 @@ body {
     color: var(--color-text-secondary);
     margin-top: 10px;
     font-size: 0.9rem;
+    line-height: 1.4;
 }
 
 /* Actions */
 .actions {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 12px;
+    margin-top: 20px;
+    width: 100%;
 }
 
     .actions button {
-        padding: 10px 0;
+        padding: 12px 0;
         border: none;
         border-radius: 8px;
         cursor: pointer;
         font-size: 14px;
         color: white;
         flex: 1;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
 .add-button {
@@ -183,21 +228,31 @@ body {
     background-color: var(--color-neutral-dark);
 }
 
+/* Hover Effects for Action Buttons */
 .add-button:hover {
     background-color: #16A085;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 .bookmark-button:hover {
     background-color: #F39C12;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 .share-button:hover {
     background-color: #C0392B;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 .details-button:hover {
     background-color: #7F8C8D;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
+
 
 /* Pagination */
 .pagination-controls {
@@ -213,18 +268,21 @@ body {
     color: white;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     font-size: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
     .pagination-button:hover:not(:disabled) {
         background-color: #16A085;
         transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
 
     .pagination-button:disabled {
         background-color: var(--color-neutral-dark);
         cursor: not-allowed;
+        opacity: 0.7; /* Slightly transparent for disabled state */
     }
 
 /* Modal */
@@ -233,6 +291,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: fixed; /* Ensure modal covers the viewport */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000; /* Ensure modal is on top */
 }
 
 .modal-content {
@@ -242,6 +306,7 @@ body {
     width: 95%;
     max-width: 850px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    position: relative; /* For positioning close button */
 }
 
 .close-modal {
@@ -254,10 +319,12 @@ body {
     padding: 10px;
     border-radius: 50%;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
     .close-modal:hover {
         background-color: #C0392B;
+        transform: scale(1.1);
     }
 
 /* Related Games */
@@ -269,6 +336,7 @@ body {
     display: flex;
     gap: 10px;
     overflow-x: auto;
+    padding: 10px 0; /* Add padding for a nicer layout */
 }
 
 .related-game-card {
@@ -277,12 +345,14 @@ body {
     background-color: var(--color-neutral-light);
     border: 1px solid var(--color-neutral-dark);
     cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
     .related-game-card:hover {
         transform: translateY(-3px);
-        background-color: var(--color-neutral-light);
+        background-color: var(--color-neutral-lighter);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     }
 
 .related-game-image {
@@ -304,6 +374,7 @@ body {
     color: var(--color-text-secondary);
 }
 
+
 /* Bookmarks */
 .bookmarks {
     margin-top: 35px;
@@ -313,6 +384,7 @@ body {
         font-family: var(--font-secondary);
         color: var(--color-primary);
         margin-bottom: 15px;
+        text-align: center; /* Center the heading for a balanced look */
     }
 
 .bookmarks-list {
@@ -325,7 +397,7 @@ body {
     background-color: var(--color-accent-alt);
     padding: 12px 18px;
     border-radius: 8px;
-    flex: 1 1 45%;
+    flex: 1 1 45%; /* Adjust to take more width on larger screens */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -355,6 +427,7 @@ body {
     z-index: 1100;
     font-family: var(--font-secondary);
     font-size: 1rem;
+    transition: opacity 0.5s ease; /* Smooth fade effect */
 }
 
 /* Highlighted Text */
@@ -424,8 +497,114 @@ body {
 .modal-content::-webkit-scrollbar-thumb {
     background: var(--color-neutral-dark);
     border-radius: 5px;
+    transition: background 0.3s ease; /* Smooth transition for hover effect */
 }
 
     .modal-content::-webkit-scrollbar-thumb:hover {
         background: var(--color-primary);
     }
+
+
+/* Media Queries for Larger Screens */
+@media (min-width: 1200px) {
+    /* Increase max width and padding for search container */
+    .game-search-container {
+        max-width: 1100px;
+        padding: 30px;
+    }
+
+    /* Enlarged search controls for desktop */
+    .search-input,
+    .genre-input,
+    .sort-select {
+        padding: 16px 20px;
+        font-size: 18px;
+        flex: 1 1 300px; /* Adjusting the flex basis for better alignment */
+    }
+
+    .search-button {
+        padding: 16px 32px;
+        font-size: 18px;
+    }
+
+    /* Adjust results grid spacing for better layout on wide screens */
+    .results-container {
+        gap: 30px;
+        padding: 15px;
+    }
+
+    /* Increase game card size for larger screens */
+    .game-card {
+        padding: 24px;
+        border-radius: 15px;
+    }
+
+    .game-image {
+        width: 180px; /* Increase image width */
+    }
+
+    .game-details h3 {
+        font-size: 1.8rem;
+    }
+
+    .game-details p {
+        font-size: 1.1rem;
+    }
+
+    /* Adjust actions buttons on desktop */
+    .actions button {
+        font-size: 16px;
+        padding: 14px 0;
+    }
+
+    /* Pagination controls for desktop */
+    .pagination-controls {
+        gap: 20px;
+    }
+
+    .pagination-button {
+        padding: 14px 28px;
+        font-size: 1.1rem;
+    }
+
+    /* Modal */
+    .modal-content {
+        padding: 35px;
+        max-width: 1000px;
+    }
+
+    /* Related Games on larger screens */
+    .related-games-list {
+        gap: 20px;
+        padding-bottom: 15px;
+    }
+
+    .related-game-card {
+        width: 200px; /* Increase width for related game cards */
+    }
+}
+
+/* Slightly larger font sizes on smaller desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .game-details h3 {
+        font-size: 1.7rem;
+    }
+
+    .game-details p {
+        font-size: 1.05rem;
+    }
+
+    .search-button {
+        padding: 15px 30px;
+        font-size: 17px;
+    }
+
+    .pagination-button {
+        padding: 13px 26px;
+        font-size: 1.05rem;
+    }
+
+    .related-game-card {
+        width: 190px; /* Adjust related game card width */
+    }
+}
