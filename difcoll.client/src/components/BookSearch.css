@@ -153,27 +153,6 @@ body {
     font-size: 0.95rem; /* Increased font size for better readability */
 }
 
-/* Responsive Design Enhancements */
-@media (max-width: 768px) {
-    .book-card {
-        padding: 15px; /* Reduced padding for smaller screens */
-    }
-
-    .book-details h3 {
-        font-size: 1.4rem; /* Slightly reduced header size */
-    }
-
-    .book-details p,
-    .description {
-        font-size: 0.9rem; /* Adjust font sizes for smaller screens */
-    }
-
-    .book-image {
-        height: 180px; /* Reduced image height on smaller screens */
-    }
-}
-
-
 .actions {
     display: flex;
     justify-content: space-between;
@@ -509,6 +488,7 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
 }
 
+
 /* Media Queries for Larger Screens */
 @media (min-width: 1200px) {
     /* Increase max width and padding for search container */
@@ -610,5 +590,83 @@ body {
 
     .related-book-card {
         width: 190px;
+    }
+}
+
+@media (min-width: 1440px) {
+    /* Increase max width and padding for search container */
+    .book-search-container {
+        max-width: 1400px; /* Increased max width for better alignment on larger screens */
+        padding: 40px; /* Increased padding for more spacing */
+    }
+
+    /* Larger search input fields and controls */
+    .search-input,
+    .category-input,
+    .sort-select {
+        padding: 18px 24px; /* Adjusted padding for more comfortable use */
+        font-size: 20px; /* Increased font size for better readability */
+        flex: 1 1 350px; /* Increased flex basis for wider inputs */
+    }
+
+    .search-button {
+        padding: 18px 36px; /* Larger button for easier clicking */
+        font-size: 20px; /* Increased font size for better visibility */
+    }
+
+    /* Increased spacing in results container */
+    .results-container {
+        gap: 40px; /* More space between results for better layout */
+        padding: 20px; /* Additional padding around the container */
+    }
+
+    /* Larger book cards */
+    .book-card {
+        padding: 30px; /* Increased padding for larger cards */
+        border-radius: 18px; /* Slightly larger border-radius for aesthetics */
+    }
+
+    .book-image {
+        height: 300px; /* Increased height for better visual presence */
+    }
+
+    .book-details h3 {
+        font-size: 2rem; /* Larger title font for emphasis */
+    }
+
+    .book-details p {
+        font-size: 1.2rem; /* Increased font size for descriptions */
+    }
+
+    /* Adjust action buttons */
+    .actions button {
+        font-size: 18px; /* Increased font size for action buttons */
+        padding: 16px 0; /* More padding for touch targets */
+    }
+
+    /* Larger pagination controls */
+    .pagination-controls {
+        gap: 25px; /* Increased gap for better spacing */
+    }
+
+    .pagination-button {
+        padding: 16px 32px; /* Larger padding for buttons */
+        font-size: 1.2rem; /* Increased font size for pagination */
+    }
+
+    /* Modal adjustments */
+    .modal-content {
+        padding: 40px; /* More padding for modal content */
+        max-width: 1200px; /* Increased max width for modals */
+    }
+
+    /* Larger related books cards */
+    .related-books-list {
+        gap: 25px; /* Increased gap for related books */
+        padding-bottom: 20px; /* Added padding for bottom spacing */
+    }
+
+    .related-book-card {
+        width: 240px; /* Increased width for related book cards */
     }
 }

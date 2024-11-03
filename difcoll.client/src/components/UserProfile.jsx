@@ -228,17 +228,27 @@ const UserProfile = ({ onLogout }) => {
             ) : (
                 <div className="profile-details" data-aos="zoom-in">
                     <h2 className="profile-heading">Welcome, {nickname}</h2>
-                    {pictureUrl ? (
-                        <img
-                            src={pictureUrl}
-                            alt="User Profile"
-                            className="profile-picture"
-                            referrerPolicy="no-referrer"
-                            loading="lazy"
-                        />
-                    ) : (
-                        <p>No profile picture available</p>
-                    )}
+                    <div className="profile-header">
+                        {pictureUrl ? (
+                            <img
+                                src={pictureUrl}
+                                alt="User Profile"
+                                className="profile-picture"
+                                referrerPolicy="no-referrer"
+                                loading="lazy"
+                            />
+                        ) : (
+                            <p>No profile picture available</p>
+                        )}
+                        <div className="profile-actions">
+                            <button onClick={() => setIsEditing(true)} className="edit-button">
+                                <FaEdit /> Edit Profile
+                            </button>
+                            <button onClick={onLogout} className="logout-button">
+                                <FaSignOutAlt /> Logout
+                            </button>
+                        </div>
+                    </div>
                     <p className="profile-email">Email: {email}</p>
                     <div className="stats-container">
                         <div className="stat-card" data-aos="fade-right" data-aos-delay="200">
@@ -257,9 +267,6 @@ const UserProfile = ({ onLogout }) => {
                             <span>{dateOfBirth || "N/A"}</span>
                         </div>
                     </div>
-                    <button onClick={() => setIsEditing(true)} className="edit-button">
-                        <FaEdit /> Edit Profile
-                    </button>
                     <button onClick={toggleDetails} className="details-button">
                         {isExpanded ? 'Hide Details' : 'View Details'}
                     </button>
@@ -271,11 +278,6 @@ const UserProfile = ({ onLogout }) => {
                             <p><FaInfoCircle /> Social Links: {socialMediaLinks || "N/A"}</p>
                         </div>
                     )}
-                    <div className="profile-footer">
-                        <button onClick={onLogout} className="logout-button">
-                            <FaSignOutAlt /> Logout
-                        </button>
-                    </div>
                 </div>
             )}
         </div>

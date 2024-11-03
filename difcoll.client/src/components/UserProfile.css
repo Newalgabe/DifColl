@@ -211,7 +211,6 @@
 
 .edit-button, .logout-button {
     padding: 14px 28px;
-    background-color: var(--color-secondary);
     color: #ffffff;
     border: none;
     border-radius: 8px;
@@ -224,8 +223,22 @@
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.edit-button {
+    background-color: var(--color-secondary);
+}
+
+.logout-button {
+    background-color: #FF4C4C;
+}
+    .logout-button:hover {
+        background-color: #D63939;
+    }
+
+.edit-button:hover {
+    background-color: #149174;
+}
+
     .edit-button:hover, .logout-button:hover {
-        background-color: #149174;
         transform: translateY(-4px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
@@ -419,6 +432,78 @@
     }
 }
 
+/* Media Queries for Larger Screens */
+@media (min-width: 1201px) {
+    .profile-container {
+        padding: 50px 40px; /* Increased padding for larger screens */
+    }
+
+    .profile-heading {
+        font-size: 32px; /* Larger font for headings */
+    }
+
+    .profile-picture {
+        width: 150px; /* Increased profile picture size */
+        height: 150px;
+    }
+
+    .profile-email {
+        font-size: 20px; /* Larger font size for email */
+    }
+
+    .stat-card {
+        width: 160px; /* Wider stat cards */
+        padding: 20px; /* More padding for larger cards */
+    }
+}
+
+@media (min-width: 1440px) {
+    .profile-container {
+        padding: 60px 50px; /* More spacious padding */
+    }
+
+    .profile-heading {
+        font-size: 36px; /* Emphasized heading size */
+    }
+
+    .profile-picture {
+        width: 180px; /* Even larger profile picture */
+        height: 180px;
+    }
+
+    .profile-email {
+        font-size: 22px; /* Increased email font size */
+    }
+
+    .stat-card {
+        width: 180px; /* Further increased card width */
+        padding: 24px; /* More padding for stat cards */
+    }
+
+    .show-more-button, .edit-button, .logout-button, .save-button, .cancel-button {
+        font-size: 16px; /* Larger button font sizes */
+        padding: 12px 24px; /* Adjusted padding for larger buttons */
+    }
+
+    .input-field {
+        font-size: 16px; /* Larger input field font */
+        padding: 12px; /* More padding for input fields */
+    }
+
+    .collapsible p {
+        font-size: 16px; /* Increased font for collapsible text */
+    }
+
+    .stats-container {
+        gap: 20px; /* More gap between stats */
+    }
+
+    .button-group {
+        flex-direction: row; /* Horizontal button group on larger screens */
+        gap: 20px; /* More space between buttons */
+    }
+}
+
 
 .details-button {
     padding: 12px 24px;
@@ -460,4 +545,24 @@
 
 .details-button.expanded .details-button-icon {
     transform: rotate(180deg);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center; /* Aligns items vertically */
+    justify-content: space-between; /* Space between picture and buttons */
+    margin-bottom: 20px; /* Space below the profile header */
+}
+
+.profile-actions {
+    display: flex;
+    align-items: center; /* Align buttons vertically within the flex container */
+}
+
+.edit-button {
+    margin-right: 10px; /* Space between edit and logout buttons */
+}
+
+.logout-button {
+    /* No additional styles needed unless you want to add specific margin or padding */
 }

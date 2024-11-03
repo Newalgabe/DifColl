@@ -650,6 +650,45 @@ body {
     }
 }
 
+/* Adjustments for larger screens */
+@media (min-width: 1440px) {
+    .hero-text h1 {
+        font-size: 4rem; /* Increase header size */
+    }
+
+    .hero-text p {
+        font-size: 1.5rem; /* Increase paragraph size */
+    }
+
+    .stat-card {
+        width: 220px; /* Increase width for stat cards */
+        padding: 20px 15px; /* More padding for stat cards */
+    }
+
+    .feature-card,
+    .testimonial-card {
+        width: 300px; /* Increase width for feature and testimonial cards */
+        padding: 30px 20px; /* More padding for cards */
+    }
+
+    .overlay-section {
+        padding: 60px 30px; /* More padding for overlay sections */
+    }
+
+    .overlay-content h2 {
+        font-size: 2.5rem; /* Increase overlay header size */
+    }
+
+    .overlay-content p {
+        font-size: 1.2rem; /* Increase overlay paragraph size */
+    }
+
+    .btn {
+        padding: 15px; /* Increase padding for buttons */
+    }
+}
+
+
 /* Interactive Elements */
 .btn {
     transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for scale effect */

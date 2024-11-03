@@ -346,106 +346,52 @@
     }
 
 
-/* Media Queries for Larger Screens */
-@media (min-width: 1200px) {
-    /* Increase max width and padding for search container */
-    .game-search-container {
-        max-width: 1100px;
-        padding: 30px;
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .nexus-collection {
+        padding: 30px; /* Further increased padding */
     }
 
-    /* Enlarged search controls for desktop */
-    .search-input,
-    .genre-input,
-    .sort-select {
-        padding: 16px 20px;
-        font-size: 18px;
-        flex: 1 1 300px; /* Adjusting the flex basis for better alignment */
+    .nexus-item {
+        padding: 20px; /* Further increased item padding */
     }
 
-    .search-button {
-        padding: 16px 32px;
-        font-size: 18px;
-    }
-
-    /* Adjust results grid spacing for better layout on wide screens */
-    .results-container {
-        gap: 30px;
-        padding: 15px;
-    }
-
-    /* Increase game card size for larger screens */
-    .game-card {
-        padding: 24px;
-        border-radius: 15px;
-    }
-
-    .game-image {
-        width: 200px; /* Increase image width */
-    }
-
-    .game-details h3 {
-        font-size: 1.8rem;
-    }
-
-    .game-details p {
-        font-size: 1.1rem;
-    }
-
-    /* Adjust actions buttons on desktop */
-    .actions button {
-        font-size: 16px;
-        padding: 14px 0;
-    }
-
-    /* Pagination controls for desktop */
-    .pagination-controls {
-        gap: 20px;
-    }
-
-    .pagination-button {
-        padding: 14px 28px;
-        font-size: 1.1rem;
-    }
-
-    /* Modal */
-    .modal-content {
-        padding: 35px;
-        max-width: 1000px;
-    }
-
-    /* Related Games on larger screens */
-    .related-games-list {
-        gap: 20px;
-        padding-bottom: 15px;
-    }
-
-    .related-game-card {
-        width: 220px; /* Increase width for related game cards */
+    #search {
+        margin-bottom: 25px; /* Further increased bottom margin */
     }
 }
 
-/* Slightly larger font sizes on smaller desktops */
-@media (min-width: 992px) and (max-width: 1199px) {
-    .game-details h3 {
-        font-size: 1.7rem;
+/* Larger Screens Adjustments */
+@media (min-width: 1201px) {
+    .nexus-items-grid {
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* Further increased min size of columns */
     }
 
-    .game-details p {
-        font-size: 1.05rem;
+    .nexus-collection {
+        padding: 80px; /* More padding for larger screens */
+    }
+}
+
+@media (min-width: 1440px) {
+    .nexus-items-grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Further increased min size of columns */
     }
 
-    .search-button {
-        padding: 15px 30px;
-        font-size: 17px;
+    .nexus-collection {
+        padding: 100px; /* More padding for extra-large screens */
     }
 
-    .pagination-button {
-        padding: 13px 26px;
-        font-size: 1.05rem;
+    .nexus-item {
+        padding: 40px; /* Increased padding for items */
     }
 
-    .related-game-card {
-        width: 200px; /* Adjust related game card width */
+    .item-details h3 {
+        font-size: 2rem; /* Further increased font size for item titles */
+    }
+
+    #search,
+    #sort-type,
+    #sort-order {
+        font-size: 1.4rem; /* Larger font size for inputs */
     }
 }

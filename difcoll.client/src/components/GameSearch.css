@@ -608,3 +608,82 @@ body {
         width: 190px; /* Adjust related game card width */
     }
 }
+
+/* Media Queries for Extra Large Screens */
+@media (min-width: 1440px) {
+    /* Increase max width and padding for search container */
+    .game-search-container {
+        max-width: 1300px; /* Increase max width for larger displays */
+        padding: 40px; /* Add more padding for spacious design */
+    }
+
+    /* Larger search input fields and controls */
+    .search-input,
+    .genre-input,
+    .sort-select {
+        padding: 18px 24px; /* Larger padding for comfort */
+        font-size: 18px; /* Slightly larger font size for readability */
+        flex: 1 1 350px; /* Adjust flex basis for better alignment */
+    }
+
+    .search-button {
+        padding: 18px 36px; /* Increase padding for a more substantial button */
+        font-size: 18px; /* Adjust font size to match */
+    }
+
+    /* Increased spacing in results container */
+    .results-container {
+        gap: 40px; /* More gap for clearer separation */
+        padding: 20px; /* Additional padding */
+    }
+
+    /* Larger game cards */
+    .game-card {
+        padding: 30px; /* More padding for content */
+        border-radius: 15px; /* Slightly rounded corners */
+    }
+
+    .game-image {
+        width: 240px; /* Wider images for better visibility */
+    }
+
+    .game-details h3 {
+        font-size: 2rem; /* Larger heading for emphasis */
+    }
+
+    .game-details p {
+        font-size: 1.2rem; /* Increased font size for details */
+    }
+
+    /* Adjust action buttons */
+    .actions button {
+        font-size: 18px; /* Larger text for buttons */
+        padding: 16px 0; /* Adequate padding for touch targets */
+    }
+
+    /* Larger pagination controls */
+    .pagination-controls {
+        gap: 25px; /* Increased gap for a cleaner look */
+    }
+
+    .pagination-button {
+        padding: 16px 32px; /* More padding for buttons */
+        font-size: 1.2rem; /* Larger font size */
+    }
+
+    /* Modal adjustments */
+    .modal-content {
+        padding: 40px; /* More padding for content */
+        max-width: 1200px; /* Wider modal for extra content */
+    }
+
+    /* Larger related game cards */
+    .related-games-list {
+        gap: 25px; /* More spacing between cards */
+        padding-bottom: 20px; /* Additional padding for bottom */
+    }
+
+    .related-game-card {
+        width: 240px; /* Wider related game cards */
+    }
+}

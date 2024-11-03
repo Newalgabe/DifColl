@@ -318,6 +318,9 @@ body {
 
 
 /* Media Queries for Larger Screens */
+
+
+
 @media (min-width: 1200px) {
     /* Increase max width and padding for search container */
     .movie-search-container {
@@ -416,5 +419,82 @@ body {
 
     .related-movie-card {
         width: 190px;
+    }
+}
+
+/* Media Queries for Extra Large Screens */
+@media (min-width: 1440px) {
+    /* Increase max width and padding for search container */
+    .movie-search-container {
+        max-width: 1400px;
+        padding: 40px;
+    }
+
+    /* Larger search input fields and controls */
+    .search-input {
+        padding: 18px 24px;
+        font-size: 20px;
+        flex: 1 1 350px;
+    }
+
+    .search-button {
+        padding: 18px 36px;
+        font-size: 20px;
+    }
+
+    /* Increased spacing in results container */
+    .results-container {
+        gap: 40px;
+        padding: 20px;
+    }
+
+    /* Larger movie cards */
+    .movie-card {
+        padding: 30px;
+        border-radius: 18px;
+    }
+
+    .movie-image {
+        width: 240px;
+    }
+
+    .movie-details h3 {
+        font-size: 2rem;
+    }
+
+    .movie-details p {
+        font-size: 1.2rem;
+    }
+
+    /* Adjust action buttons */
+    .actions button {
+        font-size: 18px;
+        padding: 16px 0;
+    }
+
+    /* Larger pagination controls */
+    .pagination-controls {
+        gap: 25px;
+    }
+
+    .pagination-button {
+        padding: 16px 32px;
+        font-size: 1.2rem;
+    }
+
+    /* Modal adjustments */
+    .modal-content {
+        padding: 40px;
+        max-width: 1200px;
+    }
+
+    /* Larger related movie cards */
+    .related-movies-list {
+        gap: 25px;
+        padding-bottom: 20px;
+    }
+
+    .related-movie-card {
+        width: 240px;
     }
 }
