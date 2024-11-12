@@ -17,6 +17,5 @@ namespace DifColl.Server.Data
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Game> Games { get; set; }
 
-        // Optional: Configure composite keys, relationships, etc.
     }
 }

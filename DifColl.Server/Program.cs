@@ -40,6 +40,7 @@ builder.Services.AddCors(options =>
 });
 
 // Enable Google Authentication
+// Enable Google, Microsoft, and Twitter Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -52,7 +53,23 @@ builder.Services.AddAuthentication(options =>
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     googleOptions.CallbackPath = "/signin-google";
     googleOptions.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url"); // Map profile picture
-    googleOptions.SaveTokens = true; // Save access and refresh tokens
+    googleOptions.SaveTokens = true;
+})
+.AddMicrosoftAccount(microsoftOptions =>
+{
+    microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
+    microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
+    microsoftOptions.CallbackPath = "/signin-microsoft";
+    microsoftOptions.SaveTokens = true;
+    microsoftOptions.ClaimActions.MapJsonKey("urn:microsoftaccount:picture", "picture", "url"); // Map Microsoft profile picture
+})
+.AddTwitter(twitterOptions =>
+{
+    twitterOptions.ConsumerKey = builder.Configuration["Authentication:Twitter:ConsumerKey"];
+    twitterOptions.ConsumerSecret = builder.Configuration["Authentication:Twitter:ConsumerSecret"];
+    twitterOptions.CallbackPath = "/signin-twitter";
+    twitterOptions.SaveTokens = true;
+    twitterOptions.ClaimActions.MapJsonKey("urn:twitter:profile_image_url", "profile_image_url", "url"); // Map Twitter profile picture
 });
 
 // Enable authorization

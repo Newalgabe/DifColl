@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DifColl.Server.DTOs;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.Twitter;
 
 namespace DifCol.Controllers
 {
@@ -29,13 +31,21 @@ namespace DifCol.Controllers
 
 
         [HttpGet("login")]
-        public IActionResult Login()
+        public IActionResult Login([FromQuery] string provider)
         {
-            // This will trigger Google authentication
+            // Determine the authentication scheme based on the provider parameter
+            string authenticationScheme = provider switch
+            {
+                "google" => GoogleDefaults.AuthenticationScheme,
+                "microsoft" => MicrosoftAccountDefaults.AuthenticationScheme,
+                "twitter" => TwitterDefaults.AuthenticationScheme,
+                _ => throw new ArgumentException("Unsupported provider") // Handle unsupported providers
+            };
+
             return Challenge(new AuthenticationProperties
             {
                 RedirectUri = "/"
-            }, GoogleDefaults.AuthenticationScheme);
+            }, authenticationScheme);
         }
 
         [HttpPost("logout")]
@@ -53,30 +63,32 @@ namespace DifCol.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userProfile = await _context.UserProfiles.FindAsync(userId);
 
+                string pictureUrl = User.FindFirst(c =>
+                    c.Type == "urn:google:picture" ||
+                    c.Type == "urn:microsoftaccount:picture" ||
+                    c.Type == "urn:twitter:profile_image_url")?.Value;
+
                 if (userProfile == null)
                 {
-                    // If the user doesn't have a profile, return basic info
                     var name = User.Identity.Name;
                     var email = User.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
-                    var picture = User.FindFirst(c => c.Type == "urn:google:picture")?.Value;
 
                     return Ok(new
                     {
-                        Id = userId,  // Include UserId
+                        Id = userId,
                         Name = name,
                         Email = email,
-                        PictureUrl = picture
+                        PictureUrl = pictureUrl
                     });
                 }
                 else
                 {
-                    // Return the profile data including the newly added fields
                     return Ok(new
                     {
-                        Id = userId,  // Include UserId
+                        Id = userId,
                         Name = userProfile.Name,
                         Email = User.FindFirst(c => c.Type == ClaimTypes.Email)?.Value,
-                        PictureUrl = userProfile.PictureUrl,
+                        PictureUrl = userProfile.PictureUrl ?? pictureUrl, // Use stored or newly fetched picture
                         Bio = userProfile.Bio,
                         Pronouns = userProfile.Pronouns,
                         Location = userProfile.Location,
@@ -90,6 +102,7 @@ namespace DifCol.Controllers
 
             return Unauthorized();
         }
+
 
 
 

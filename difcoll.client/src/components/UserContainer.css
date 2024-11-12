@@ -1,0 +1,236 @@
+/* Full-screen container with a soft gradient background and background image */
+.user-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: url('https://images.unsplash.com/photo-1723987513091-4cc24f8e5c71?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MnxVOUNMTHhRVlRRRXx8ZW58MHx8fHx8');
+    background-size: cover; /* Ensures the image covers the entire container */
+    background-position: center; /* Centers the image */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Loading animation */
+.loading-container {
+    font-size: 22px;
+    color: #444;
+    animation: fadeIn 1s ease-in-out;
+    margin-top: 20px;
+}
+
+/* Login card with significant padding, shadow, and animation */
+.login-section {
+    text-align: center;
+    background-color: #ffffff;
+    padding: 60px;
+    border-radius: 25px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    max-width: 650px;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    animation: fadeInScale 1s ease-in-out;
+    transform: scale(1);
+}
+
+    .login-section:hover {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+    }
+
+    /* Animated gradient heading */
+    .login-section h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        background: linear-gradient(90deg, #4285f4, #0078d4, #1da1f2);
+        -webkit-background-clip: text;
+        color: transparent;
+        animation: gradientShift 3s ease infinite;
+    }
+
+    .login-section p {
+        font-size: 20px;
+        color: #555;
+        margin-bottom: 30px;
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+/* Login buttons container */
+.login-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+/* Login button styles with prominent branding */
+.login-button {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #ffffff;
+    border: 2px solid transparent;
+    padding: 16px 40px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    min-width: 240px;
+    position: relative;
+}
+
+    /* Subtle animated glow effect */
+    .login-button::after {
+        content: '';
+        position: absolute;
+        top: -5px;
+        bottom: -5px;
+        left: -5px;
+        right: -5px;
+        border-radius: 12px;
+        background: inherit;
+        filter: blur(10px);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .login-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+        .login-button:hover::after {
+            opacity: 0.3;
+        }
+
+/* Provider-specific button styling with colors */
+.provider-logo {
+    width: 30px;
+    height: 30px;
+}
+
+/* Google button styling with custom color */
+.login-button.google {
+    background-color: #4285F4; /* Google Blue */
+    border-color: #4285F4;
+}
+
+    .login-button.google:hover {
+        background-color: #357ae8; /* Darker Google Blue */
+    }
+
+/* Microsoft button styling with custom color */
+.login-button.microsoft {
+    background-color: #00A4EF; /* Microsoft Blue */
+    border-color: #00A4EF;
+}
+
+    .login-button.microsoft:hover {
+        background-color: #0082C9; /* Darker Microsoft Blue */
+    }
+
+/* Twitter button styling with custom color */
+.login-button.twitter {
+    background-color: #1DA1F2; /* Twitter Blue */
+    border-color: #1DA1F2;
+}
+
+    .login-button.twitter:hover {
+        background-color: #1991D0; /* Darker Twitter Blue */
+    }
+
+/* Media queries for responsive scaling */
+@media (min-width: 768px) {
+    .login-section {
+        padding: 70px;
+    }
+
+        .login-section h2 {
+            font-size: 40px;
+        }
+
+        .login-section p {
+            font-size: 22px;
+        }
+
+    .login-button {
+        font-size: 22px;
+        padding: 18px 45px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .user-container {
+        padding: 80px;
+    }
+
+    .login-section {
+        padding: 80px;
+    }
+
+    .login-button {
+        font-size: 24px;
+        padding: 20px 50px;
+    }
+
+    .login-section h2 {
+        font-size: 44px;
+    }
+
+    .login-section p {
+        font-size: 24px;
+    }
+}
+
+@media (min-width: 1440px) {
+    .user-container {
+        padding: 100px;
+    }
+
+    .login-section {
+        padding: 100px;
+    }
+
+    .login-button {
+        font-size: 26px;
+        padding: 22px 55px;
+    }
+
+    .login-section h2 {
+        font-size: 48px;
+    }
+
+    .login-section p {
+        font-size: 26px;
+    }
+}
+
+/* Animations */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}

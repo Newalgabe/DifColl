@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
-import './UserProfile.css';  // Import the external stylesheet
-import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa'; // Importing icons for better visuals
+import './UserProfile.css';
+import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa';
 
 const UserProfile = ({ onLogout }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -19,8 +19,6 @@ const UserProfile = ({ onLogout }) => {
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [contactInfo, setContactInfo] = useState("");
 
-    // **New State for User ID**
-
     const availablePronouns = ['They/Them', 'She/Her', 'He/Him', 'Other'];
 
     useEffect(() => {
@@ -34,11 +32,10 @@ const UserProfile = ({ onLogout }) => {
                 if (response.ok) {
                     const userData = await response.json();
 
-                    console.log('User data:', userData); // Log the full response
-
-                    setNickname(userData.name || "");
+                    // Handle different provider data formats
+                    setNickname(userData.name || userData.nickname || "User");
                     setEmail(userData.email || "");
-                    setPictureUrl(userData.pictureUrl || "");
+                    setPictureUrl(userData.picture || userData.pictureUrl || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg");
                     setBio(userData.bio || "");
                     setPronouns(userData.pronouns || "");
                     setLocation(userData.location || "");
@@ -46,7 +43,7 @@ const UserProfile = ({ onLogout }) => {
                     setSocialMediaLinks(userData.socialMediaLinks || "");
                     setDateOfBirth(userData.dateOfBirth || "");
                     setContactInfo(userData.contactInformation || "");
-                    setNewPictureUrl(userData.pictureUrl || "https://default-profile-url.com/default-image.png");
+                    setNewPictureUrl(userData.pictureUrl || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg");
                 } else {
                     console.error('Failed to load user info');
                 }
@@ -60,7 +57,7 @@ const UserProfile = ({ onLogout }) => {
 
     const handleSave = async () => {
         const profileData = {
-            nickname: nickname || "", // Use existing values if not changed
+            nickname: nickname || "",
             pictureUrl: newPictureUrl || pictureUrl || "",
             bio: bio || "",
             pronouns: pronouns || "",
