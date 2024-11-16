@@ -104,10 +104,6 @@ namespace DifCol.Controllers
         }
 
 
-
-
-
-
         [HttpPost("update-profile")]
         [Authorize]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateUserProfileDto model) // Change FromForm to FromBody
@@ -156,6 +152,80 @@ namespace DifCol.Controllers
 
             return Ok(new { Name = userProfile.Name, PictureUrl = userProfile.PictureUrl });
         }
+
+
+
+        [HttpPost("add-friend/{friendId}")]
+        [Authorize]
+        public async Task<IActionResult> AddFriend(string friendId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == friendId)
+            {
+                return BadRequest("You cannot add yourself as a friend.");
+            }
+
+            var existingFriendship = await _context.Friendships
+                .FirstOrDefaultAsync(f => (f.UserId == userId && f.FriendId == friendId) ||
+                                           (f.UserId == friendId && f.FriendId == userId));
+
+            if (existingFriendship != null)
+            {
+                return BadRequest("Friendship already exists.");
+            }
+
+            var friendship = new Friendship
+            {
+                UserId = userId,
+                FriendId = friendId
+            };
+
+            _context.Friendships.Add(friendship);
+            await _context.SaveChangesAsync();
+
+            return Ok("Friend added successfully.");
+        }
+
+        [HttpDelete("remove-friend/{friendId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveFriend(string friendId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var friendship = await _context.Friendships
+                .FirstOrDefaultAsync(f => (f.UserId == userId && f.FriendId == friendId) ||
+                                           (f.UserId == friendId && f.FriendId == userId));
+
+            if (friendship == null)
+            {
+                return NotFound("Friendship not found.");
+            }
+
+            _context.Friendships.Remove(friendship);
+            await _context.SaveChangesAsync();
+
+            return Ok("Friend removed successfully.");
+        }
+
+        [HttpGet("friends")]
+        [Authorize]
+        public async Task<IActionResult> GetFriends()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var friends = await _context.Friendships
+                .Where(f => f.UserId == userId || f.FriendId == userId)
+                .Select(f => f.UserId == userId ? f.FriendId : f.UserId)
+                .ToListAsync();
+
+            var friendProfiles = await _context.UserProfiles
+                .Where(u => friends.Contains(u.UserId))
+                .ToListAsync();
+
+            return Ok(friendProfiles);
+        }
+
 
     }
 }

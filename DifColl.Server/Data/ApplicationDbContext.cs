@@ -16,6 +16,7 @@ namespace DifColl.Server.Data
         // New DbSets
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Game> Games { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
 
     }
 }

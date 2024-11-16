@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 import './UserProfile.css';
 import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa';
+import FriendsList from './FriendsList';
 
 const UserProfile = ({ onLogout }) => {
+    const [userId, setUserId] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [uploadStatus, setUploadStatus] = useState("");
@@ -31,7 +33,9 @@ const UserProfile = ({ onLogout }) => {
 
                 if (response.ok) {
                     const userData = await response.json();
+                    console.log("User data:", userData); // Debugging: Log the entire user data
 
+                    setUserId(userData.id || "");
                     // Handle different provider data formats
                     setNickname(userData.name || userData.nickname || "User");
                     setEmail(userData.email || "");
@@ -236,7 +240,8 @@ const UserProfile = ({ onLogout }) => {
                             />
                         ) : (
                             <p>No profile picture available</p>
-                        )}
+                            )}
+
                         <div className="profile-actions">
                             <button onClick={() => setIsEditing(true)} className="edit-button">
                                 <FaEdit /> Edit Profile
@@ -245,7 +250,9 @@ const UserProfile = ({ onLogout }) => {
                                 <FaSignOutAlt /> Logout
                             </button>
                         </div>
-                    </div>
+                        </div>
+                        <p className="profile-userid">User ID: {userId}</p>
+
                     <p className="profile-email">Email: {email}</p>
                     <div className="stats-container">
                         <div className="stat-card" data-aos="fade-right" data-aos-delay="200">
@@ -274,7 +281,8 @@ const UserProfile = ({ onLogout }) => {
                             <p><FaInfoCircle /> Contact Info: {contactInfo || "No contact info provided"}</p>
                             <p><FaInfoCircle /> Social Links: {socialMediaLinks || "N/A"}</p>
                         </div>
-                    )}
+                        )}
+                        <FriendsList />
                 </div>
             )}
         </div>
