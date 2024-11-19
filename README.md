@@ -1,6 +1,105 @@
 # DifColl 🎉
 
-**DifColl** — современное приложение для управления коллекциями книг, фильмов и игр с социальными функциями. Оно упрощает создание, управление и обмен коллекциями, добавляя возможности для взаимодействия, такие как друзья и рекомендации.
+**DifColl** is a modern app for managing collections of books, movies, and games with social features. It simplifies the creation, management, and sharing of collections, adding social functionalities like friends and recommendations.
+
+## 🚀 Features
+
+- **Collection Management**: Create and edit collections of books, movies, and games.
+- **API Integration**: Automatically fetch data from Google Books, TMDb, and RAWG.
+- **Social Features**: Share your collections and follow your friends' activities.
+- **User Profile**: Customize personal information, including photo, username, biography, and social links.
+- **Recommendations**: Get personalized recommendations based on your interests.
+
+## 🔧 Core Features
+
+- **Authentication**: Sign in using Google, Microsoft, or Twitter with ASP.NET Core Identity.
+- **Intuitive UI**: Clean and modern design with responsive layout.
+- **Reactivity**: Fetch API for real-time data updates.
+- **Modular Architecture**: A clear and maintainable structure with components and pages.
+
+## 🛠 Technologies
+
+- **Frontend**: React with pure JavaScript.
+- **Backend**: ASP.NET Core 8 with Entity Framework Core and ASP.NET Identity.
+- **Database**: MSSQL for storing users, collections, and items.
+- **API Integrations**: Google Books, TMDb, and RAWG for books, movies, and games.
+- **Email**: Email confirmation via APIs for Google, Microsoft, and Twitter.
+- **Styling**: Modern design with CSS and animations.
+
+## 💻 Installation
+
+To run the app locally, follow these steps:
+
+1. **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/Newalgabe/DifColl
+    ```
+
+2. **Navigate to the project folder:**
+
+    ```bash
+    cd DifColl
+    ```
+
+3. **Install dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+4. **Run the app:**
+
+    ```bash
+    npm start
+    ```
+
+---
+
+## 📱 How to Use the App
+
+1. **Registration and Login**: Sign in via Google, Microsoft, or Twitter for easy access.
+2. **Create a Collection**: Add books, movies, and games to your collection with API integrations.
+3. **Edit Profile**: Customize your personal data, including photo, username, interests, and social links.
+4. **Social Interaction**: Follow friends' collections and share recommendations.
+5. **Recommendations**: Get personalized suggestions based on your collections and interests.
+
+## 📂 Project Structure
+
+- **Frontend** — `src/`
+    - `components/` — User interface components.
+    - `pages/` — Pages of the app.
+- **Backend** — `DifColl.Api/`
+    - `Controllers/` — Controllers to handle requests.
+    - `Models/` — Database models.
+- **Database** — `DifColl.Data/`
+    - `Migrations/` — MSSQL database migrations.
+
+---
+
+## 💬 Support
+
+If you have any questions or suggestions, feel free to reach out via GitHub Issues or contact us directly.
+
+---
+
+## 🎉 Acknowledgments
+
+Thank you for your interest in **DifColl**! We hope our app makes managing your collections easy and fun. We look forward to your feedback and suggestions!
+
+---
+
+### License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+---
+
+# DifColl 🎉
+
+**DifColl** — это современное приложение для управления коллекциями книг, фильмов и игр с социальными функциями. Оно упрощает создание, управление и обмен коллекциями, добавляя возможности для взаимодействия, такие как друзья и рекомендации.
 
 ## 🚀 Возможности
 
@@ -61,7 +160,7 @@
 1. **Регистрация и вход**: Авторизуйтесь через Google, Microsoft или Twitter для удобного доступа в приложение.
 2. **Создание коллекции**: Добавляйте книги, фильмы и игры в свою коллекцию с помощью интеграций API.
 3. **Редактирование профиля**: Настройте личные данные, такие как фото, никнейм, интересы и социальные ссылки.
-4. **Социальное взаимодействие**: Следите за коллекциями друзей, обменивались рекомендациями.
+4. **Социальное взаимодействие**: Следите за коллекциями друзей, обменивайтесь рекомендациями.
 5. **Рекомендации**: Получайте персонализированные рекомендации на основе ваших коллекций и интересов.
 
 ## 📂 Структура проекта
@@ -69,12 +168,9 @@
 - **Frontend** — `src/`
     - `components/` — Компоненты интерфейса.
     - `pages/` — Страницы приложения.
-    - `styles/` — CSS и стилизация.
-    - `utils/` — Утилитарные функции и хелперы.
 - **Backend** — `DifColl.Api/`
     - `Controllers/` — Контроллеры для обработки запросов.
     - `Models/` — Модели базы данных.
-    - `Services/` — Логика работы с данными и внешними API.
 - **Database** — `DifColl.Data/`
     - `Migrations/` — Миграции для базы данных MSSQL.
 
