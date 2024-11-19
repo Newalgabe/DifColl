@@ -62,7 +62,7 @@ To run the app locally, follow these steps:
 2. **Create a Collection**: Add books, movies, and games to your collection with API integrations.
 3. **Edit Profile**: Customize your personal data, including photo, username, interests, and social links.
 4. **Social Interaction**: Follow friends' collections and share recommendations.
-5. **Recommendations**: Get personalized suggestions based on your collections and interests.
+5. **Recommendations**: Get personalized suggestions based on your interests.
 
 ## 📂 Project Structure
 
@@ -161,7 +161,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 2. **Создание коллекции**: Добавляйте книги, фильмы и игры в свою коллекцию с помощью интеграций API.
 3. **Редактирование профиля**: Настройте личные данные, такие как фото, никнейм, интересы и социальные ссылки.
 4. **Социальное взаимодействие**: Следите за коллекциями друзей, обменивайтесь рекомендациями.
-5. **Рекомендации**: Получайте персонализированные рекомендации на основе ваших коллекций и интересов.
+5. **Рекомендации**: Получайте персонализированные рекомендации на основе ваших и интересов.
 
 ## 📂 Структура проекта
 
