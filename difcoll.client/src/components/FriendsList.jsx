@@ -3,7 +3,7 @@ import { FaUserPlus, FaUserTimes, FaBook } from "react-icons/fa";
 import './FriendsList.css';
 
 
-const FriendsList = () => {
+const FriendsList = (userId) => {
     const [friends, setFriends] = useState([]);
     const [friendIdToAdd, setFriendIdToAdd] = useState("");
     const [addFriendStatus, setAddFriendStatus] = useState("");
@@ -14,8 +14,6 @@ const FriendsList = () => {
     const [showUserCollection, setShowUserCollection] = useState(false);
     const [expandedFriendId, setExpandedFriendId] = useState(null);
 
-    // Get current userId (this could come from a global state or context)
-    const userId = "f32315e4a75cc150"; // Replace with actual userId if necessary
 
     // Fetch friends on component mount
     useEffect(() => {

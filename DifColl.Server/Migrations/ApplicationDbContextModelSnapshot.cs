@@ -22,10 +22,49 @@ namespace DifColl.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ItemId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("DifColl.Server.Models.Book", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Authors")
                         .IsRequired()
@@ -54,34 +93,9 @@ namespace DifColl.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
+                    b.HasKey("Id", "UserId");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("DifColl.Server.Models.Category", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("DifColl.Server.Models.Friendship", b =>
@@ -111,7 +125,12 @@ namespace DifColl.Server.Migrations
             modelBuilder.Entity("DifColl.Server.Models.Game", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("BackgroundImage")
                         .IsRequired()
@@ -144,11 +163,7 @@ namespace DifColl.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
+                    b.HasKey("Id", "UserId");
 
                     b.ToTable("Games");
                 });
@@ -156,7 +171,12 @@ namespace DifColl.Server.Migrations
             modelBuilder.Entity("DifColl.Server.Models.Movie", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Directors")
                         .IsRequired()
@@ -185,84 +205,9 @@ namespace DifColl.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
+                    b.HasKey("Id", "UserId");
 
                     b.ToTable("Movies");
-                });
-
-            modelBuilder.Entity("DifColl.Server.Models.Post", b =>
-                {
-                    b.Property<int>("PostId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ParentPostId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TopicId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PostId");
-
-                    b.HasIndex("ParentPostId");
-
-                    b.HasIndex("TopicId");
-
-                    b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("DifColl.Server.Models.Topic", b =>
-                {
-                    b.Property<int>("TopicId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TopicId"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TopicId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("DifColl.Server.Models.UserProfile", b =>
@@ -310,48 +255,15 @@ namespace DifColl.Server.Migrations
                     b.ToTable("UserProfiles");
                 });
 
-            modelBuilder.Entity("DifColl.Server.Models.Post", b =>
+            modelBuilder.Entity("Comment", b =>
                 {
-                    b.HasOne("DifColl.Server.Models.Post", "ParentPost")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentPostId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DifColl.Server.Models.Topic", "Topic")
-                        .WithMany("Posts")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("DifColl.Server.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("ParentPost");
-
-                    b.Navigation("Topic");
-                });
-
-            modelBuilder.Entity("DifColl.Server.Models.Topic", b =>
-                {
-                    b.HasOne("DifColl.Server.Models.Category", "Category")
-                        .WithMany("Topics")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("DifColl.Server.Models.Category", b =>
-                {
-                    b.Navigation("Topics");
-                });
-
-            modelBuilder.Entity("DifColl.Server.Models.Post", b =>
-                {
-                    b.Navigation("Replies");
-                });
-
-            modelBuilder.Entity("DifColl.Server.Models.Topic", b =>
-                {
-                    b.Navigation("Posts");
+                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }
