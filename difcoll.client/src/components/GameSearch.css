@@ -133,13 +133,16 @@ body {
 .game-card {
     padding: 20px;
     background-color: var(--color-neutral-light);
-    border-radius: 12px;
+    border-radius: 12px; /* Slightly more rounded for a modern look */
     border: 1px solid var(--color-neutral-dark);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    justify-content: space-between; /* Ensures buttons are at the bottom */
+    min-height: 380px; /* Fixed height to maintain consistency */
+    height: auto; /* Allow height to expand if necessary */
+    overflow: hidden; /* Prevent content from overflowing outside the card */
 }
 
     .game-card:hover {
@@ -148,9 +151,11 @@ body {
         background-color: var(--color-neutral-lighter);
     }
 
+/* Game Image */
 .game-image {
-    width: 160px;
-    height: auto;
+    width: 160px; /* Fixed width */
+    height: 160px; /* Fixed height */
+    object-fit: cover; /* Ensures the image covers the area without distorting */
     border-radius: 10px;
     margin-bottom: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -162,44 +167,54 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
+
+/* Game Details */
 .game-details {
     text-align: center;
-    padding: 10px 0;
+    flex-grow: 1; /* Ensures the game details take available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Align name and other info together */
+    margin-top: 10px;
 }
 
+    .game-details .game-title,
+    .game-details p {
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    /* Game Title */
     .game-details h3 {
         font-family: var(--font-secondary);
         font-size: 1.6rem;
         color: var(--color-primary);
-        margin-bottom: 5px;
-        transition: color 0.3s ease;
+        margin-bottom: 8px;
+        line-height: 1.4; /* Better readability */
+        overflow: hidden; /* Prevents overflow of long titles */
+        text-overflow: ellipsis; /* Adds ellipsis to overflowed text */
     }
 
-        .game-details h3:hover {
-            color: var(--color-secondary);
-        }
-
-    .game-details p {
-        color: var(--color-text-secondary);
-        font-size: 0.95rem;
-    }
-
+/* Game Description */
 .description {
     font-style: italic;
     color: var(--color-text-secondary);
     margin-top: 10px;
     font-size: 0.9rem;
     line-height: 1.4;
+    flex-shrink: 0;
 }
 
-/* Actions */
+/* Actions (Buttons) */
 .actions {
     display: flex;
     gap: 12px;
     margin-top: 20px;
-    width: 100%;
+    justify-content: space-between; /* Spread out buttons */
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+    align-self: flex-end; /* Ensures buttons are aligned at the bottom */
 }
 
+    /* Action Button Styles */
     .actions button {
         padding: 12px 0;
         border: none;
@@ -208,10 +223,12 @@ body {
         font-size: 14px;
         color: white;
         flex: 1;
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        font-weight: 600; /* Bolder text for action buttons */
+        letter-spacing: 0.5px;
     }
 
+/* Button Variants */
 .add-button {
     background-color: var(--color-secondary);
 }
@@ -228,30 +245,27 @@ body {
     background-color: var(--color-neutral-dark);
 }
 
-/* Hover Effects for Action Buttons */
+/* Button Hover Effects */
 .add-button:hover {
     background-color: #16A085;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
 }
 
 .bookmark-button:hover {
     background-color: #F39C12;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
 }
 
 .share-button:hover {
     background-color: #C0392B;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
 }
 
 .details-button:hover {
     background-color: #7F8C8D;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
 }
+
 
 
 /* Pagination */
@@ -329,50 +343,67 @@ body {
 
 /* Related Games */
 .related-games-container {
-    margin-top: 25px;
+    margin-top: 40px;
+    padding: 25px 0;
+    background-color: var(--color-background); /* Soft neutral background */
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Subtle but impactful shadow */
+    text-align: center;
 }
 
 .related-games-list {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding: 10px 0; /* Add padding for a nicer layout */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid */
+    gap: 20px;
+    padding: 0 15px;
 }
 
 .related-game-card {
-    padding: 10px;
-    border-radius: 8px;
     background-color: var(--color-neutral-light);
-    border: 1px solid var(--color-neutral-dark);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
     cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.related-game-card:hover {
+    transform: translateY(-5px); /* Floating hover effect */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Enhanced hover shadow */
+}
+
+.related-game-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover; /* Ensures images maintain aspect ratio and cover the area */
+    border-radius: 10px;
+    margin-bottom: 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-    .related-game-card:hover {
-        transform: translateY(-3px);
-        background-color: var(--color-neutral-lighter);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    }
-
-.related-game-image {
-    width: 100px;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 5px;
+.related-game-info {
+    text-align: center;
 }
 
 .related-game-info h4 {
     font-family: var(--font-secondary);
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
     color: var(--color-primary);
-    margin-bottom: 3px;
+    margin-bottom: 8px;
+    text-transform: uppercase; /* Adds a more impactful appearance */
 }
 
 .related-game-info p {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--color-text-secondary);
+    line-height: 1.4;
 }
+
 
 
 /* Bookmarks */

@@ -9,7 +9,7 @@ const LoginButton = ({ provider, logo }) => {
     return (
         <button className={`login-button ${provider}`} onClick={handleLogin}>
             <img src={logo} alt={`${provider} logo`} className="provider-logo" />
-            {`Log in with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
+            
         </button>
     );
 };

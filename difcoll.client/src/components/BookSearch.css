@@ -98,14 +98,17 @@ body {
 
 .book-card {
     padding: 20px;
-    border: 1px solid var(--color-neutral-dark);
-    border-radius: 12px; /* Slightly larger border-radius for a softer look */
     background-color: var(--color-neutral-light);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Increased shadow for depth */
+    border-radius: 12px; /* Slightly more rounded for a modern look */
+    border: 1px solid var(--color-neutral-dark);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Softer shadow */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-between; /* Ensures buttons are at the bottom */
+    min-height: 380px; /* Fixed height to maintain consistency */
+    height: auto; /* Allow height to expand if necessary */
+    overflow: hidden; /* Prevent content from overflowing outside the card */
 }
 
     .book-card:hover {
@@ -123,55 +126,80 @@ body {
 }
 
 .book-card:hover .book-image {
-    transform: scale(1.05);
+    transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
+/* Book Details */
 .book-details {
-    text-align: left;
-    flex-grow: 1;
+    text-align: center;
+    margin-top: 10px;
+    flex-grow: 1; /* Makes sure the book details take available space */
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* Align name and other info together */
 }
 
-    .book-details h3 {
+    /* Ensure the title and description align together */
+    .book-details .book-title,
+    .book-details p {
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .book-details .book-title {
         font-family: var(--font-secondary);
-        font-size: 1.6rem; /* Increased font size for better readability */
+        font-size: 1.6rem;
         color: var(--color-primary);
-        margin-bottom: 8px; /* Adjusted margin for spacing */
+        margin-bottom: 8px;
+        line-height: 1.4; /* Better readability */
+        overflow: hidden; /* Prevent overflow of long titles */
+        text-overflow: ellipsis; /* Adds ellipsis to overflowed text */
     }
 
     .book-details p {
-        margin: 5px 0;
         color: var(--color-text-secondary);
-        font-size: 1rem; /* Increased font size for better visibility */
+        font-size: 1rem; /* Increased size for clarity */
+        line-height: 1.5;
+        margin: 5px 0; /* Consistent spacing */
+        overflow: hidden; /* Ensures no content is hidden */
+        text-overflow: ellipsis; /* Adds ellipsis to overflowed text */
+        white-space: nowrap; /* Prevents text from wrapping */
     }
 
+/* Description (Italic style) */
 .description {
     font-style: italic;
     color: var(--color-text-secondary);
     margin-top: 10px;
-    font-size: 0.95rem; /* Increased font size for better readability */
+    font-size: 0.95rem; /* Slightly larger font for readability */
 }
 
+/* Actions (Buttons) */
 .actions {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: space-between; /* Spread out buttons */
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+    align-self: flex-end; /* Ensures buttons are aligned at the bottom */
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
 }
 
+    /* Action Button Styles */
     .actions button {
-        flex: 1 1 45%;
-        padding: 12px 0; /* Increased padding for a more substantial button */
-        font-size: 16px; /* Increased font size for better readability */
+        padding: 12px 0;
         border: none;
-        border-radius: 10px; /* Slightly larger border-radius for a softer look */
+        border-radius: 10px;
         cursor: pointer;
+        font-size: 15px;
         color: white;
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added box-shadow for hover effect */
+        flex: 1;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        font-weight: 600; /* Bolder text for action buttons */
+        letter-spacing: 0.5px;
+        min-width: 120px; /* Ensure buttons have a minimum width */
     }
 
+/* Button Variants */
 .add-button {
     background-color: var(--color-secondary);
 }
@@ -188,28 +216,25 @@ body {
     background-color: var(--color-neutral-dark);
 }
 
+/* Button Hover Effects */
 .add-button:hover {
     background-color: #16A085;
-    transform: scale(1.03); /* Slightly increased scale for hover effect */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Added shadow effect */
+    transform: scale(1.03);
 }
 
 .bookmark-button:hover {
     background-color: #F39C12;
     transform: scale(1.03);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .share-button:hover {
     background-color: #C0392B;
     transform: scale(1.03);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .details-button:hover {
     background-color: #7F8C8D;
     transform: scale(1.03);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .pagination-controls {

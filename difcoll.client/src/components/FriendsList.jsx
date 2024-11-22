@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { FaUserPlus, FaUserTimes, FaBook } from "react-icons/fa";
 import './FriendsList.css';
 
-
-const FriendsList = (userId) => {
+const FriendsList = () => {
+    const [userId, setUserId] = useState(""); // State to store userId
     const [friends, setFriends] = useState([]);
     const [friendIdToAdd, setFriendIdToAdd] = useState("");
     const [addFriendStatus, setAddFriendStatus] = useState("");
@@ -14,9 +14,36 @@ const FriendsList = (userId) => {
     const [showUserCollection, setShowUserCollection] = useState(false);
     const [expandedFriendId, setExpandedFriendId] = useState(null);
 
+    // Fetch user info on component mount
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await fetch('https://localhost:7113/api/account/userinfo', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    console.log("User data:", userData); // Debugging: Log the entire user data
+
+                    setUserId(userData.id || "");
+                    // Optionally set other user-related state here
+                } else {
+                    console.error('Failed to load user info');
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
 
     // Fetch friends on component mount
     useEffect(() => {
+        if (!userId) return; // Prevent fetching if userId is not available
+
         const fetchFriends = async () => {
             try {
                 const response = await fetch("https://localhost:7113/api/Account/friends", {
@@ -36,17 +63,12 @@ const FriendsList = (userId) => {
         };
 
         fetchFriends();
-    }, []);
+    }, [userId]); // Dependency on userId
 
     // Fetch user's collection
     const handleViewUserCollection = async () => {
-        // Toggle off if already open
-        if (showUserCollection) {
-            setShowUserCollection(false);
-            return;
-        }
+        if (!userId) return; // Prevent fetching if userId is not available
 
-        // If closed, fetch and open the collection
         try {
             const response = await fetch(`https://localhost:7113/api/Nexus/collections?userId=${userId}`, {
                 method: 'GET',
@@ -65,7 +87,6 @@ const FriendsList = (userId) => {
             console.error("Error fetching user's collection:", error);
         }
     };
-
 
     // Fetch and display friend’s collection
     const handleViewFriendCollection = async (friendId) => {
@@ -90,6 +111,8 @@ const FriendsList = (userId) => {
 
     // Handle add friend by userId
     const handleAddFriend = async () => {
+        if (!friendIdToAdd) return; // Don't try to add if no friendId is entered
+
         try {
             const response = await fetch(`https://localhost:7113/api/Account/add-friend/${friendIdToAdd}`, {
                 method: 'POST',
@@ -152,8 +175,7 @@ const FriendsList = (userId) => {
 
     // Generate Shareable Link
     const generateShareableLink = () => {
-        const link = `https://localhost:7113/api/Nexus/collections?userId=${userId}`;
-        return link;
+        return `https://localhost:7113/api/Nexus/collections?userId=${userId}`;
     };
 
     return (
@@ -260,7 +282,7 @@ const FriendsList = (userId) => {
             {showFriendCollection && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <h3>Friend&#39;s Collection</h3>
+                        <h3>Friend&apos;s Collection</h3>
                         <ul className="collection-list">
                             {friendCollection.length > 0 ? (
                                 friendCollection.map((item, index) => (

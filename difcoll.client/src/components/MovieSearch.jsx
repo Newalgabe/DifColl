@@ -251,6 +251,7 @@ const MovieSearch = () => {
     // Function to fetch related movies based on genre
     const handleRelatedMovies = async (movie) => {
         try {
+            // Check if the related movies for this movie are already cached
             if (relatedMoviesCache[movie.id]) {
                 setRelatedMovies(relatedMoviesCache[movie.id]);
                 return;
@@ -258,15 +259,17 @@ const MovieSearch = () => {
 
             const genres = movie.genres.split(', ').map(g => g.trim());
 
+            // If no genres are found, clear the related movies
             if (genres.length === 0) {
                 setRelatedMovies([]);
                 return;
             }
 
-            // Fetch related movies based on the first genre
+            // Fetch most popular movies based on the first genre
             const genreQuery = encodeURIComponent(genres[0]);
-            const apiUrl = `https://localhost:7113/api/Movie/search/${genreQuery}?page=1&sortOrder=relevance&genre=${encodeURIComponent(genres[0])}`;
+            const apiUrl = `https://localhost:7113/api/Movie/search/${genreQuery}?page=1&sortOrder=popularity.desc&genre=${encodeURIComponent(genres[0])}`;
 
+            // Send the API request
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
@@ -275,20 +278,28 @@ const MovieSearch = () => {
                 },
             });
 
+            // Handle the response if it's successful
             if (response.ok) {
                 const data = await response.json();
-                const related = data.movies.filter(m => m.id !== movie.id).slice(0, 5);
-                setRelatedMovies(related);
-                setRelatedMoviesCache(prev => ({ ...prev, [movie.id]: related }));
+                const popularMovies = data.movies
+                    .filter(m => m.id !== movie.id) // Exclude the current movie
+                    .slice(0, 5); // Limit to the top 5 popular movies
+
+                setRelatedMovies(popularMovies);
+                setRelatedMoviesCache(prev => ({
+                    ...prev,
+                    [movie.id]: popularMovies,
+                }));
             } else {
                 setRelatedMovies([]);
-                console.error('Failed to fetch related movies');
+                console.error('Failed to fetch popular movies');
             }
         } catch (error) {
-            console.error("Error fetching related movies:", error);
+            console.error("Error fetching popular movies:", error);
             setRelatedMovies([]);
         }
     };
+
 
     // Function to view detailed information about a movie
     const handleViewDetails = (movie) => {

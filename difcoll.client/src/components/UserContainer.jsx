@@ -49,7 +49,7 @@ const UserContainer = () => {
             ) : (
                 <div className="login-section">
                     <h2>Welcome to DifCol</h2>
-                    <p>Please log in to access your profile</p>
+                    <p>Choose your preferred method to log in and get started!</p>
                     <div className="login-buttons">
                         <LoginButton
                             provider="google"
@@ -61,7 +61,7 @@ const UserContainer = () => {
                         />
                         <LoginButton
                             provider="twitter"
-                            logo="https://static.vecteezy.com/system/resources/previews/016/716/467/non_2x/twitter-icon-free-png.png"
+                            logo="https://static.vecteezy.com/system/resources/previews/031/737/227/non_2x/twitter-new-logo-twitter-icons-new-twitter-logo-x-2023-x-social-media-icon-free-png.png"
                         />
                     </div>
                 </div>

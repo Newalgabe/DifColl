@@ -100,6 +100,7 @@ body {
 }
 
 /* Movie Card */
+/* Movie Card */
 .movie-card {
     padding: 20px;
     background-color: var(--color-neutral-light);
@@ -109,7 +110,10 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    justify-content: space-between; /* Ensures buttons are at the bottom */
+    min-height: 380px; /* Fixed height to maintain consistency */
+    height: auto; /* Allow height to expand if necessary */
+    overflow: hidden; /* Prevent content from overflowing outside the card */
 }
 
     .movie-card:hover {
@@ -124,6 +128,7 @@ body {
     border-radius: 10px; /* Increased radius for smooth appearance */
     margin-bottom: 15px;
     transition: transform 0.3s ease, filter 0.3s ease;
+    object-fit: cover; /* Ensures the image covers the space appropriately */
 }
 
 .movie-card:hover .movie-image {
@@ -135,14 +140,26 @@ body {
 .movie-details {
     text-align: center;
     margin-top: 10px;
+    flex-grow: 1; /* Makes sure the movie details take available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Align name and other info together */
 }
 
-    .movie-details h3 {
+    /* Ensure the name and description align together */
+    .movie-details .movie-title,
+    .movie-details p {
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .movie-details .movie-title {
         font-family: var(--font-secondary);
         font-size: 1.6rem;
         color: var(--color-primary);
         margin-bottom: 8px;
         line-height: 1.4; /* Better readability */
+        overflow: hidden; /* Prevents overflow of long titles */
+        text-overflow: ellipsis; /* Adds ellipsis to overflowed text */
     }
 
     .movie-details p {
@@ -150,6 +167,9 @@ body {
         font-size: 1rem; /* Increased size for clarity */
         line-height: 1.5;
         margin: 5px 0; /* Consistent spacing */
+        overflow: hidden; /* Ensures no content is hidden */
+        text-overflow: ellipsis; /* Adds ellipsis to overflowed text */
+        white-space: nowrap; /* Prevents text from wrapping */
     }
 
 /* Actions */
@@ -157,8 +177,12 @@ body {
     display: flex;
     gap: 12px;
     margin-top: 20px;
+    justify-content: space-between; /* Spread out buttons */
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+    align-self: flex-end; /* Ensures buttons are aligned at the bottom */
 }
 
+    /* Action Button Styles */
     .actions button {
         padding: 12px 0;
         border: none;
@@ -200,7 +224,6 @@ body {
     background-color: #7F8C8D;
     transform: scale(1.03);
 }
-
 
 /* Pagination Controls */
 .pagination-controls {
@@ -290,34 +313,54 @@ body {
         transform: rotate(90deg); /* Adds dynamic rotation */
     }
 
-/* Related Movies */
 .related-movies-container {
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
 .related-movies-list {
-    display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    padding-bottom: 10px; /* Space for easier scroll */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    padding-bottom: 10px;
 }
 
 .related-movie-card {
-    width: 180px; /* Consistent sizing for better layout */
-    padding: 12px;
-    background-color: var(--color-neutral-light);
-    border: 1px solid var(--color-neutral-dark);
-    border-radius: 10px;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
+    background-color: transparent;
+    border: 2px solid rgba(0, 0, 0, 0.1); /* Light border */
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
 }
 
-    .related-movie-card:hover {
-        transform: translateY(-5px);
+    .related-movie-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: opacity 0.3s ease;
     }
 
+    .related-movie-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
 
-/* Media Queries for Larger Screens */
+    .related-movie-card .movie-title {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay */
+        padding: 5px;
+        border-radius: 5px;
+    }
 
 
 
