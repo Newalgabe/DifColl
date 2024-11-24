@@ -282,6 +282,7 @@ const FriendsList = () => {
             {showFriendCollection && (
                 <div className="modal-overlay">
                     <div className="modal-content">
+                        <button className="modal-close-button top" onClick={() => setShowFriendCollection(false)}>Close</button>
                         <h3>Friend&apos;s Collection</h3>
                         <ul className="collection-list">
                             {friendCollection.length > 0 ? (
@@ -299,7 +300,7 @@ const FriendsList = () => {
                                 <p>No items in this collection.</p>
                             )}
                         </ul>
-                        <button className="modal-close-button" onClick={() => setShowFriendCollection(false)}>Close</button>
+                        <button className="modal-close-button bottom" onClick={() => setShowFriendCollection(false)}>Close</button>
                     </div>
                 </div>
             )}
@@ -307,6 +308,7 @@ const FriendsList = () => {
             {/* User's Collection */}
             {showUserCollection && (
                 <div className="user-collection">
+                    <button className="modal-close-button top" onClick={() => setShowUserCollection(false)}>Close Collection</button>
                     <h3>Your Collection</h3>
                     <ul>
                         {userCollection.length > 0 ? (
@@ -322,9 +324,10 @@ const FriendsList = () => {
                             <p>No items in your collection.</p>
                         )}
                     </ul>
-                    <button onClick={() => setShowUserCollection(false)}>Close Collection</button>
+                    <button className="modal-close-button bottom" onClick={() => setShowUserCollection(false)}>Close Collection</button>
                 </div>
             )}
+
 
             {/* Display status of friend removal */}
             {removeFriendStatus && <p className="status-message">{removeFriendStatus}</p>}

@@ -563,6 +563,28 @@
     margin-right: 10px; /* Space between edit and logout buttons */
 }
 
-.logout-button {
-    /* No additional styles needed unless you want to add specific margin or padding */
+.return-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #f1f1f1;
+    color: #333;
+    padding: 12px 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
+
+    /* Hover effect */
+    .return-button:hover {
+        background-color: #ddd;
+        transform: scale(1.1);
+    }
+
+    .return-button:focus {
+        outline: none;
+    }

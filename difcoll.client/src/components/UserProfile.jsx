@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import PropTypes from 'prop-types';
 import './UserProfile.css';
-import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa';
+import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart, FaHome } from 'react-icons/fa';
 import FriendsList from './FriendsList';
 
 const UserProfile = ({ onLogout }) => {
@@ -20,6 +21,8 @@ const UserProfile = ({ onLogout }) => {
     const [socialMediaLinks, setSocialMediaLinks] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [contactInfo, setContactInfo] = useState("");
+
+    const navigate = useNavigate(); // Initialize navigate
 
     const availablePronouns = ['They/Them', 'She/Her', 'He/Him', 'Other'];
 
@@ -115,6 +118,13 @@ const UserProfile = ({ onLogout }) => {
 
     return (
         <div className="profile-container" data-aos="fade-up">
+            <button
+                onClick={() => navigate('/')}
+                className="return-button"
+                aria-label="Return to Main Menu"
+            >
+                <FaHome size={24} /> {/* FaHome icon */}
+            </button>
             <div className="background-overlay"></div> {/* Decorative background */}
             {isEditing ? (
                 <div className="form-container" data-aos="zoom-in">

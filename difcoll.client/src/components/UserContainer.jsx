@@ -48,7 +48,7 @@ const UserContainer = () => {
                 <UserProfile user={user} onLogout={handleLogout} />
             ) : (
                 <div className="login-section">
-                    <h2>Welcome to DifCol</h2>
+                    <h2>Welcome to DifColl</h2>
                     <p>Choose your preferred method to log in and get started!</p>
                     <div className="login-buttons">
                         <LoginButton
