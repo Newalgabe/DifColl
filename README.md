@@ -21,7 +21,7 @@
 
 - **Frontend**: React with pure JavaScript.
 - **Backend**: ASP.NET Core 8 with Entity Framework Core and ASP.NET Identity.
-- **Database**: MSSQL for storing users, collections, and items.
+- **Database**: Microsoft Azure for storing users, collections, and items.
 - **API Integrations**: Google Books, TMDb, and RAWG for books, movies, and games.
 - **Email**: Email confirmation via APIs for Google, Microsoft, and Twitter.
 - **Styling**: Modern design with CSS and animations.
@@ -72,8 +72,6 @@ To run the app locally, follow these steps:
 - **Backend** — `DifColl.Api/`
     - `Controllers/` — Controllers to handle requests.
     - `Models/` — Database models.
-- **Database** — `DifColl.Data/`
-    - `Migrations/` — MSSQL database migrations.
 
 ---
 
@@ -120,7 +118,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - **Frontend**: React с использованием чистого JavaScript.
 - **Backend**: ASP.NET Core 8 с Entity Framework Core и ASP.NET Identity.
-- **База данных**: MSSQL для хранения пользователей, коллекций и элементов.
+- **База данных**: Microsoft Azure для хранения пользователей, коллекций и элементов.
 - **API-интеграции**: Google Books, TMDb и RAWG для книг, фильмов и игр.
 - **Почта**: API для отправки писем с подтверждениями через Google, Microsoft и Twitter.
 - **Стилизация**: Современный дизайн с использованием CSS и анимаций.
@@ -171,8 +169,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - **Backend** — `DifColl.Api/`
     - `Controllers/` — Контроллеры для обработки запросов.
     - `Models/` — Модели базы данных.
-- **Database** — `DifColl.Data/`
-    - `Migrations/` — Миграции для базы данных MSSQL.
 
 ---
 
