@@ -69,7 +69,7 @@ To run the app locally, follow these steps:
 - **Frontend** — `src/`
     - `components/` — User interface components.
     - `pages/` — Pages of the app.
-- **Backend** — `DifColl.Api/`
+- **Backend** — `DifColl.Server/`
     - `Controllers/` — Controllers to handle requests.
     - `Models/` — Database models.
 
@@ -166,7 +166,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - **Frontend** — `src/`
     - `components/` — Компоненты интерфейса.
     - `pages/` — Страницы приложения.
-- **Backend** — `DifColl.Api/`
+- **Backend** — `DifColl.Server/`
     - `Controllers/` — Контроллеры для обработки запросов.
     - `Models/` — Модели базы данных.
 
