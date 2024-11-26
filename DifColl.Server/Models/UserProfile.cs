@@ -5,7 +5,7 @@ namespace DifColl.Server.Models
     public class UserProfile
     {
         [Key]
-        public string UserId { get; set; } // Maps to Google or auth system user ID
+        public string UserId { get; set; } 
 
         [Required]
         public string Name { get; set; }

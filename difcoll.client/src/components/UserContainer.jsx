@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import UserProfile from './UserProfile';
+import LoginButton from './LoginButton';
+import './UserContainer.css';
 
 const UserContainer = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch user information from the backend
         const fetchUserInfo = async () => {
             try {
                 const response = await fetch('https://localhost:7113/api/account/userinfo', {
@@ -29,10 +30,6 @@ const UserContainer = () => {
         fetchUserInfo();
     }, []);
 
-    const handleLogin = () => {
-        window.location.href = 'https://localhost:7113/api/account/login';
-    };
-
     const handleLogout = async () => {
         await fetch('https://localhost:7113/api/account/logout', {
             method: 'POST',
@@ -42,17 +39,31 @@ const UserContainer = () => {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="loading-container">Loading...</div>;
     }
 
     return (
-        <div>
+        <div className="user-container">
             {user ? (
                 <UserProfile user={user} onLogout={handleLogout} />
             ) : (
-                <div>
-                    <h2>You are not logged in</h2>
-                    <button onClick={handleLogin}>Login with Google</button>
+                <div className="login-section">
+                    <h2>Welcome to DifColl</h2>
+                    <p>Choose your preferred method to log in and get started!</p>
+                    <div className="login-buttons">
+                        <LoginButton
+                            provider="google"
+                            logo="https://www.cdnlogo.com/logos/g/35/google-icon.svg"
+                        />
+                        <LoginButton
+                            provider="microsoft"
+                            logo="https://cdn1.iconfinder.com/data/icons/flat-and-simple-part-1/128/microsoft-512.png"
+                        />
+                        <LoginButton
+                            provider="twitter"
+                            logo="https://static.vecteezy.com/system/resources/previews/031/737/227/non_2x/twitter-new-logo-twitter-icons-new-twitter-logo-x-2023-x-social-media-icon-free-png.png"
+                        />
+                    </div>
                 </div>
             )}
         </div>

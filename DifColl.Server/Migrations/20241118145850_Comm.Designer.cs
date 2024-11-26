@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DifColl.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241013144909_AddMoviesAndGames")]
-    partial class AddMoviesAndGames
+    [Migration("20241118145850_Comm")]
+    partial class Comm
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,45 @@ namespace DifColl.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ItemId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("DifColl.Server.Models.Book", b =>
                 {
                     b.Property<string>("Id")
@@ -33,6 +72,21 @@ namespace DifColl.Server.Migrations
                     b.Property<string>("Authors")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Genres")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PublishedDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Rating")
+                        .HasColumnType("real");
 
                     b.Property<string>("Thumbnail")
                         .IsRequired()
@@ -51,6 +105,30 @@ namespace DifColl.Server.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("DifColl.Server.Models.Friendship", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FriendId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Friendships");
+                });
+
             modelBuilder.Entity("DifColl.Server.Models.Game", b =>
                 {
                     b.Property<string>("Id")
@@ -64,6 +142,10 @@ namespace DifColl.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Developer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Genres")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -71,6 +153,13 @@ namespace DifColl.Server.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Publisher")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
 
                     b.Property<string>("Released")
                         .IsRequired()
@@ -105,6 +194,9 @@ namespace DifColl.Server.Migrations
                     b.Property<string>("PosterPath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Rating")
+                        .HasColumnType("real");
 
                     b.Property<string>("ReleaseDate")
                         .IsRequired()
@@ -166,6 +258,23 @@ namespace DifColl.Server.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UserProfiles");
+                });
+
+            modelBuilder.Entity("Comment", b =>
+                {
+                    b.HasOne("Comment", "ParentComment")
+                        .WithMany()
+                        .HasForeignKey("ParentCommentId");
+
+                    b.HasOne("DifColl.Server.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("UserProfile");
                 });
 #pragma warning restore 612, 618
         }

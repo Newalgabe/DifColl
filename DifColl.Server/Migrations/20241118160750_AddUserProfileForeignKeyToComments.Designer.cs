@@ -4,6 +4,7 @@ using DifColl.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DifColl.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241118160750_AddUserProfileForeignKeyToComments")]
+    partial class AddUserProfileForeignKeyToComments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,12 +62,7 @@ namespace DifColl.Server.Migrations
             modelBuilder.Entity("DifColl.Server.Models.Book", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(1);
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Authors")
                         .IsRequired()
@@ -93,7 +91,11 @@ namespace DifColl.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Books");
                 });
@@ -125,12 +127,7 @@ namespace DifColl.Server.Migrations
             modelBuilder.Entity("DifColl.Server.Models.Game", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(1);
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("BackgroundImage")
                         .IsRequired()
@@ -163,7 +160,11 @@ namespace DifColl.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Games");
                 });
@@ -171,12 +172,7 @@ namespace DifColl.Server.Migrations
             modelBuilder.Entity("DifColl.Server.Models.Movie", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(1);
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Directors")
                         .IsRequired()
@@ -205,7 +201,11 @@ namespace DifColl.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id", "UserId");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Movies");
                 });

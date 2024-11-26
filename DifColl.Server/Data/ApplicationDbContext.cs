@@ -12,11 +12,25 @@ namespace DifColl.Server.Data
 
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Book> Books { get; set; }
-
-        // New DbSets
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Game> Games { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
 
-        // Optional: Configure composite keys, relationships, etc.
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Composite Key Configuration for Books
+            modelBuilder.Entity<Book>()
+                .HasKey(b => new { b.Id, b.UserId });
+
+            // Composite Key Configuration for Movies
+            modelBuilder.Entity<Movie>()
+                .HasKey(m => new { m.Id, m.UserId });
+
+            // Composite Key Configuration for Games
+            modelBuilder.Entity<Game>()
+                .HasKey(g => new { g.Id, g.UserId });
+        }
     }
 }

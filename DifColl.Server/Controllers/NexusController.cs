@@ -72,4 +72,27 @@ public class NexusController : ControllerBase
         await _nexusService.AddGameToNexusAsync(userId, game);
         return Ok();
     }
+
+    [HttpDelete("remove/book/{userId}/{bookId}")]
+    public async Task<IActionResult> RemoveBookFromNexus(string userId, string bookId)
+    {
+        await _nexusService.RemoveBookFromNexusAsync(userId, bookId);
+        return Ok();
+    }
+
+    // Remove a movie from the user's nexus collection
+    [HttpDelete("remove/movie/{userId}/{movieId}")]
+    public async Task<IActionResult> RemoveMovieFromNexus(string userId, string movieId)
+    {
+        await _nexusService.RemoveMovieFromNexusAsync(userId, movieId);
+        return Ok();
+    }
+
+    // Remove a game from the user's nexus collection
+    [HttpDelete("remove/game/{userId}/{gameId}")]
+    public async Task<IActionResult> RemoveGameFromNexus(string userId, string gameId)
+    {
+        await _nexusService.RemoveGameFromNexusAsync(userId, gameId);
+        return Ok();
+    }
 }

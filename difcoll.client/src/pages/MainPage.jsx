@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import './MainPage.css'; // Add styles for the main page
-import { FaBook, FaUsers, FaStar, FaChartBar, FaUsersCog, FaFilm, FaGamepad } from 'react-icons/fa'; // Added icons for movies and games
+import './MainPage.css';
+import { FaBook, FaUsers, FaStar, FaChartBar, FaUsersCog, FaFilm, FaGamepad, FaSearch } from 'react-icons/fa';
 
 const MainPage = () => {
     const testimonials = [
@@ -38,37 +38,52 @@ const MainPage = () => {
 
     return (
         <div className="main-page">
-            {/* Hero Section */}
             <section className="hero-section" data-aos="fade-up">
                 <div className="hero-content">
                     <div className="hero-text">
                         <h1>Welcome to DifColl</h1>
                         <p>Manage your books, movies, and games all in one place. Share your collections with friends and discover new recommendations!</p>
                         <div className="auth-section" data-aos="fade-up" data-aos-delay="200">
-                            <p>Get started by signing in with your Google account:</p>
+                            <p>Enter your profile to manage your collections:</p>
                             <a
                                 href="/login" // Using href instead of Link to maintain functionality with external authentication
                                 className="btn btn-google"
                             >
-                                <img
-                                    src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
-                                    alt="Google Logo"
-                                    className="google-logo"
-                                />
-                                Sign in with Google
+                                <FaUsersCog /> Enter Your Profile
                             </a>
                         </div>
                     </div>
                     <div className="hero-image" data-aos="zoom-in" data-aos-delay="400">
                         <img
-                            src="https://www.apple.com/newsroom/images/tile-images/Apple_unveils_best_of_2017.jpg.og.jpg?202408200426" // Replace with a valid URL
+                            src="https://www.apple.com/newsroom/images/tile-images/Apple_unveils_best_of_2017.jpg.og.jpg?202408200426"
                             alt="Illustration of managing collections"
                         />
                     </div>
                 </div>
             </section>
 
-            {/* Statistics Section */}
+
+            <div className="main-content">
+                <div className="search-section" data-aos="fade-up">
+                    <h2><FaSearch className="section-icon" /> Search the Collection</h2>
+                    <div className="search-buttons">
+                        <Link to="/search-books" className="btn btn-primary"><FaBook  />Search Books</Link>
+                        <Link to="/search-movies" className="btn btn-primary"><FaFilm /> Search Movies</Link>
+                        <Link to="/search-games" className="btn btn-primary"><FaGamepad /> Search Games</Link>
+                    </div>
+                </div>
+            </div>
+
+            <section className="overlay-section" data-aos="fade-up">
+                <div className="overlay-content">
+                    <h2>Join the DifColl Community</h2>
+                    <p>Connect, share, and grow with like-minded enthusiasts. Your collections are just the beginning!</p>
+                    <Link to="/my-nexus" className="btn btn-primary">
+                        Manage Your Nexus <FaUsersCog />
+                    </Link>
+                </div>
+            </section>
+
             <section className="statistics-section" data-aos="fade-up">
                 <div className="statistics-container">
                     {statistics.map((stat, index) => (
@@ -83,7 +98,6 @@ const MainPage = () => {
                 </div>
             </section>
 
-            {/* Features Section */}
             <section className="features-section" data-aos="fade-up">
                 <h2>Why Choose DifColl?</h2>
                 <div className="features-container">
@@ -105,7 +119,6 @@ const MainPage = () => {
                 </div>
             </section>
 
-            {/* Testimonials Section */}
             <section className="testimonials-section" data-aos="fade-up">
                 <h2>What Our Users Say</h2>
                 <div className="testimonials-container">
@@ -118,31 +131,6 @@ const MainPage = () => {
                 </div>
             </section>
 
-            {/* Main Content */}
-            <div className="main-content">
-                {/* Search Section */}
-                <div className="search-section" data-aos="fade-up">
-                    <h2><FaBook className="section-icon" /> Search the Collection</h2>
-                    <div className="search-buttons">
-                        <Link to="/search-books" className="btn btn-primary">Search Books</Link>
-                        <Link to="/search-movies" className="btn btn-primary"><FaFilm /> Search Movies</Link>
-                        <Link to="/search-games" className="btn btn-primary"><FaGamepad /> Search Games</Link>
-                    </div>
-                </div>
-            </div>
-
-            {/* Overlay Section */}
-            <section className="overlay-section" data-aos="fade-up">
-                <div className="overlay-content">
-                    <h2>Join the DifColl Community</h2>
-                    <p>Connect, share, and grow with like-minded enthusiasts. Your collections are just the beginning!</p>
-                    <Link to="/my-nexus" className="btn btn-primary">
-                        Manage Your Nexus <FaUsersCog />
-                    </Link>
-                </div>
-            </section>
-
-            {/* Footer */}
             <footer className="main-footer" data-aos="fade-up">
                 <p>Connect with your collections and friends in one place. Start exploring now!</p>
             </footer>

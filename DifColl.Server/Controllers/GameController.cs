@@ -37,7 +37,6 @@ namespace DifColl.Server.Controllers
             _logger = logger;
         }
 
-        // Method to initialize and fetch genre mapping
         private async Task InitializeGenreMappingAsync()
         {
             if (_genreMapping == null)
@@ -47,7 +46,6 @@ namespace DifColl.Server.Controllers
                     if (_genreMapping != null)
                         return;
 
-                    // Initialize to prevent multiple fetches
                     _genreMapping = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 }
 
@@ -188,7 +186,6 @@ namespace DifColl.Server.Controllers
                 var detailsJson = await detailsResponse.Content.ReadAsStringAsync();
                 var detailsData = JObject.Parse(detailsJson);
 
-                // Extract description
                 dto.Description = detailsData["description_raw"]?.ToString() ?? "No Description";
 
                 // Extract genres
@@ -198,51 +195,21 @@ namespace DifColl.Server.Controllers
                     genres.Add(g["name"]?.ToString());
                 }
                 dto.Genres = string.Join(", ", genres);
+
+                // Extract developer and publisher
+                dto.Developer = detailsData["developers"]?.FirstOrDefault()?["name"]?.ToString() ?? "Unknown";
+                dto.Publisher = detailsData["publishers"]?.FirstOrDefault()?["name"]?.ToString() ?? "Unknown";
             }
             else
             {
                 dto.Description = "N/A";
                 dto.Genres = "N/A";
+                dto.Developer = "N/A";
+                dto.Publisher = "N/A";
                 _logger.LogWarning($"Failed to fetch details for game ID {dto.Id}.");
             }
 
             return dto;
         }
-
-        [HttpPost("add")]
-        public async Task<IActionResult> AddGameToCollection([FromBody] GameDto gameDto)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (gameDto == null || string.IsNullOrEmpty(userId))
-                return BadRequest(new { message = "Invalid data." });
-
-            var existingGame = await _context.Games
-                .FirstOrDefaultAsync(m => m.Id == gameDto.Id && m.UserId == userId);
-
-            if (existingGame != null)
-                return BadRequest(new { message = "Game already exists in your collection." });
-
-            var game = new Game
-            {
-                Id = gameDto.Id,
-                Name = gameDto.Name,
-                Genres = gameDto.Genres,
-                Released = gameDto.Released,
-                BackgroundImage = gameDto.BackgroundImage,
-                Description = gameDto.Description,
-                Rating = gameDto.Rating,
-                UserId = userId
-            };
-
-            _context.Games.Add(game);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Game '{game.Name}' added to user '{userId}' collection.");
-
-            return Ok(new { message = "Game added to your collection." });
-        }
-
-        // Optional: Implement endpoints to retrieve, update, or delete games from the collection
     }
 }

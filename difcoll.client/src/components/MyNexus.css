@@ -1,51 +1,397 @@
+/* Define CSS Variables for colors, spacing, and font sizes */
+:root {
+    --primary-color: #007bb5; /* Muted blue for light theme contrast */
+    --primary-dark: #005a8e;
+    --accent-color: #ffd54f; /* Bright gold accent */
+    --text-color: #333;
+    --background-color: #f5f5f5;
+    --card-background: #ffffff;
+    --border-radius: 16px;
+    --transition-speed: 0.3s;
+}
+
+/* General Layout */
 .nexus-collection {
-    padding: 20px;
+    padding: 40px;
     max-width: 1200px;
     margin: 0 auto;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    font-family: 'Roboto', sans-serif;
+    border-radius: 12px; /* Added border radius for the collection container */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
+/* Grid Layout */
 .nexus-items-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
 }
 
+/* Card Style */
 .nexus-item {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
     display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center align items */
-    height: 100%; /* Ensure equal height for items */
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
     .nexus-item:hover {
-        transform: scale(1.05);
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
     }
 
+/* Thumbnail Style */
 .item-thumbnail {
     width: 100%;
-    height: 150px; /* Fixed height for uniformity */
-    object-fit: cover; /* Cover to maintain aspect ratio */
-    border-radius: 4px;
-    margin-bottom: 10px;
+    height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease; /* Added transition for box shadow */
 }
 
+    .item-thumbnail:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    }
+
+/* Item Details */
 .item-details {
-    text-align: center;
-    flex-grow: 1; /* Allow details to grow and fill space */
+    text-align: left; /* Align text to the left for better readability in list view */
+    flex-grow: 1; /* Allow the details to take available space */
 }
 
     .item-details h3 {
-        font-size: 1.2rem;
-        margin-bottom: 10px;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: var(--text-color);
+        transition: color var(--transition-speed) ease; /* Transition for text color */
     }
 
+        .item-details h3:hover {
+            color: var(--highlight-color); /* Change color on hover */
+        }
+
     .item-details p {
+        font-size: 1rem;
         margin: 5px 0;
-        font-size: 0.9rem;
-        color: #555;
+        color: #666;
     }
+
+/* Button Style for Actions (e.g., Add to Cart) */
+.action-button {
+    padding: 10px 20px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+    .action-button:hover {
+        background-color: var(--highlight-color);
+        transform: translateY(-2px); /* Slight lift effect */
+    }
+
+
+/* Buttons */
+.read-more-btn,
+.remove-item-btn {
+    padding: 12px 24px; /* Slightly increased padding for a more substantial button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease; /* Added transform transition */
+    margin-top: 10px;
+}
+
+.read-more-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+    .read-more-btn:hover {
+        background-color: var(--primary-dark);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px); /* Lift effect on hover */
+    }
+
+.remove-item-btn {
+    background-color: #f44336;
+    color: #333;
+}
+
+    .remove-item-btn:hover {
+        background-color: #d32f2f;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px); /* Lift effect on hover */
+    }
+
+.favorite-item-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--accent-color);
+    font-size: 1.8rem;
+    padding: 0;
+    transition: color var(--transition-speed) ease, transform var(--transition-speed) ease; /* Added transform transition */
+}
+
+    .favorite-item-btn:hover {
+        color: #ffca28;
+        transform: scale(1.1); /* Slightly enlarge on hover */
+    }
+
+/* Filter and Search Fields */
+#search,
+#sort-type,
+#sort-order {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    transition: box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease; /* Added border color transition */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+    outline: none;
+}
+
+    #search:focus,
+    #sort-type:focus,
+    #sort-order:focus {
+        box-shadow: 0 6px 14px rgba(0, 123, 181, 0.2);
+        border-color: var(--primary-color); /* Change border color on focus for better visibility */
+    }
+
+#search {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+
+/* Modern Checkbox */
+.show-favorites-only-checkbox {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--accent-color);
+    cursor: pointer;
+}
+
+    .show-favorites-only-checkbox input[type="checkbox"] {
+        appearance: none;
+        width: 24px; /* Increased width for better usability */
+        height: 24px; /* Increased height for better usability */
+        border: 2px solid var(--accent-color);
+        border-radius: 5px;
+        margin-right: 10px;
+        position: relative;
+        transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; /* Added border color transition */
+    }
+
+        .show-favorites-only-checkbox input[type="checkbox"]:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2); /* Added subtle glow effect on check */
+        }
+
+            .show-favorites-only-checkbox input[type="checkbox"]:checked::after {
+                content: "\2605"; /* Unicode for star */
+                position: absolute;
+                top: -4px; /* Adjusted for better centering */
+                left: 3px; /* Adjusted for better centering */
+                color: #fff; /* Changed to white for better contrast */
+                font-size: 16px; /* Increased size for better visibility */
+            }
+
+/* Modal Style */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7); /* Darkened background for better focus */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--card-background);
+    padding: 30px;
+    max-width: 800px; /* Increased max width for larger screens */
+    width: 90%;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25); /* Enhanced shadow for depth */
+    position: relative;
+    animation: fadeIn var(--transition-speed) ease;
+    color: var(--text-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    font-size: 1.4rem; /* Increased header size for prominence */
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent; /* Made background transparent for cleaner look */
+    color: var(--text-color);
+    border: none;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: transform var(--transition-speed) ease; /* Added transition for hover effect */
+}
+
+    .modal-close-btn:hover {
+        transform: scale(1.1); /* Slightly enlarge on hover for feedback */
+    }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .nexus-collection {
+        padding: 20px;
+    }
+
+    .nexus-item {
+        padding: 15px;
+    }
+
+    #search {
+        margin-bottom: 15px;
+    }
+}
+
+/* View Toggle */
+.view-toggle {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+    .view-toggle button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 18px; /* Adjusted padding for balance */
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color var(--transition-speed);
+    }
+
+        .view-toggle button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px); /* Lift effect on hover */
+        }
+
+/* List View Styles */
+.nexus-items-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nexus-item-list {
+    padding: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    transition: background-color var(--transition-speed); /* Added transition for hover */
+}
+
+    /* Adjust thumbnail style in list view */
+    .nexus-item-list .item-thumbnail {
+        width: 80px; /* Adjust width for better visibility */
+        height: 80px; /* Set height to match width for a square appearance */
+        border-radius: 12px; /* Keep the border radius for rounded corners */
+        object-fit: cover; /* Ensure the image covers the thumbnail area without distortion */
+        margin-right: 15px; /* Add space between the thumbnail and item details */
+    }
+
+    .nexus-item-list:hover {
+        background-color: rgba(0, 0, 0, 0.05); /* Subtle background change on hover */
+    }
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .nexus-collection {
+        padding: 30px; /* Further increased padding */
+    }
+
+    .nexus-item {
+        padding: 20px; /* Further increased item padding */
+    }
+
+    #search {
+        margin-bottom: 25px; /* Further increased bottom margin */
+    }
+}
+
+/* Larger Screens Adjustments */
+@media (min-width: 1201px) {
+    .nexus-items-grid {
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* Further increased min size of columns */
+    }
+
+    .nexus-collection {
+        padding: 80px; /* More padding for larger screens */
+    }
+}
+
+@media (min-width: 1440px) {
+    .nexus-items-grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Further increased min size of columns */
+    }
+
+    .nexus-collection {
+        padding: 100px; /* More padding for extra-large screens */
+    }
+
+    .nexus-item {
+        padding: 40px; /* Increased padding for items */
+    }
+
+    .item-details h3 {
+        font-size: 2rem; /* Further increased font size for item titles */
+    }
+
+    #search,
+    #sort-type,
+    #sort-order {
+        font-size: 1.4rem; /* Larger font size for inputs */
+    }
+}

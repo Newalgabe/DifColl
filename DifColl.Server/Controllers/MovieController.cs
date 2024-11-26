@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Newtonsoft.Json;
 
 namespace DifColl.Server.Controllers
 {
@@ -253,46 +254,5 @@ namespace DifColl.Server.Controllers
 
             return dto;
         }
-
-        /// <summary>
-        /// Adds a movie to the user's collection.
-        /// </summary>
-        /// <param name="movieDto">Movie DTO.</param>
-        /// <returns>Result message.</returns>
-        [HttpPost("add")]
-        public async Task<IActionResult> AddMovieToCollection([FromBody] MovieDto movieDto)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (movieDto == null || string.IsNullOrEmpty(userId))
-                return BadRequest(new { message = "Invalid data." });
-
-            var existingMovie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.Id == movieDto.Id && m.UserId == userId);
-
-            if (existingMovie != null)
-                return BadRequest(new { message = "Movie already exists in your collection." });
-
-            var movie = new Movie
-            {
-                Id = movieDto.Id,
-                Title = movieDto.Title,
-                Directors = movieDto.Directors,
-                Genres = movieDto.Genres,
-                ReleaseDate = movieDto.ReleaseDate,
-                PosterPath = movieDto.PosterPath,
-                Overview = movieDto.Overview,
-                Rating = movieDto.Rating, // New
-                UserId = userId
-            };
-
-
-            _context.Movies.Add(movie);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Movie added to your collection." });
-        }
-
-        // Optional: Implement endpoints to retrieve, update, or delete movies from the collection
     }
 }

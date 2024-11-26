@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import './MovieSearch.css';
 
+
 const MovieSearch = () => {
     const [query, setQuery] = useState('');
     const [movies, setMovies] = useState([]);
@@ -169,57 +170,72 @@ const MovieSearch = () => {
     // Add movie to collection function
     const handleAddToCollection = async (movie) => {
         try {
-            const userId = await fetchUserId();  // Fetch the user ID
+            const userId = await fetchUserId();
 
             if (!userId) {
                 showToast('Unable to fetch user information');
                 return;
             }
 
-            console.log('Adding movie to collection for userId:', userId);
+            console.log('Movie data received:', movie);
 
-            // Ensure required fields are included with fallbacks
-            const directors = movie.credits?.crew
-                ?.filter(member => member.job === "Director")
-                ?.map(director => director.name)
-                .join(', ') || 'Unknown'; // Default to 'Unknown' if no directors are found
 
-            const genres = Array.isArray(movie.genres)
-                ? movie.genres.map(genre => genre.name).join(', ')
-                : 'Unknown'; // Handle case where genres might not be an array
+            const directors = typeof movie.directors === 'string' && movie.directors.trim() !== ''
+                ? movie.directors.split(',').map(director => director.trim()).join(', ')
+                : 'Unknown';
 
-            const posterPath = movie.poster_path
-                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                : ''; // Default to an empty string if no poster path
+            console.log('Directors:', directors);
 
-            const releaseDate = movie.release_date || "Unknown"; // Default to "Unknown" if release date is missing
-            const overview = movie.overview || "No description available"; // Default description
+            const genres = typeof movie.genres === 'string' && movie.genres.trim() !== ''
+                ? movie.genres.split(',').map(genre => genre.trim()).join(', ')
+                : 'Unknown';
 
-            // Send the request to add the movie
+            console.log('Genres:', genres);
+
+            const releaseDate = typeof movie.releaseDate === 'string' && movie.releaseDate.trim() !== ''
+                ? movie.releaseDate
+                : 'Unknown';
+
+            console.log('Release Date:', releaseDate);
+
+            const posterPath = movie.posterPath
+                ? `https://image.tmdb.org/t/p/w780${movie.posterPath}`
+                : '';
+            console.log('Poster Path:', posterPath);
+
+            const overview = movie.overview || 'No description available';
+
+            // Ensure rating is processed as a float
+            const rating = typeof movie.rating === 'number'
+                ? parseFloat(movie.rating.toFixed(1))
+                : 0;
+
+            const movieDto = {
+                id: movie.id,
+                title: movie.title,
+                directors,
+                genres,
+                releaseDate,
+                posterPath,
+                overview,
+                rating,
+            };
+
+            console.log('Final movieDto to send:', movieDto);
+
             const response = await fetch(`https://localhost:7113/api/Nexus/add/movie/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    id: movie.id,
-                    title: movie.title,
-                    directors,           // Corresponds to Directors
-                    genres,              // Corresponds to Genres
-                    releaseDate,         // Corresponds to ReleaseDate
-                    posterPath,          // Corresponds to PosterPath
-                    overview,            // Corresponds to Overview
-                    rating: movie.vote_average || 0,  // Corresponds to Rating
-                }),
+                body: JSON.stringify(movieDto),
             });
 
             if (response.ok) {
-                const result = await response.json();
-                console.log('Movie added to collection:', result);
-                showToast(result.message || 'Movie added to collection!');
+                console.log('Movie added to collection!');
+                showToast('Movie added to collection!');
             } else {
-                const errorData = await response.json().catch(() => ({})); // Handle empty or non-JSON response
-                console.error('Failed to add movie:', errorData);
+                console.error('Failed to add movie:', response.status);
                 showToast('Failed to add movie to collection');
             }
         } catch (error) {
@@ -235,6 +251,7 @@ const MovieSearch = () => {
     // Function to fetch related movies based on genre
     const handleRelatedMovies = async (movie) => {
         try {
+            // Check if the related movies for this movie are already cached
             if (relatedMoviesCache[movie.id]) {
                 setRelatedMovies(relatedMoviesCache[movie.id]);
                 return;
@@ -242,15 +259,17 @@ const MovieSearch = () => {
 
             const genres = movie.genres.split(', ').map(g => g.trim());
 
+            // If no genres are found, clear the related movies
             if (genres.length === 0) {
                 setRelatedMovies([]);
                 return;
             }
 
-            // Fetch related movies based on the first genre
+            // Fetch most popular movies based on the first genre
             const genreQuery = encodeURIComponent(genres[0]);
-            const apiUrl = `https://localhost:7113/api/Movie/search/${genreQuery}?page=1&sortOrder=relevance&genre=${encodeURIComponent(genres[0])}`;
+            const apiUrl = `https://localhost:7113/api/Movie/search/${genreQuery}?page=1&sortOrder=popularity.desc&genre=${encodeURIComponent(genres[0])}`;
 
+            // Send the API request
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
@@ -259,20 +278,28 @@ const MovieSearch = () => {
                 },
             });
 
+            // Handle the response if it's successful
             if (response.ok) {
                 const data = await response.json();
-                const related = data.movies.filter(m => m.id !== movie.id).slice(0, 5);
-                setRelatedMovies(related);
-                setRelatedMoviesCache(prev => ({ ...prev, [movie.id]: related }));
+                const popularMovies = data.movies
+                    .filter(m => m.id !== movie.id) // Exclude the current movie
+                    .slice(0, 5); // Limit to the top 5 popular movies
+
+                setRelatedMovies(popularMovies);
+                setRelatedMoviesCache(prev => ({
+                    ...prev,
+                    [movie.id]: popularMovies,
+                }));
             } else {
                 setRelatedMovies([]);
-                console.error('Failed to fetch related movies');
+                console.error('Failed to fetch popular movies');
             }
         } catch (error) {
-            console.error("Error fetching related movies:", error);
+            console.error("Error fetching popular movies:", error);
             setRelatedMovies([]);
         }
     };
+
 
     // Function to view detailed information about a movie
     const handleViewDetails = (movie) => {

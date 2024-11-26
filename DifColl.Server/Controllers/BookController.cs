@@ -71,39 +71,5 @@ namespace DifColl.Server.Controllers
 
             return BadRequest("Failed to fetch data from Google Books.");
         }
-
-
-        [HttpPost("add")]
-        public async Task<IActionResult> AddBookToCollection([FromBody] BookDto bookDto, [FromQuery] string userId)
-        {
-            if (bookDto == null || string.IsNullOrEmpty(userId))
-                return BadRequest("Invalid data.");
-
-            // Check if the book already exists in the user's collection
-            var existingBook = await _context.Books.FindAsync(bookDto.Id);
-            if (existingBook != null && existingBook.UserId == userId)
-                return BadRequest("Book already exists in your collection.");
-
-            var book = new Book
-            {
-                Id = bookDto.Id,
-                Title = bookDto.Title,
-                Authors = string.Join(", ", bookDto.Authors),
-                Thumbnail = bookDto.Thumbnail,
-                PublishedDate = bookDto.PublishedDate, // New
-                Description = bookDto.Description, // New
-                Genres = string.Join(", ", bookDto.Genres), // New
-                Rating = bookDto.Rating, // New
-                UserId = userId
-            };
-
-
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
-
-            return Ok("Book added to your collection.");
-        }
-
-        // Optional: Implement endpoints to retrieve, update, or delete books from the collection
     }
 }

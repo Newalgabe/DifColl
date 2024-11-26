@@ -65,6 +65,7 @@ namespace DifColl.Server.Repositories
                 .ToListAsync();
         }
 
+
         // Retrieve all games for a specific user
         public async Task<List<GameDto>> GetGamesAsync(string userId)
         {
@@ -78,14 +79,26 @@ namespace DifColl.Server.Repositories
                     BackgroundImage = g.BackgroundImage,
                     Description = g.Description,
                     Genres = g.Genres,
-                    Rating = (float)g.Rating
+                    Rating = (float)g.Rating,
+                    Developer = g.Developer, // Add Developer field
+                    Publisher = g.Publisher  // Add Publisher field
                 })
                 .ToListAsync();
         }
 
+
         // Add a book to the user's collection
         public async Task AddBookAsync(string userId, BookDto book)
         {
+            // Check if the book already exists in the user's collection
+            var existingBook = await _context.Books
+                .FirstOrDefaultAsync(b => b.Id == book.Id && b.UserId == userId);
+
+            if (existingBook != null)
+            {
+                throw new InvalidOperationException("This book is already in your collection.");
+            }
+
             var newBook = new Book
             {
                 Id = book.Id,
@@ -103,9 +116,17 @@ namespace DifColl.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        // Add a movie to the user's collection
         public async Task AddMovieAsync(string userId, MovieDto movie)
         {
+            // Check if the movie already exists in the user's collection
+            var existingMovie = await _context.Movies
+                .FirstOrDefaultAsync(m => m.Id == movie.Id && m.UserId == userId);
+
+            if (existingMovie != null)
+            {
+                throw new InvalidOperationException("This movie is already in your collection.");
+            }
+
             var newMovie = new Movie
             {
                 Id = movie.Id,
@@ -123,9 +144,17 @@ namespace DifColl.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        // Add a game to the user's collection
         public async Task AddGameAsync(string userId, GameDto game)
         {
+            // Check if the game already exists in the user's collection
+            var existingGame = await _context.Games
+                .FirstOrDefaultAsync(g => g.Id == game.Id && g.UserId == userId);
+
+            if (existingGame != null)
+            {
+                throw new InvalidOperationException("This game is already in your collection.");
+            }
+
             var newGame = new Game
             {
                 Id = game.Id,
@@ -135,12 +164,15 @@ namespace DifColl.Server.Repositories
                 Description = game.Description,
                 Genres = game.Genres,
                 Rating = game.Rating,
-                UserId = userId // Associate the game with the user
+                UserId = userId,
+                Developer = game.Developer,
+                Publisher = game.Publisher
             };
 
             _context.Games.Add(newGame);
             await _context.SaveChangesAsync();
         }
+
 
         // Remove a book from the user's collection
         public async Task RemoveBookAsync(string userId, string bookId)

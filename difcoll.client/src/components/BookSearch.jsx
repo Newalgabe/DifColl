@@ -203,9 +203,6 @@ const BookSearch = () => {
     };
 
 
-
-
-
     const handleRelatedBooks = async (book) => {
         try {
             if (relatedBooksCache[book.id]) {

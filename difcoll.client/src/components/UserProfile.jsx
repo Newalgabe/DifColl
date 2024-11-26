@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import PropTypes from 'prop-types';
-import './UserProfile.css';  // Import the external stylesheet
-import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart } from 'react-icons/fa'; // Importing icons for better visuals
+import './UserProfile.css';
+import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart, FaHome } from 'react-icons/fa';
+import FriendsList from './FriendsList';
 
 const UserProfile = ({ onLogout }) => {
+    const [userId, setUserId] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [uploadStatus, setUploadStatus] = useState("");
@@ -19,7 +22,7 @@ const UserProfile = ({ onLogout }) => {
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [contactInfo, setContactInfo] = useState("");
 
-    // **New State for User ID**
+    const navigate = useNavigate(); // Initialize navigate
 
     const availablePronouns = ['They/Them', 'She/Her', 'He/Him', 'Other'];
 
@@ -33,12 +36,13 @@ const UserProfile = ({ onLogout }) => {
 
                 if (response.ok) {
                     const userData = await response.json();
+                    console.log("User data:", userData); // Debugging: Log the entire user data
 
-                    console.log('User data:', userData); // Log the full response
-
-                    setNickname(userData.name || "");
+                    setUserId(userData.id || "");
+                    // Handle different provider data formats
+                    setNickname(userData.name || userData.nickname || "User");
                     setEmail(userData.email || "");
-                    setPictureUrl(userData.pictureUrl || "");
+                    setPictureUrl(userData.picture || userData.pictureUrl || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg");
                     setBio(userData.bio || "");
                     setPronouns(userData.pronouns || "");
                     setLocation(userData.location || "");
@@ -46,7 +50,7 @@ const UserProfile = ({ onLogout }) => {
                     setSocialMediaLinks(userData.socialMediaLinks || "");
                     setDateOfBirth(userData.dateOfBirth || "");
                     setContactInfo(userData.contactInformation || "");
-                    setNewPictureUrl(userData.pictureUrl || "https://default-profile-url.com/default-image.png");
+                    setNewPictureUrl(userData.pictureUrl || "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg");
                 } else {
                     console.error('Failed to load user info');
                 }
@@ -60,7 +64,7 @@ const UserProfile = ({ onLogout }) => {
 
     const handleSave = async () => {
         const profileData = {
-            nickname: nickname || "", // Use existing values if not changed
+            nickname: nickname || "",
             pictureUrl: newPictureUrl || pictureUrl || "",
             bio: bio || "",
             pronouns: pronouns || "",
@@ -114,6 +118,13 @@ const UserProfile = ({ onLogout }) => {
 
     return (
         <div className="profile-container" data-aos="fade-up">
+            <button
+                onClick={() => navigate('/')}
+                className="return-button"
+                aria-label="Return to Main Menu"
+            >
+                <FaHome size={24} /> {/* FaHome icon */}
+            </button>
             <div className="background-overlay"></div> {/* Decorative background */}
             {isEditing ? (
                 <div className="form-container" data-aos="zoom-in">
@@ -228,17 +239,30 @@ const UserProfile = ({ onLogout }) => {
             ) : (
                 <div className="profile-details" data-aos="zoom-in">
                     <h2 className="profile-heading">Welcome, {nickname}</h2>
-                    {pictureUrl ? (
-                        <img
-                            src={pictureUrl}
-                            alt="User Profile"
-                            className="profile-picture"
-                            referrerPolicy="no-referrer"
-                            loading="lazy"
-                        />
-                    ) : (
-                        <p>No profile picture available</p>
-                    )}
+                    <div className="profile-header">
+                        {pictureUrl ? (
+                            <img
+                                src={pictureUrl}
+                                alt="User Profile"
+                                className="profile-picture"
+                                referrerPolicy="no-referrer"
+                                loading="lazy"
+                            />
+                        ) : (
+                            <p>No profile picture available</p>
+                            )}
+
+                        <div className="profile-actions">
+                            <button onClick={() => setIsEditing(true)} className="edit-button">
+                                <FaEdit /> Edit Profile
+                            </button>
+                            <button onClick={onLogout} className="logout-button">
+                                <FaSignOutAlt /> Logout
+                            </button>
+                        </div>
+                        </div>
+                        <p className="profile-userid">User ID: {userId}</p>
+
                     <p className="profile-email">Email: {email}</p>
                     <div className="stats-container">
                         <div className="stat-card" data-aos="fade-right" data-aos-delay="200">
@@ -257,9 +281,6 @@ const UserProfile = ({ onLogout }) => {
                             <span>{dateOfBirth || "N/A"}</span>
                         </div>
                     </div>
-                    <button onClick={() => setIsEditing(true)} className="edit-button">
-                        <FaEdit /> Edit Profile
-                    </button>
                     <button onClick={toggleDetails} className="details-button">
                         {isExpanded ? 'Hide Details' : 'View Details'}
                     </button>
@@ -270,12 +291,8 @@ const UserProfile = ({ onLogout }) => {
                             <p><FaInfoCircle /> Contact Info: {contactInfo || "No contact info provided"}</p>
                             <p><FaInfoCircle /> Social Links: {socialMediaLinks || "N/A"}</p>
                         </div>
-                    )}
-                    <div className="profile-footer">
-                        <button onClick={onLogout} className="logout-button">
-                            <FaSignOutAlt /> Logout
-                        </button>
-                    </div>
+                        )}
+                        <FriendsList />
                 </div>
             )}
         </div>

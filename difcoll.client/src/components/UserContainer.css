@@ -1,0 +1,189 @@
+/* Full-screen container with a soft gradient background and background image */
+.user-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1723987513091-4cc24f8e5c71?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MnxVOUNMTHhRVlRRRXx8ZW58MHx8fHx8');
+    background-size: cover;
+    background-position: center;
+    font-family: 'Poppins', sans-serif; /* Modern Google Font */
+    overflow: hidden;
+}
+
+/* Loading animation */
+.loading-container {
+    font-size: 22px;
+    color: #fff;
+    animation: fadeIn 1s ease-in-out;
+    margin-top: 20px;
+}
+
+/* Login section with card-like background and shadow */
+.login-section {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+    max-width: 600px;
+    width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    animation: fadeInScale 0.6s ease-in-out;
+}
+
+    .login-section:hover {
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.2);
+        transform: translateY(-8px);
+        background-color: rgba(255, 255, 255, 0.95); /* Slight color change on hover */
+    }
+
+    .login-section h2 {
+        font-size: 40px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, #4285f4, #0078d4, #1da1f2);
+        -webkit-background-clip: text;
+        color: transparent;
+        animation: gradientShift 4s ease infinite;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .login-section p {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 30px;
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.6;
+        opacity: 0.85; /* Subtle opacity effect */
+    }
+
+/* Login buttons container with just logos */
+.login-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+/* Login button styles with logos only */
+.login-button {
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #fff; /* Solid button background */
+    border: 2px solid #fff;
+    padding: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+    /* Hover effect for the login buttons */
+    .login-button:hover {
+        transform: scale(1.12); /* Larger zoom effect */
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Stronger hover shadow */
+        background-color: rgba(255, 255, 255, 0.85); /* Slight background fade */
+    }
+
+/* Provider-specific button styling with colors */
+.provider-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%; /* Ensure logos inside buttons are circular */
+}
+
+/* Media queries for responsive scaling */
+@media (min-width: 768px) {
+    .login-button {
+        width: 80px;
+        height: 80px;
+    }
+
+    .login-section h2 {
+        font-size: 48px;
+    }
+
+    .login-section p {
+        font-size: 20px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .login-button {
+        width: 90px;
+        height: 90px;
+    }
+
+    .login-section h2 {
+        font-size: 54px;
+    }
+
+    .login-section p {
+        font-size: 22px;
+    }
+}
+
+@media (min-width: 1440px) {
+    .login-button {
+        width: 100px;
+        height: 100px;
+    }
+
+    .login-section h2 {
+        font-size: 58px;
+    }
+
+    .login-section p {
+        font-size: 24px;
+    }
+}
+
+/* Animations */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Animation for fade-in and scale effect */
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Background overlay and text contrast */
+.user-container:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4); /* Dark overlay for better contrast */
+    z-index: 1;
+}
+
+.user-container > * {
+    z-index: 2; /* Ensure content is above overlay */
+}

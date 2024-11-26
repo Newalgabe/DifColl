@@ -14,9 +14,9 @@ const App = () => {
 
     useEffect(() => {
         AOS.init({
-            duration: 1000, // Customize animation duration
-            easing: "ease-in-out", // Customize easing
-            once: true, // Whether animation should happen only once
+            duration: 1000,
+            easing: "ease-in-out",
+            once: true,
         });
 
         const fetchUserId = async () => {
@@ -26,9 +26,11 @@ const App = () => {
                     credentials: 'include',
                 });
 
-                if (response.ok) {
+                if (response.status === 401) {
+                    setUserId(null);
+                } else if (response.ok) {
                     const userData = await response.json();
-                    setUserId(userData.id); // Set the user ID from the fetched data
+                    setUserId(userData.id);
                 } else {
                     console.error('Failed to load user info');
                 }
@@ -41,7 +43,7 @@ const App = () => {
     }, []);
 
     if (!userId) {
-        return <div>Loading...</div>; // Add a loading state until userId is available
+        return <UserContainer />; // Redirect to login page if not authenticated
     }
 
     return (
@@ -51,8 +53,6 @@ const App = () => {
             <Route path="/search-books" element={<BookSearch />} />
             <Route path="/search-movies" element={<MovieSearch />} />
             <Route path="/search-games" element={<GameSearch />} /> {/* Added GameSearch route */}
-
-            {/* Pass userId to MyNexus component */}
             <Route path="/my-nexus" element={<MyNexus userId={userId} />} />
         </Routes>
     );
