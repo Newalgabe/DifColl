@@ -46,7 +46,7 @@ const MainPage = () => {
                         <div className="auth-section" data-aos="fade-up" data-aos-delay="200">
                             <p>Enter your profile to manage your collections:</p>
                             <a
-                                href="/login" // Using href instead of Link to maintain functionality with external authentication
+                                href="/login"
                                 className="btn btn-google"
                             >
                                 <FaUsersCog /> Enter Your Profile

@@ -16,6 +16,8 @@ const GameSearch = () => {
     const [toastMessage, setToastMessage] = useState('');
     const [sortOrder, setSortOrder] = useState('relevance'); // New sortOrder state
     const [genre, setGenre] = useState(''); // New genre state
+    const [loadingRelatedGames, setLoadingRelatedGames] = useState(false);
+
 
     // Load saved search parameters from localStorage on component mount
     useEffect(() => {
@@ -229,9 +231,12 @@ const GameSearch = () => {
     // Function to fetch related games based on genre
     const handleRelatedGames = async (game) => {
         try {
+            setLoadingRelatedGames(true); // Set loading to true when fetching related games
+
             // Check if related games are cached
             if (relatedGamesCache[game.id]) {
                 setRelatedGames(relatedGamesCache[game.id]);
+                setLoadingRelatedGames(false); // Set loading to false after fetching from cache
                 return;
             }
 
@@ -239,6 +244,7 @@ const GameSearch = () => {
 
             if (genres.length === 0) {
                 setRelatedGames([]);
+                setLoadingRelatedGames(false);
                 return;
             }
 
@@ -281,8 +287,11 @@ const GameSearch = () => {
         } catch (error) {
             console.error("Error fetching related games:", error);
             setRelatedGames([]);
+        } finally {
+            setLoadingRelatedGames(false); // Ensure loading is set to false once the fetch is done
         }
     };
+
 
 
 
@@ -402,10 +411,15 @@ const GameSearch = () => {
                 />
 
                 {/* Search Button */}
-                <button onClick={() => handleSearch(query, 1, sortOrder, genre)} className="search-button">
-                    Search
+                <button
+                    onClick={() => handleSearch(query, 1, sortOrder, genre)}
+                    className="search-button"
+                    disabled={loading} // Disable the button when loading
+                >
+                    {loading ? <div className="spinner"></div> : 'Search'} {/* Show spinner or text based on loading state */}
                 </button>
             </div>
+
 
             {/* Loading Indicator */}
             {loading && <p>Loading...</p>}
@@ -413,7 +427,6 @@ const GameSearch = () => {
             {/* Error Message */}
             {error && <p className="error">{error}</p>}
 
-            {/* Search Results */}
             {/* Search Results */}
             <div className="results-container">
                 {games.map((game) => (
@@ -504,7 +517,9 @@ const GameSearch = () => {
                         {/* Related Games */}
                         <div className="related-games-container">
                             <h3>Related Games</h3>
-                            {relatedGames.length > 0 ? (
+                            {loadingRelatedGames ? (
+                                <div className="spinner"></div> // The spinner div
+                            ) : relatedGames.length > 0 ? (
                                 <div className="related-games-list">
                                     {relatedGames.map((game) => (
                                         <div key={game.id} className="related-game-card" onClick={() => handleRelatedGameClick(game)}>
@@ -524,6 +539,7 @@ const GameSearch = () => {
                                 <p>No related games could be found.</p>
                             )}
                         </div>
+
                     </div>
                 </div>
             )}

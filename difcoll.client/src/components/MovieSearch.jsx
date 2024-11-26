@@ -17,6 +17,7 @@ const MovieSearch = () => {
     const [toastMessage, setToastMessage] = useState('');
     const [sortOrder, setSortOrder] = useState('relevance'); // Updated sortOrder state
     const [genre, setGenre] = useState(''); // New genre state
+    const [loadingRelatedMovies, setLoadingRelatedMovies] = useState(false);
 
     // Load saved search parameters from localStorage on component mount
     useEffect(() => {
@@ -251,9 +252,12 @@ const MovieSearch = () => {
     // Function to fetch related movies based on genre
     const handleRelatedMovies = async (movie) => {
         try {
+            setLoadingRelatedMovies(true); // Set loading to true when fetching related movies
+
             // Check if the related movies for this movie are already cached
             if (relatedMoviesCache[movie.id]) {
                 setRelatedMovies(relatedMoviesCache[movie.id]);
+                setLoadingRelatedMovies(false); // Set loading to false after fetching from cache
                 return;
             }
 
@@ -262,10 +266,11 @@ const MovieSearch = () => {
             // If no genres are found, clear the related movies
             if (genres.length === 0) {
                 setRelatedMovies([]);
+                setLoadingRelatedMovies(false); // Set loading to false
                 return;
             }
 
-            // Fetch most popular movies based on the first genre
+            // Fetch related movies based on the first genre
             const genreQuery = encodeURIComponent(genres[0]);
             const apiUrl = `https://localhost:7113/api/Movie/search/${genreQuery}?page=1&sortOrder=popularity.desc&genre=${encodeURIComponent(genres[0])}`;
 
@@ -297,8 +302,11 @@ const MovieSearch = () => {
         } catch (error) {
             console.error("Error fetching popular movies:", error);
             setRelatedMovies([]);
+        } finally {
+            setLoadingRelatedMovies(false); // Ensure loading is set to false once the fetch is done
         }
     };
+
 
 
     // Function to view detailed information about a movie
@@ -386,10 +394,15 @@ const MovieSearch = () => {
                 />
 
                 {/* Search Button */}
-                <button onClick={() => handleSearch(query, 1, sortOrder, genre)} className="search-button">
-                    Search
+                <button
+                    onClick={() => handleSearch(query, 1, sortOrder, genre)}
+                    className="search-button"
+                    disabled={loading} // Disable the button when loading
+                >
+                    {loading ? <div className="spinner"></div> : 'Search'} {/* Show spinner or text based on loading state */}
                 </button>
             </div>
+
 
             {/* Loading Indicator */}
             {loading && <p>Loading...</p>}
@@ -483,7 +496,9 @@ const MovieSearch = () => {
                         {/* Related Movies */}
                         <div className="related-movies-container">
                             <h3>Related Movies</h3>
-                            {relatedMovies.length > 0 ? (
+                            {loadingRelatedMovies ? (
+                                <div className="spinner"></div> // The spinner div to indicate loading
+                            ) : relatedMovies.length > 0 ? (
                                 <div className="related-movies-list">
                                     {relatedMovies.map((movie) => (
                                         <div key={movie.id} className="related-movie-card" onClick={() => handleRelatedMovieClick(movie)}>
@@ -503,6 +518,7 @@ const MovieSearch = () => {
                                 <p>No related movies could be found.</p>
                             )}
                         </div>
+
                     </div>
                 </div>
             )}

@@ -312,18 +312,6 @@ const BookSearch = () => {
                     }}
                     className="search-input"
                 />
-                <input
-                    type="text"
-                    placeholder="Category (optional)"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            handleSearch(0);
-                        }
-                    }}
-                    className="category-input"
-                />
                 <select
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
@@ -337,10 +325,23 @@ const BookSearch = () => {
                     <option value="relevance">Relevance</option>
                     <option value="newest">Newest</option>
                 </select>
+                <input
+                    type="text"
+                    placeholder="Category (optional)"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleSearch(0);
+                        }
+                    }}
+                    className="category-input"
+                />
                 <button onClick={() => handleSearch(0)} className="search-button">
                     Search
                 </button>
             </div>
+
 
             {loading && <p>Loading...</p>}
             {error && <p className="error">{error}</p>}

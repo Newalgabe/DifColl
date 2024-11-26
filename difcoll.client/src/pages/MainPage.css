@@ -227,7 +227,6 @@ body {
 }
 
 
-/* Features Section */
 .features-section {
     padding: 50px 30px;
     background-color: var(--color-background);
@@ -298,7 +297,6 @@ body {
     line-height: 1.6;
 }
 
-/* Testimonials Section */
 .testimonials-section {
     padding: 50px 30px;
     background-color: var(--color-background);
