@@ -237,21 +237,22 @@ body {
     transform: scale(1.03);
 }
 
+/* Pagination Controls */
 .pagination-controls {
     display: flex;
     justify-content: center;
     margin-top: 30px;
-    gap: 15px;
+    gap: 20px; /* Increased gap for better spacing */
 }
 
 .pagination-button {
     padding: 12px 20px;
-    background-color: var(--color-secondary);
+    background-color: #1ABC9C; /* Default button color */
     color: white;
     border: none;
     border-radius: 10px; /* Consistent border-radius */
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added box-shadow */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth transitions for hover, transform, and box-shadow */
     font-size: 16px;
 }
 
@@ -261,10 +262,50 @@ body {
     }
 
     .pagination-button:hover:not(:disabled) {
-        background-color: #16A085;
-        transform: translateY(-2px);
+        background-color: #16A085; /* Lighter shade for hover */
+        transform: translateY(-2px); /* Slight lift effect on hover */
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Added shadow effect */
     }
+
+    .pagination-button:active {
+        background-color: #1ABC9C; /* Maintain the pressed color */
+        transform: translateY(0); /* Button returns to normal position when pressed */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Reduced shadow effect when pressed */
+    }
+
+/* Page Input */
+.page-input {
+    width: 80px; /* Adjusted for better aesthetics */
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px; /* Rounded borders for a modern feel */
+    background: #f9f9f9;
+    font-size: 16px;
+    font-weight: 600; /* Slightly bolder text */
+    text-align: center;
+    color: #333;
+    transition: all 0.3s ease; /* Smooth transition for hover, focus, and state changes */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+    .page-input:focus {
+        outline: none;
+        border-color: #1ABC9C; /* Blue border on focus */
+        background: #fff; /* Lighter background on focus */
+        box-shadow: 0 0 10px rgba(26, 188, 156, 0.5); /* Focused glow effect */
+        transform: scale(1.05); /* Slight scaling effect on focus */
+    }
+
+    .page-input::placeholder {
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    .page-input:hover {
+        border-color: #1ABC9C; /* Border color change on hover */
+        background: #e0f5f0; /* Lightened background for hover */
+    }
+
 
 
 .error {

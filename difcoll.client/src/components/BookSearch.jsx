@@ -22,6 +22,11 @@ const BookSearch = () => {
     const [categories, setCategories] = useState([]);
     const [previewLink, setPreviewLink] = useState('');
     const [description, setDescription] = useState(''); // Added description state
+    const [loadingRelatedBooks, setLoadingRelatedBooks] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);  // State for the current page
+
+
+
 
     useEffect(() => {
         const savedQuery = localStorage.getItem('query');
@@ -121,19 +126,27 @@ const BookSearch = () => {
         }
     };
 
+    const handlePageChange = (pageNumber) => {
+        const newIndex = (pageNumber - 1) * 10;  // Calculate the new start index based on the page number
+        setStartIndex(newIndex);
+        setCurrentPage(pageNumber);
+        handleSearch(newIndex);  // Trigger search with the new start index
+    };
+
     const handleNextPage = () => {
-        const newIndex = startIndex + 10;
-        if (newIndex < totalItems) {
-            handleSearch(newIndex);
+        if (currentPage * 10 < totalItems) {
+            setCurrentPage(currentPage + 1);
+            handlePageChange(currentPage + 1);
         }
     };
 
     const handlePreviousPage = () => {
-        if (startIndex > 0) {
-            const newIndex = startIndex - 10;
-            handleSearch(newIndex);
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+            handlePageChange(currentPage - 1);
         }
     };
+
 
     // Fetch user ID function
     const fetchUserId = async () => {
@@ -205,8 +218,12 @@ const BookSearch = () => {
 
     const handleRelatedBooks = async (book) => {
         try {
+            setLoadingRelatedBooks(true); // Set loading to true when fetching related books
+
+            // Check if related books are cached
             if (relatedBooksCache[book.id]) {
                 setRelatedBooks(relatedBooksCache[book.id]);
+                setLoadingRelatedBooks(false); // Set loading to false after fetching from cache
                 return;
             }
 
@@ -225,6 +242,7 @@ const BookSearch = () => {
 
             if (!query) {
                 setRelatedBooks([]);
+                setLoadingRelatedBooks(false);
                 return;
             }
 
@@ -244,8 +262,11 @@ const BookSearch = () => {
         } catch (error) {
             console.error("Error fetching related books:", error);
             setRelatedBooks([]);
+        } finally {
+            setLoadingRelatedBooks(false); // Ensure loading is set to false once the fetch is done
         }
     };
+
 
     const handleViewDetails = (book) => {
         if (book && book.volumeInfo) {
@@ -300,6 +321,7 @@ const BookSearch = () => {
             <h2>Search Books</h2>
 
             <div className="search-controls">
+                {/* Search Input */}
                 <input
                     type="text"
                     placeholder="Enter book name..."
@@ -312,6 +334,8 @@ const BookSearch = () => {
                     }}
                     className="search-input"
                 />
+
+                {/* Sort Order Dropdown */}
                 <select
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
@@ -325,6 +349,8 @@ const BookSearch = () => {
                     <option value="relevance">Relevance</option>
                     <option value="newest">Newest</option>
                 </select>
+
+                {/* Category Input */}
                 <input
                     type="text"
                     placeholder="Category (optional)"
@@ -337,8 +363,14 @@ const BookSearch = () => {
                     }}
                     className="category-input"
                 />
-                <button onClick={() => handleSearch(0)} className="search-button">
-                    Search
+
+                {/* Search Button */}
+                <button
+                    onClick={() => handleSearch(0)}
+                    className="search-button"
+                    disabled={loading} // Disable the button when loading
+                >
+                    {loading ? <div className="spinner"></div> : 'Search'} {/* Show spinner or text based on loading state */}
                 </button>
             </div>
 
@@ -397,19 +429,32 @@ const BookSearch = () => {
             <div className="pagination-controls">
                 <button
                     onClick={handlePreviousPage}
-                    disabled={startIndex === 0}
+                    disabled={currentPage === 1}
                     className="pagination-button"
                 >
                     Previous
                 </button>
+
+                <input
+                    type="number"
+                    value={currentPage}
+                    onChange={(e) => handlePageChange(Number(e.target.value))}
+                    min="1"
+                    max={Math.ceil(totalItems / 10)}  // Maximum number of pages
+                    className="page-input"
+                />
+
+                <span> / {Math.ceil(totalItems / 10)}</span>  {/* Total number of pages */}
+
                 <button
                     onClick={handleNextPage}
-                    disabled={startIndex + 10 >= totalItems}
+                    disabled={currentPage * 10 >= totalItems}
                     className="pagination-button"
                 >
                     Next
                 </button>
             </div>
+
 
             {selectedBook && (
                 <div className="modal" onClick={() => setSelectedBook(null)}>
@@ -454,7 +499,9 @@ const BookSearch = () => {
 
                         <div className="related-books-container">
                             <h3>Related Books</h3>
-                            {relatedBooks.length > 0 ? (
+                            {loadingRelatedBooks ? (
+                                <div className="spinner"></div> // Spinner displayed when loading
+                            ) : relatedBooks.length > 0 ? (
                                 <div className="related-books-list">
                                     {relatedBooks.map((book) => (
                                         <div key={book.id} className="related-book-card" onClick={() => handleRelatedBookClick(book)}>

@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import './MovieSearch.css';
 
-
 const MovieSearch = () => {
     const [query, setQuery] = useState('');
     const [movies, setMovies] = useState([]);
@@ -142,6 +141,20 @@ const MovieSearch = () => {
     const handlePreviousPage = () => {
         if (page > 1) {
             handleSearch(query, page - 1, sortOrder, genre);
+        }
+    };
+
+    // Function to handle page input changes
+    const handlePageChange = (pageValue) => {
+        if (pageValue === '') {
+            // If the input is cleared (empty), don't change the page
+            return;
+        }
+
+        const parsedValue = parseInt(pageValue, 10);
+        if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= totalPages) {
+            setPage(parsedValue);
+            handleSearch(query, parsedValue, sortOrder, genre);
         }
     };
 
@@ -461,7 +474,15 @@ const MovieSearch = () => {
                 >
                     Previous
                 </button>
-                <span>Page {page} of {totalPages}</span>
+                <input
+                    type="text"
+                    value={page}
+                    onChange={(e) => handlePageChange(e.target.value)}
+                    onBlur={() => handleSearch(query, page, sortOrder, genre)}  // Trigger search on losing focus
+                    className="page-input"
+                    maxLength={3}  // Limit to 3 digits (or change based on your page number range)
+                />
+                <span> / {totalPages}</span> {/* Display total pages */}
                 <button
                     onClick={handleNextPage}
                     disabled={page === totalPages}

@@ -107,6 +107,8 @@ const GameSearch = () => {
     };
 
 
+
+    // Function to handle moving to the next page
     // Function to handle moving to the next page
     const handleNextPage = () => {
         if (page < totalPages) {
@@ -120,6 +122,23 @@ const GameSearch = () => {
             handleSearch(query, page - 1, sortOrder, genre);
         }
     };
+
+    // Function to handle when the user inputs a page number
+    const handlePageChange = (pageValue) => {
+        if (pageValue === '') {
+            // If the input is cleared (empty), don't set page to 0, just keep the current page
+            return;
+        }
+
+        const parsedValue = parseInt(pageValue, 10);
+
+        // Ensure parsedValue is a valid number within the page range
+        if (!isNaN(parsedValue) && parsedValue >= 1 && parsedValue <= totalPages) {
+            setPage(parsedValue);
+            handleSearch(query, parsedValue, sortOrder, genre);
+        }
+    };
+
 
     const fetchUserId = async () => {
         try {
@@ -472,20 +491,34 @@ const GameSearch = () => {
             <div className="pagination-controls">
                 <button
                     onClick={handlePreviousPage}
-                    disabled={page === 1}
+                    disabled={page === 1}  // Disable if on the first page
                     className="pagination-button"
                 >
                     Previous
                 </button>
-                <span>Page {page} of {totalPages}</span>
+
+                <input
+                    type="text"  // Changed to text input
+                    value={page}
+                    onChange={(e) => handlePageChange(e.target.value)}
+                    min="1"
+                    max={totalPages}  // Limit the max value to totalPages
+                    className="page-input"
+                    inputMode="numeric"  // Allows numeric input on mobile
+                />
+
+                <span> / {totalPages}</span>  {/* Total number of pages */}
+
                 <button
                     onClick={handleNextPage}
-                    disabled={page === totalPages}
+                    disabled={page === totalPages}  // Disable if on the last page
                     className="pagination-button"
                 >
                     Next
                 </button>
             </div>
+
+
 
             {selectedGame && (
                 <div className="modal" onClick={() => setSelectedGame(null)}>
