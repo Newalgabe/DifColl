@@ -126,15 +126,29 @@ const BookSearch = () => {
         }
     };
 
-    const handlePageChange = (pageNumber) => {
-        const newIndex = (pageNumber - 1) * 10;  // Calculate the new start index based on the page number
-        setStartIndex(newIndex);
-        setCurrentPage(pageNumber);
-        handleSearch(newIndex);  // Trigger search with the new start index
-    };
+const handlePageChange = (pageNumber) => {
+    // Convert to string and remove leading zeros by parsing the number and converting it back to a string
+    const pageNumberString = String(pageNumber).replace(/^0+/, '');
+
+    // Convert back to number
+    const validPageNumber = Number(pageNumberString);
+
+    // Check if the pageNumber is valid and greater than 0
+    if (isNaN(validPageNumber) || validPageNumber < 1) {
+        // Prevent invalid page number input (negative, less than 1, or non-numeric)
+        console.log('Invalid page number. Please enter a number greater than 0.');
+        return;
+    }
+
+    const newIndex = (validPageNumber - 1) * 10;  // Calculate the new start index based on the page number
+    setStartIndex(newIndex);
+    setCurrentPage(validPageNumber);
+    handleSearch(newIndex);  // Trigger search with the new start index
+};
+
 
     const handleNextPage = () => {
-        if (currentPage * 10 < totalItems) {
+        if ((currentPage * 10) < totalItems) {
             setCurrentPage(currentPage + 1);
             handlePageChange(currentPage + 1);
         }
@@ -146,6 +160,21 @@ const BookSearch = () => {
             handlePageChange(currentPage - 1);
         }
     };
+
+    // Handle input change (to ensure no leading zeros)
+    const handleInputChange = (e) => {
+        const inputValue = e.target.value;
+
+        // Prevent leading zeros by using a regular expression
+        if (inputValue !== "" && inputValue[0] === '0') {
+            // Remove leading zero
+            e.target.value = inputValue.replace(/^0+/, '');
+        }
+
+        // Call the original page change handler
+        handlePageChange(Number(e.target.value));
+    };
+
 
 
     // Fetch user ID function
@@ -438,7 +467,7 @@ const BookSearch = () => {
                 <input
                     type="number"
                     value={currentPage}
-                    onChange={(e) => handlePageChange(Number(e.target.value))}
+                    onChange={handleInputChange}  // Use handleInputChange to handle input changes
                     min="1"
                     max={Math.ceil(totalItems / 10)}  // Maximum number of pages
                     className="page-input"
@@ -454,6 +483,7 @@ const BookSearch = () => {
                     Next
                 </button>
             </div>
+
 
 
             {selectedBook && (
