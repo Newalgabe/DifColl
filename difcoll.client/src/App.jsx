@@ -7,10 +7,10 @@ import UserContainer from "./components/UserContainer";
 import BookSearch from "./components/BookSearch";
 import MovieSearch from "./components/MovieSearch"; // Imported MovieSearch
 import GameSearch from "./components/GameSearch"; // Imported GameSearch
-import MyNexus from "./components/MyNexus"; // New Component for My Nexus
+import MyNexus from "./components/MyNexus"; 
 
 const App = () => {
-    const [userId, setUserId] = useState(null); // State for user ID
+    const [userId, setUserId] = useState(null); 
 
     useEffect(() => {
         AOS.init({
@@ -43,7 +43,7 @@ const App = () => {
     }, []);
 
     if (!userId) {
-        return <UserContainer />; // Redirect to login page if not authenticated
+        return <UserContainer />;
     }
 
     return (
@@ -52,7 +52,7 @@ const App = () => {
             <Route path="/login" element={<UserContainer />} />
             <Route path="/search-books" element={<BookSearch />} />
             <Route path="/search-movies" element={<MovieSearch />} />
-            <Route path="/search-games" element={<GameSearch />} /> {/* Added GameSearch route */}
+            <Route path="/search-games" element={<GameSearch />} /> {}
             <Route path="/my-nexus" element={<MyNexus userId={userId} />} />
         </Routes>
     );
