@@ -109,9 +109,11 @@ const FriendsList = () => {
         }
     };
 
-    // Handle add friend by userId
     const handleAddFriend = async () => {
         if (!friendIdToAdd) return; // Don't try to add if no friendId is entered
+
+        // Reset status before initiating the request
+        setAddFriendStatus("");
 
         try {
             const response = await fetch(`https://localhost:7113/api/Account/add-friend/${friendIdToAdd}`, {
@@ -119,14 +121,24 @@ const FriendsList = () => {
                 credentials: 'include'
             });
 
+            // Check if the response is JSON or plain text
+            const contentType = response.headers.get('Content-Type');
+
             if (response.ok) {
-                const updatedFriends = await response.json();
-                setFriends(updatedFriends);
-                setAddFriendStatus("Friend added successfully.");
+                if (contentType && contentType.includes('application/json')) {
+                    // If the response is JSON, parse it
+                    const updatedFriends = await response.json();
+                    setFriends(updatedFriends);
+                    setAddFriendStatus("Friend added successfully.");
+                } else {
+                    // If the response is plain text, treat it as a message
+                    const message = await response.text();
+                    setAddFriendStatus(message); // Display the message as is
+                }
                 setFriendIdToAdd(""); // Clear input after adding
             } else {
                 const message = await response.text();
-                setAddFriendStatus(message);
+                setAddFriendStatus(message); // Display error message from the server
             }
         } catch (error) {
             console.error("Error adding friend:", error);
@@ -134,27 +146,40 @@ const FriendsList = () => {
         }
     };
 
+
     // Handle remove friend
     const handleRemoveFriend = async (friendId) => {
         try {
+            // Make a DELETE request to the backend API to remove the friend
             const response = await fetch(`https://localhost:7113/api/Account/remove-friend/${friendId}`, {
                 method: 'DELETE',
-                credentials: 'include'
+                credentials: 'include' // Include credentials (cookies) for authentication
             });
 
+            // Check if the response is JSON or plain text
+            const contentType = response.headers.get('Content-Type');
+
             if (response.ok) {
-                const updatedFriends = await response.json();
-                setFriends(updatedFriends);
-                setRemoveFriendStatus("Friend removed successfully.");
+                if (contentType && contentType.includes('application/json')) {
+                    // If the response is JSON, parse it
+                    const updatedFriends = await response.json();
+                    setFriends(updatedFriends);
+                    setRemoveFriendStatus("Friend removed successfully.");
+                } else {
+                    // If the response is plain text, treat it as a message
+                    const message = await response.text();
+                    setRemoveFriendStatus(message); // Display the message as is
+                }
             } else {
                 const message = await response.text();
-                setRemoveFriendStatus(message);
+                setRemoveFriendStatus(message); // Display error message from the server
             }
         } catch (error) {
             console.error("Error removing friend:", error);
             setRemoveFriendStatus("Error removing friend.");
         }
     };
+
 
     // Toggle friend details
     const toggleFriendDetails = (friendId) => {
@@ -258,6 +283,8 @@ const FriendsList = () => {
                                 >
                                     <FaUserTimes /> Remove
                                 </button>
+                                {removeFriendStatus && <p className="status-message">{removeFriendStatus}</p>}
+
                                 <button
                                     onClick={() => toggleFriendDetails(friend.userId)}
                                     className="toggle-details-button"
