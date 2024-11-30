@@ -272,8 +272,15 @@ const FriendsList = () => {
                                             <p><strong>Location:</strong> {friend.location || "N/A"}</p>
                                             <p><strong>Bio:</strong> {friend.bio || "No bio provided"}</p>
                                             <p><strong>Interests:</strong> {friend.interests || "N/A"}</p>
+                                            <p><strong>Date of Birth:</strong> {friend.dateOfBirth || "N/A"}</p>
+                                            <p><strong>Contact Information:</strong> {friend.contactInformation || "N/A"}</p>
+                                            <p><strong>Social Media Links:</strong>
+                                                <a href={friend.socialMediaLinks} target="_blank">{friend.socialMediaLinks}</a>
+                                            </p>
+
                                         </div>
                                     ) : null}
+
                                 </div>
                             </div>
                             <div className="friend-actions">
