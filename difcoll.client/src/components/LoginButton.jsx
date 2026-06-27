@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 const LoginButton = ({ provider, logo }) => {
     const handleLogin = () => {
         // Redirect to the login endpoint with the chosen provider
-        window.location.href = `https://localhost:7113/api/account/login?provider=${provider}`;
+        window.location.href = `/api/account/login?provider=${provider}`;
     };
 
     return (

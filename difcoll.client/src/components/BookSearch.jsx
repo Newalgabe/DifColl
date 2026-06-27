@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FaBook, FaStar, FaStarHalfAlt, FaRegStar, FaTimes } from 'react-icons/fa';
 import './BookSearch.css';
 
 const BookSearch = () => {
@@ -21,7 +22,9 @@ const BookSearch = () => {
     const [isbn, setIsbn] = useState('');
     const [categories, setCategories] = useState([]);
     const [previewLink, setPreviewLink] = useState('');
-    const [description, setDescription] = useState(''); // Added description state
+    const [description, setDescription] = useState('');
+    const [searched, setSearched] = useState(false);
+    const [toastType, setToastType] = useState('success');
 
     useEffect(() => {
         const savedQuery = localStorage.getItem('query');
@@ -89,20 +92,36 @@ const BookSearch = () => {
         const categoryFilter = category ? `+subject:${encodeURIComponent(category)}` : '';
         try {
             const response = await fetch(
-                `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}${categoryFilter}&startIndex=${index}&maxResults=10&orderBy=${sortOrder}`
+                `/api/book/search/${encodeURIComponent(query)}${categoryFilter}?startIndex=${index}&maxResults=10&orderBy=${sortOrder}`
             );
             if (response.ok) {
                 const data = await response.json();
-                setBooks(data.items || []);
-                setTotalItems(data.totalItems || 0);
+                const formattedBooks = data.map(b => ({
+                    id: b.id,
+                    volumeInfo: {
+                        title: b.title || '',
+                        authors: b.authors ? b.authors.split(', ') : [],
+                        publishedDate: b.publishedDate,
+                        description: b.description,
+                        imageLinks: { thumbnail: b.thumbnail },
+                        categories: b.genres ? b.genres.split(', ') : [],
+                        averageRating: b.rating || 0,
+                        pageCount: null,
+                        publisher: null,
+                        language: null,
+                        industryIdentifiers: null,
+                        previewLink: null,
+                        ratingsCount: null
+                    }
+                }));
+                setBooks(formattedBooks);
+                setTotalItems(data.length < 10 ? index + data.length : index + 10);
                 setStartIndex(index);
 
-                // Extract ratings and new fields
                 const ratingsMap = {};
-                data.items.forEach((book) => {
-                    const { averageRating } = book.volumeInfo || {};
-                    if (averageRating) {
-                        ratingsMap[book.id] = averageRating;
+                formattedBooks.forEach((book) => {
+                    if (book.volumeInfo.averageRating) {
+                        ratingsMap[book.id] = book.volumeInfo.averageRating;
                     }
                 });
                 setRatings(ratingsMap);
@@ -118,6 +137,7 @@ const BookSearch = () => {
             setTotalItems(0);
         } finally {
             setLoading(false);
+            setSearched(true);
         }
     };
 
@@ -138,7 +158,7 @@ const BookSearch = () => {
     // Fetch user ID function
     const fetchUserId = async () => {
         try {
-            const response = await fetch('https://localhost:7113/api/account/userinfo', {
+            const response = await fetch('/api/account/userinfo', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -164,13 +184,13 @@ const BookSearch = () => {
             const userId = await fetchUserId();  // Assuming fetchUserId gets and returns the correct user ID
 
             if (!userId) {
-                showToast('Unable to fetch user information');
+                showToast('Unable to fetch user information', 'error');
                 return;
             }
 
             console.log('Adding to collection for userId:', userId);
 
-            const response = await fetch(`https://localhost:7113/api/Nexus/add/book/${userId}`, {
+            const response = await fetch(`/api/Nexus/add/book/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -194,11 +214,11 @@ const BookSearch = () => {
             } else {
                 const errorData = await response.json().catch(() => ({})); // Handle empty or non-JSON response
                 console.error('Failed to add book:', errorData);
-                showToast('Failed to add book to collection');
+                showToast('Failed to add book to collection', 'error');
             }
         } catch (error) {
             console.error('Error adding book to collection:', error);
-            showToast('An error occurred while adding the book.');
+            showToast('An error occurred while adding the book.', 'error');
         }
     };
 
@@ -229,12 +249,29 @@ const BookSearch = () => {
             }
 
             const response = await fetch(
-                `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5&orderBy=relevance`
+                `/api/book/search/${encodeURIComponent(query)}?maxResults=5&orderBy=relevance`
             );
 
             if (response.ok) {
                 const data = await response.json();
-                const related = data.items || [];
+                const related = (data || []).map(b => ({
+                    id: b.id,
+                    volumeInfo: {
+                        title: b.title || '',
+                        authors: b.authors ? b.authors.split(', ') : [],
+                        publishedDate: b.publishedDate,
+                        description: b.description,
+                        imageLinks: { thumbnail: b.thumbnail },
+                        categories: b.genres ? b.genres.split(', ') : [],
+                        averageRating: b.rating || 0,
+                        pageCount: null,
+                        publisher: null,
+                        language: null,
+                        industryIdentifiers: null,
+                        previewLink: null,
+                        ratingsCount: null
+                    }
+                }));
                 setRelatedBooks(related);
                 setRelatedBooksCache(prev => ({ ...prev, [book.id]: related }));
             } else {
@@ -279,7 +316,7 @@ const BookSearch = () => {
             showToast('Book link copied to clipboard!');
         }).catch((error) => {
             console.error('Failed to copy: ', error);
-            showToast('Failed to copy link.');
+            showToast('Failed to copy link.', 'error');
         });
     };
 
@@ -288,11 +325,25 @@ const BookSearch = () => {
         handleRelatedBooks(book);
     };
 
-    const showToast = (message) => {
+    const showToast = (message, type = 'success') => {
         setToastMessage(message);
+        setToastType(type);
         setTimeout(() => {
             setToastMessage('');
         }, 3000);
+    };
+
+    const renderStars = (rating) => {
+        if (!rating) return null;
+        const full = Math.floor(rating);
+        const half = rating - full >= 0.5;
+        const stars = [];
+        for (let i = 0; i < 5; i++) {
+            if (i < full) stars.push(<FaStar key={i} className="star-filled" />);
+            else if (i === full && half) stars.push(<FaStarHalfAlt key={i} className="star-filled" />);
+            else stars.push(<FaRegStar key={i} className="star-empty" />);
+        }
+        return <span className="stars">{stars}</span>;
     };
 
     return (
@@ -342,8 +393,22 @@ const BookSearch = () => {
                 </button>
             </div>
 
-            {loading && <p>Loading...</p>}
+            {category && (
+                <div className="active-filters">
+                    <span className="filter-tag">{category} <button onClick={() => setCategory('')}><FaTimes /></button></span>
+                </div>
+            )}
+
+            {loading && <div className="loading-spinner" />}
             {error && <p className="error">{error}</p>}
+
+            {!loading && !error && searched && books.length === 0 && (
+                <div className="empty-state">
+                    <FaBook className="empty-state-icon" />
+                    <h3>No books found</h3>
+                    <p>Try a different search term or category</p>
+                </div>
+            )}
 
             <div className="results-container">
                 {books.map((book) => {
@@ -364,10 +429,20 @@ const BookSearch = () => {
                                 {publishedDate && <p><strong>Published:</strong> {publishedDate}</p>}
                                 {publisher && <p><strong>Publisher:</strong> {publisher}</p>}
                                 {pageCount && <p><strong>Pages:</strong> {pageCount}</p>}
-                                {ratingStats.averageRating && <p><strong>Average Rating:</strong> {ratingStats.averageRating}</p>}
-                                {ratingStats.ratingsCount && <p><strong>Ratings Count:</strong> {ratingStats.ratingsCount}</p>}
-                                {ratings[book.id] && <p><strong>User Rating:</strong> {ratings[book.id]}</p>} {/* Updated line */}
+                                {book.volumeInfo.averageRating ? (
+                                    <p className="rating-row">{renderStars(book.volumeInfo.averageRating)} <span className="rating-value">{book.volumeInfo.averageRating.toFixed(1)}</span></p>
+                                ) : null}
+                                {ratings[book.id] ? (
+                                    <p className="rating-row">{renderStars(ratings[book.id])} <span className="rating-value">User: {ratings[book.id].toFixed(1)}</span></p>
+                                ) : null}
                                 {language && <p><strong>Language:</strong> {language}</p>}
+                                {book.volumeInfo.categories && book.volumeInfo.categories.length > 0 && (
+                                    <div className="genre-badges">
+                                        {book.volumeInfo.categories.slice(0, 3).map((cat, i) => (
+                                            <span key={i} className="genre-badge">{cat}</span>
+                                        ))}
+                                    </div>
+                                )}
                                 {description && <p className="description">{description.slice(0, 150)}...</p>}
 
                                 <div className="actions">
@@ -428,7 +503,7 @@ const BookSearch = () => {
                             <p><strong>Pages:</strong> {selectedBook.volumeInfo.pageCount}</p>
                         )}
                         {selectedBook.volumeInfo.averageRating && (
-                            <p><strong>Average Rating:</strong> {selectedBook.volumeInfo.averageRating}</p>
+                            <p className="rating-row"><strong>Rating:</strong> {renderStars(selectedBook.volumeInfo.averageRating)} <span className="rating-value">{selectedBook.volumeInfo.averageRating.toFixed(1)}</span></p>
                         )}
                         {selectedBook.volumeInfo.ratingsCount && (
                             <p><strong>Ratings Count:</strong> {selectedBook.volumeInfo.ratingsCount}</p>
@@ -491,8 +566,9 @@ const BookSearch = () => {
             )}
 
             {toastMessage && (
-                <div className="toast">
+                <div className={`toast toast--${toastType}`}>
                     <p>{toastMessage}</p>
+                    <div className="toast-progress" />
                 </div>
             )}
         </div>

@@ -29,7 +29,7 @@ const UserProfile = ({ onLogout }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('https://localhost:7113/api/account/userinfo', {
+                const response = await fetch('/api/account/userinfo', {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -76,7 +76,7 @@ const UserProfile = ({ onLogout }) => {
         };
 
         try {
-            const response = await fetch('https://localhost:7113/api/account/update-profile', {
+            const response = await fetch('/api/account/update-profile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

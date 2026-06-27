@@ -18,7 +18,7 @@ const FriendsList = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('https://localhost:7113/api/account/userinfo', {
+                const response = await fetch('/api/account/userinfo', {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -46,7 +46,7 @@ const FriendsList = () => {
 
         const fetchFriends = async () => {
             try {
-                const response = await fetch("https://localhost:7113/api/Account/friends", {
+                const response = await fetch("/api/Account/friends", {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -70,7 +70,7 @@ const FriendsList = () => {
         if (!userId) return; // Prevent fetching if userId is not available
 
         try {
-            const response = await fetch(`https://localhost:7113/api/Nexus/collections?userId=${userId}`, {
+            const response = await fetch(`/api/Nexus/collections?userId=${userId}`, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -88,10 +88,10 @@ const FriendsList = () => {
         }
     };
 
-    // Fetch and display friend’s collection
+    // Fetch and display friendï¿½s collection
     const handleViewFriendCollection = async (friendId) => {
         try {
-            const response = await fetch(`https://localhost:7113/api/Nexus/collections?userId=${friendId}`, {
+            const response = await fetch(`/api/Nexus/collections?userId=${friendId}`, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -114,7 +114,7 @@ const FriendsList = () => {
         if (!friendIdToAdd) return; // Don't try to add if no friendId is entered
 
         try {
-            const response = await fetch(`https://localhost:7113/api/Account/add-friend/${friendIdToAdd}`, {
+            const response = await fetch(`/api/Account/add-friend/${friendIdToAdd}`, {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -137,7 +137,7 @@ const FriendsList = () => {
     // Handle remove friend
     const handleRemoveFriend = async (friendId) => {
         try {
-            const response = await fetch(`https://localhost:7113/api/Account/remove-friend/${friendId}`, {
+            const response = await fetch(`/api/Account/remove-friend/${friendId}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });
@@ -175,7 +175,7 @@ const FriendsList = () => {
 
     // Generate Shareable Link
     const generateShareableLink = () => {
-        return `https://localhost:7113/api/Nexus/collections?userId=${userId}`;
+        return `/api/Nexus/collections?userId=${userId}`;
     };
 
     return (

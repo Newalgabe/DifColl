@@ -10,7 +10,7 @@ const UserContainer = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('https://localhost:7113/api/account/userinfo', {
+                const response = await fetch('/api/account/userinfo', {
                     credentials: 'include',
                 });
 
@@ -31,7 +31,7 @@ const UserContainer = () => {
     }, []);
 
     const handleLogout = async () => {
-        await fetch('https://localhost:7113/api/account/logout', {
+        await fetch('/api/account/logout', {
             method: 'POST',
             credentials: 'include',
         });

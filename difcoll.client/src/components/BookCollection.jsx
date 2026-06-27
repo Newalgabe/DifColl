@@ -5,7 +5,7 @@ const BookCollection = () => {
 
     const fetchCollection = async () => {
         try {
-            const response = await fetch('https://localhost:7113/api/collection/books', {
+            const response = await fetch('/api/collection/books', {
                 credentials: 'include',
             });
             if (response.ok) {

@@ -38,7 +38,11 @@ const MainPage = () => {
 
     return (
         <div className="main-page">
-            <section className="hero-section" data-aos="fade-up">
+            <section className="hero-section">
+                <div className="hero-orb hero-orb--1" />
+                <div className="hero-orb hero-orb--2" />
+                <div className="hero-orb hero-orb--3" />
+                <div className="hero-grid" />
                 <div className="hero-content">
                     <div className="hero-text">
                         <h1>Welcome to DifColl</h1>

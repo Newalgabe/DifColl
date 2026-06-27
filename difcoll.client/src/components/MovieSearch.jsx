@@ -1,5 +1,6 @@
 // MovieSearch.jsx
 import { useState, useEffect } from 'react';
+import { FaFilm, FaTimes } from 'react-icons/fa';
 import './MovieSearch.css';
 
 
@@ -17,6 +18,8 @@ const MovieSearch = () => {
     const [toastMessage, setToastMessage] = useState('');
     const [sortOrder, setSortOrder] = useState('relevance'); // Updated sortOrder state
     const [genre, setGenre] = useState(''); // New genre state
+    const [searched, setSearched] = useState(false);
+    const [toastType, setToastType] = useState('success');
 
     // Load saved search parameters from localStorage on component mount
     useEffect(() => {
@@ -86,7 +89,7 @@ const MovieSearch = () => {
 
         try {
             // Construct the API URL with query, page, sortOrder, and genre
-            let apiUrl = `https://localhost:7113/api/Movie/search/${encodeURIComponent(searchQuery)}?page=${searchPage}`;
+            let apiUrl = `/api/Movie/search/${encodeURIComponent(searchQuery)}?page=${searchPage}`;
 
             if (searchSortOrder) {
                 apiUrl += `&sortOrder=${encodeURIComponent(searchSortOrder)}`;
@@ -127,6 +130,7 @@ const MovieSearch = () => {
             setPage(1);
         } finally {
             setLoading(false);
+            setSearched(true);
         }
     };
 
@@ -148,7 +152,7 @@ const MovieSearch = () => {
     // Fetch userId function (as with books)
     const fetchUserId = async () => {
         try {
-            const response = await fetch('https://localhost:7113/api/account/userinfo', {
+            const response = await fetch('/api/account/userinfo', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -173,7 +177,7 @@ const MovieSearch = () => {
             const userId = await fetchUserId();
 
             if (!userId) {
-                showToast('Unable to fetch user information');
+                showToast('Unable to fetch user information', 'error');
                 return;
             }
 
@@ -223,7 +227,7 @@ const MovieSearch = () => {
 
             console.log('Final movieDto to send:', movieDto);
 
-            const response = await fetch(`https://localhost:7113/api/Nexus/add/movie/${userId}`, {
+            const response = await fetch(`/api/Nexus/add/movie/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -236,11 +240,11 @@ const MovieSearch = () => {
                 showToast('Movie added to collection!');
             } else {
                 console.error('Failed to add movie:', response.status);
-                showToast('Failed to add movie to collection');
+                showToast('Failed to add movie to collection', 'error');
             }
         } catch (error) {
             console.error('Error adding movie to collection:', error);
-            showToast('An error occurred while adding the movie.');
+            showToast('An error occurred while adding the movie.', 'error');
         }
     };
 
@@ -267,7 +271,7 @@ const MovieSearch = () => {
 
             // Fetch most popular movies based on the first genre
             const genreQuery = encodeURIComponent(genres[0]);
-            const apiUrl = `https://localhost:7113/api/Movie/search/${genreQuery}?page=1&sortOrder=popularity.desc&genre=${encodeURIComponent(genres[0])}`;
+            const apiUrl = `/api/Movie/search/${genreQuery}?page=1&sortOrder=popularity.desc&genre=${encodeURIComponent(genres[0])}`;
 
             // Send the API request
             const response = await fetch(apiUrl, {
@@ -321,7 +325,7 @@ const MovieSearch = () => {
             showToast('Movie link copied to clipboard!');
         }).catch((error) => {
             console.error('Failed to copy: ', error);
-            showToast('Failed to copy link.');
+            showToast('Failed to copy link.', 'error');
         });
     };
 
@@ -332,8 +336,9 @@ const MovieSearch = () => {
     };
 
     // Function to display toast notifications
-    const showToast = (message) => {
+    const showToast = (message, type = 'success') => {
         setToastMessage(message);
+        setToastType(type);
         setTimeout(() => {
             setToastMessage('');
         }, 3000);
@@ -391,11 +396,27 @@ const MovieSearch = () => {
                 </button>
             </div>
 
+            {/* Genre Filter Tag */}
+            {genre && (
+                <div className="active-filters">
+                    <span className="filter-tag">{genre} <button onClick={() => setGenre('')}><FaTimes /></button></span>
+                </div>
+            )}
+
             {/* Loading Indicator */}
-            {loading && <p>Loading...</p>}
+            {loading && <div className="loading-spinner" />}
 
             {/* Error Message */}
             {error && <p className="error">{error}</p>}
+
+            {/* Empty State */}
+            {!loading && !error && searched && movies.length === 0 && (
+                <div className="empty-state">
+                    <FaFilm className="empty-state-icon" />
+                    <h3>No movies found</h3>
+                    <p>Try a different search term or genre</p>
+                </div>
+            )}
 
             {/* Search Results */}
             <div className="results-container">
@@ -409,12 +430,18 @@ const MovieSearch = () => {
                         <div className="movie-details">
                             <h3>{highlightQuery(movie.title, query)}</h3>
                             {movie.releaseDate && <p><strong>Release Date:</strong> {movie.releaseDate}</p>}
-                            {movie.genres && <p><strong>Genres:</strong> {movie.genres}</p>}
+                            {movie.genres && (
+                                <div className="genre-badges">
+                                    {movie.genres.split(', ').slice(0, 3).map((g, i) => (
+                                        <span key={i} className="genre-badge">{g}</span>
+                                    ))}
+                                </div>
+                            )}
                             {movie.directors && <p><strong>Directors:</strong> {movie.directors}</p>}
                             {movie.overview && <p className="overview">{movie.overview.slice(0, 150)}...</p>}
 
                             {movie.rating && (
-                                <p><strong>Rating:</strong> {movie.rating} / 10</p>
+                                <p className="rating-row"><span className="stars">{Array.from({ length: 5 }, (_, i) => i < Math.round(movie.rating / 2) ? <span key={i} className="star-filled">★</span> : <span key={i} className="star-empty">☆</span>)}</span> <span className="rating-value">{movie.rating.toFixed(1)} / 10</span></p>
                             )}
 
                             <div className="actions">
@@ -523,8 +550,9 @@ const MovieSearch = () => {
 
             {/* Toast Notifications */}
             {toastMessage && (
-                <div className="toast">
+                <div className={`toast toast--${toastType}`}>
                     <p>{toastMessage}</p>
+                    <div className="toast-progress" />
                 </div>
             )}
         </div>

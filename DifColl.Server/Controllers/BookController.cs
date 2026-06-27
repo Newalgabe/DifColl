@@ -27,12 +27,12 @@ namespace DifColl.Server.Controllers
         }
 
         [HttpGet("search/{query}")]
-        public async Task<IActionResult> SearchBooks(string query)
+        public async Task<IActionResult> SearchBooks(string query, [FromQuery] int startIndex = 0, [FromQuery] int maxResults = 10, [FromQuery] string orderBy = "relevance")
         {
             if (string.IsNullOrWhiteSpace(query))
                 return BadRequest("Query cannot be empty.");
 
-            var url = $"https://www.googleapis.com/books/v1/volumes?q={query}&key={_googleBooksApiKey}";
+            var url = $"https://www.googleapis.com/books/v1/volumes?q={query}&startIndex={startIndex}&maxResults={maxResults}&orderBy={orderBy}&key={_googleBooksApiKey}";
 
             var response = await _httpClient.GetAsync(url);
 

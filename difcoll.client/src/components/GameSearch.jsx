@@ -1,5 +1,6 @@
 // GameSearch.jsx
 import { useState, useEffect } from 'react';
+import { FaGamepad, FaTimes } from 'react-icons/fa';
 import './GameSearch.css';
 
 const GameSearch = () => {
@@ -16,6 +17,8 @@ const GameSearch = () => {
     const [toastMessage, setToastMessage] = useState('');
     const [sortOrder, setSortOrder] = useState('relevance'); // New sortOrder state
     const [genre, setGenre] = useState(''); // New genre state
+    const [searched, setSearched] = useState(false);
+    const [toastType, setToastType] = useState('success');
 
     // Load saved search parameters from localStorage on component mount
     useEffect(() => {
@@ -60,7 +63,7 @@ const GameSearch = () => {
 
         try {
             // Construct the API URL with query, page, sortOrder, and genre
-            let apiUrl = `https://localhost:7113/api/Game/search/${encodeURIComponent(searchQuery)}?page=${searchPage}`;
+            let apiUrl = `/api/Game/search/${encodeURIComponent(searchQuery)}?page=${searchPage}`;
 
             if (searchSortOrder) {
                 apiUrl += `&sortOrder=${encodeURIComponent(searchSortOrder)}`;
@@ -101,6 +104,7 @@ const GameSearch = () => {
             setPage(1);
         } finally {
             setLoading(false);
+            setSearched(true);
         }
     };
 
@@ -121,7 +125,7 @@ const GameSearch = () => {
 
     const fetchUserId = async () => {
         try {
-            const response = await fetch('https://localhost:7113/api/account/userinfo', {
+            const response = await fetch('/api/account/userinfo', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -147,7 +151,7 @@ const GameSearch = () => {
             const userId = await fetchUserId();
 
             if (!userId) {
-                showToast('Unable to fetch user information');
+                showToast('Unable to fetch user information', 'error');
                 return;
             }
 
@@ -202,7 +206,7 @@ const GameSearch = () => {
             console.log('Final gameDto to send:', gameDto);
 
             // Send the request to add the game to the collection
-            const response = await fetch(`https://localhost:7113/api/Nexus/add/game/${userId}`, {
+            const response = await fetch(`/api/Nexus/add/game/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -215,11 +219,11 @@ const GameSearch = () => {
                 showToast('Game added to collection!');
             } else {
                 console.error('Failed to add game:', response.status);
-                showToast('Failed to add game to collection');
+                showToast('Failed to add game to collection', 'error');
             }
         } catch (error) {
             console.error('Error adding game to collection:', error);
-            showToast('An error occurred while adding the game.');
+            showToast('An error occurred while adding the game.', 'error');
         }
     };
 
@@ -244,7 +248,7 @@ const GameSearch = () => {
 
             // Fetch related games based on the first genre
             const genreQuery = encodeURIComponent(genres[0]);
-            const apiUrl = `https://localhost:7113/api/Game/search/${genreQuery}?page=1&sortOrder=rating&genre=${encodeURIComponent(genres[0])}`;
+            const apiUrl = `/api/Game/search/${genreQuery}?page=1&sortOrder=rating&genre=${encodeURIComponent(genres[0])}`;
 
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -312,7 +316,7 @@ const GameSearch = () => {
             showToast('Game link copied to clipboard!');
         }).catch((error) => {
             console.error('Failed to copy: ', error);
-            showToast('Failed to copy link.');
+            showToast('Failed to copy link.', 'error');
         });
     };
 
@@ -323,8 +327,9 @@ const GameSearch = () => {
     };
 
     // Function to display toast notifications
-    const showToast = (message) => {
+    const showToast = (message, type = 'success') => {
         setToastMessage(message);
+        setToastType(type);
         setTimeout(() => {
             setToastMessage('');
         }, 3000);
@@ -407,13 +412,28 @@ const GameSearch = () => {
                 </button>
             </div>
 
+            {/* Genre Filter Tag */}
+            {genre && (
+                <div className="active-filters">
+                    <span className="filter-tag">{genre} <button onClick={() => setGenre('')}><FaTimes /></button></span>
+                </div>
+            )}
+
             {/* Loading Indicator */}
-            {loading && <p>Loading...</p>}
+            {loading && <div className="loading-spinner" />}
 
             {/* Error Message */}
             {error && <p className="error">{error}</p>}
 
-            {/* Search Results */}
+            {/* Empty State */}
+            {!loading && !error && searched && games.length === 0 && (
+                <div className="empty-state">
+                    <FaGamepad className="empty-state-icon" />
+                    <h3>No games found</h3>
+                    <p>Try a different search term or genre</p>
+                </div>
+            )}
+
             {/* Search Results */}
             <div className="results-container">
                 {games.map((game) => (
@@ -426,8 +446,16 @@ const GameSearch = () => {
                         <div className="game-details">
                             <h3>{highlightQuery(game.name, query)}</h3>
                             {game.released && <p><strong>Released:</strong> {game.released}</p>}
-                            {game.rating && <p><strong>Rating:</strong> {game.rating}</p>}
-                            {game.genres && <p><strong>Genres:</strong> {game.genres}</p>}
+                            {game.rating && (
+                                <p className="rating-row"><span className="stars">{Array.from({ length: 5 }, (_, i) => i < Math.round(game.rating / 2) ? <span key={i} className="star-filled">★</span> : <span key={i} className="star-empty">☆</span>)}</span> <span className="rating-value">{game.rating.toFixed(1)} / 5</span></p>
+                            )}
+                            {game.genres && (
+                                <div className="genre-badges">
+                                    {game.genres.split(', ').slice(0, 3).map((g, i) => (
+                                        <span key={i} className="genre-badge">{g}</span>
+                                    ))}
+                                </div>
+                            )}
                             {game.developer && <p><strong>Developer:</strong> {game.developer}</p>}
                             {game.publisher && <p><strong>Publisher:</strong> {game.publisher}</p>}
                             {game.description && <p className="description">{game.description.slice(0, 150)}...</p>}
@@ -544,8 +572,9 @@ const GameSearch = () => {
 
             {/* Toast Notifications */}
             {toastMessage && (
-                <div className="toast">
+                <div className={`toast toast--${toastType}`}>
                     <p>{toastMessage}</p>
+                    <div className="toast-progress" />
                 </div>
             )}
         </div>

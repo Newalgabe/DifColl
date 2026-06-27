@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen();
 
 // Add DbContext with connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add CORS policy to allow frontend communication (React frontend)
 builder.Services.AddCors(options =>

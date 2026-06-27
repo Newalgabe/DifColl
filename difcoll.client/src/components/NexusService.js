@@ -3,7 +3,7 @@ const API_URL = "/api/nexus";
 const NexusService = {
     async getNexusCollections(userId) {
         try {
-            const response = await fetch(`https://localhost:7113/api/Nexus/collections?userId=${userId}`, {
+            const response = await fetch(`/api/Nexus/collections?userId=${userId}`, {
                 method: 'GET',
                 credentials: 'include', // Include credentials if needed
             });
@@ -106,7 +106,7 @@ const NexusService = {
 
     removeBookFromNexus: async (userId, bookId) => {
         try {
-            const response = await fetch(`https://localhost:7113/api/Nexus/remove/book/${userId}/${bookId}`, {
+            const response = await fetch(`/api/Nexus/remove/book/${userId}/${bookId}`, {
                 method: "DELETE",
                 credentials: 'include',
             });
@@ -119,7 +119,7 @@ const NexusService = {
 
     async removeMovieFromNexus(userId, movieId) {
         try {
-            const response = await fetch(`https://localhost:7113/api/Nexus/remove/movie/${userId}/${movieId}`, {
+            const response = await fetch(`/api/Nexus/remove/movie/${userId}/${movieId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -135,7 +135,7 @@ const NexusService = {
 
     removeGameFromNexus: async (userId, gameId) => {
         try {
-            const response = await fetch(`https://localhost:7113/api/Nexus/remove/game/${userId}/${gameId}`, {
+            const response = await fetch(`/api/Nexus/remove/game/${userId}/${gameId}`, {
                 method: "DELETE",
                 credentials: 'include',
             });
