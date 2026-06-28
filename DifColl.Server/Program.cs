@@ -36,8 +36,7 @@ builder.Services.AddCors(options =>
         policy => policy.WithOrigins(corsOrigin)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials()
-                        .SetIsOriginAllowed((host) => true));
+                        .AllowCredentials());
 });
 
 // Enable Google Authentication
@@ -108,17 +107,6 @@ if (app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 app.UseRouting();
-
-// Handle preflight requests explicitly if necessary
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == "OPTIONS")
-    {
-        context.Response.StatusCode = 200;
-        return;
-    }
-    await next.Invoke();
-});
 
 // Use authentication and authorization middleware
 app.UseAuthentication();
