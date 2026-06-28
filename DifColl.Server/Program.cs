@@ -99,13 +99,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// CORS only in dev (production is same-origin via wwwroot)
+// Enable CORS policy for cross-origin requests from frontend
+app.UseCors("AllowFrontend");
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors("AllowFrontend");
+    app.UseHttpsRedirection();
 }
-
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
