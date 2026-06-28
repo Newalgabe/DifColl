@@ -28,15 +28,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add CORS policy to allow frontend communication (React frontend)
+// CORS: only needed in dev when frontend (5173) and backend (7113) are separate origins
+var corsOrigin = builder.Configuration.GetValue<string>("CorsOrigins") ?? "https://localhost:5173";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins("https://localhost:5173") // Adjust port if necessary
+        policy => policy.WithOrigins(corsOrigin)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials() // Required for cookies and authentication
-                        .SetIsOriginAllowed((host) => true)); // Allow localhost origins for dev purposes
+                        .AllowCredentials()
+                        .SetIsOriginAllowed((host) => true));
 });
 
 // Enable Google Authentication
@@ -94,8 +95,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Enable CORS policy for cross-origin requests from frontend
-app.UseCors("AllowFrontend");
+// CORS only in dev (production is same-origin via wwwroot)
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowFrontend");
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

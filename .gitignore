@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Local dev secrets
+DifColl.Server/appsettings.Development.json
+
+# Frontend build output
+DifColl.Server/wwwroot/
