@@ -1,6 +1,7 @@
 // MovieSearch.jsx
 import { useState, useEffect } from 'react';
 import { FaFilm, FaTimes } from 'react-icons/fa';
+import { api } from '../api';
 import './MovieSearch.css';
 
 
@@ -101,7 +102,7 @@ const MovieSearch = () => {
 
             console.log("Sending request to:", apiUrl);
 
-            const response = await fetch(apiUrl, {
+            const response = await api(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -152,7 +153,7 @@ const MovieSearch = () => {
     // Fetch userId function (as with books)
     const fetchUserId = async () => {
         try {
-            const response = await fetch('/api/account/userinfo', {
+            const response = await api('/api/account/userinfo', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -227,7 +228,7 @@ const MovieSearch = () => {
 
             console.log('Final movieDto to send:', movieDto);
 
-            const response = await fetch(`/api/Nexus/add/movie/${userId}`, {
+            const response = await api(`/api/Nexus/add/movie/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -274,7 +275,7 @@ const MovieSearch = () => {
             const apiUrl = `/api/Movie/search/${genreQuery}?page=1&sortOrder=popularity.desc&genre=${encodeURIComponent(genres[0])}`;
 
             // Send the API request
-            const response = await fetch(apiUrl, {
+            const response = await api(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

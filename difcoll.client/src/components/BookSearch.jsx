@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaBook, FaStar, FaStarHalfAlt, FaRegStar, FaTimes } from 'react-icons/fa';
+import { api } from '../api';
 import './BookSearch.css';
 
 const BookSearch = () => {
@@ -91,7 +92,7 @@ const BookSearch = () => {
         setError(null);
         const categoryFilter = category ? `+subject:${encodeURIComponent(category)}` : '';
         try {
-            const response = await fetch(
+            const response = await api(
                 `/api/book/search/${encodeURIComponent(query)}${categoryFilter}?startIndex=${index}&maxResults=10&orderBy=${sortOrder}`
             );
             if (response.ok) {
@@ -158,7 +159,7 @@ const BookSearch = () => {
     // Fetch user ID function
     const fetchUserId = async () => {
         try {
-            const response = await fetch('/api/account/userinfo', {
+            const response = await api('/api/account/userinfo', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -190,7 +191,7 @@ const BookSearch = () => {
 
             console.log('Adding to collection for userId:', userId);
 
-            const response = await fetch(`/api/Nexus/add/book/${userId}`, {
+            const response = await api(`/api/Nexus/add/book/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -248,7 +249,7 @@ const BookSearch = () => {
                 return;
             }
 
-            const response = await fetch(
+            const response = await api(
                 `/api/book/search/${encodeURIComponent(query)}?maxResults=5&orderBy=relevance`
             );
 

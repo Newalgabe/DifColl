@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { api } from '../api';
 
 const BookCollection = () => {
     const [books, setBooks] = useState([]);
 
     const fetchCollection = async () => {
         try {
-            const response = await fetch('/api/collection/books', {
+            const response = await api('/api/collection/books', {
                 credentials: 'include',
             });
             if (response.ok) {

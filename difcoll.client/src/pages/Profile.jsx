@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { api } from '../api';
 
 const Profile = () => {
     const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            const response = await fetch('/api/account/userinfo');
+            const response = await api('/api/account/userinfo');
             if (response.ok) {
                 const data = await response.json();
                 setUserInfo(data);

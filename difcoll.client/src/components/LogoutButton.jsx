@@ -1,7 +1,8 @@
+import { api } from '../api';
 
 const LogoutButton = () => {
     const handleLogout = async () => {
-        const response = await fetch('/api/account/logout', {
+        const response = await api('/api/account/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

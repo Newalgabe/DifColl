@@ -1,6 +1,7 @@
 // GameSearch.jsx
 import { useState, useEffect } from 'react';
 import { FaGamepad, FaTimes } from 'react-icons/fa';
+import { api } from '../api';
 import './GameSearch.css';
 
 const GameSearch = () => {
@@ -75,7 +76,7 @@ const GameSearch = () => {
 
             console.log("Sending request to:", apiUrl);
 
-            const response = await fetch(apiUrl, {
+            const response = await api(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ const GameSearch = () => {
 
     const fetchUserId = async () => {
         try {
-            const response = await fetch('/api/account/userinfo', {
+            const response = await api('/api/account/userinfo', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -206,7 +207,7 @@ const GameSearch = () => {
             console.log('Final gameDto to send:', gameDto);
 
             // Send the request to add the game to the collection
-            const response = await fetch(`/api/Nexus/add/game/${userId}`, {
+            const response = await api(`/api/Nexus/add/game/${userId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -250,7 +251,7 @@ const GameSearch = () => {
             const genreQuery = encodeURIComponent(genres[0]);
             const apiUrl = `/api/Game/search/${genreQuery}?page=1&sortOrder=rating&genre=${encodeURIComponent(genres[0])}`;
 
-            const response = await fetch(apiUrl, {
+            const response = await api(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

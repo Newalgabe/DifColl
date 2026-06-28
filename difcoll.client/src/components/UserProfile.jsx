@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import PropTypes from 'prop-types';
 import './UserProfile.css';
 import { FaEdit, FaSignOutAlt, FaUser, FaInfoCircle, FaMapMarkerAlt, FaBirthdayCake, FaHeart, FaHome } from 'react-icons/fa';
+import { api } from '../api';
 import FriendsList from './FriendsList';
 
 const UserProfile = ({ onLogout }) => {
@@ -29,7 +30,7 @@ const UserProfile = ({ onLogout }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('/api/account/userinfo', {
+                const response = await api('/api/account/userinfo', {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -76,7 +77,7 @@ const UserProfile = ({ onLogout }) => {
         };
 
         try {
-            const response = await fetch('/api/account/update-profile', {
+            const response = await api('/api/account/update-profile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

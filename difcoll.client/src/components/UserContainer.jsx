@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import UserProfile from './UserProfile';
 import LoginButton from './LoginButton';
+import { api } from '../api';
 import './UserContainer.css';
 
 const UserContainer = () => {
@@ -10,7 +11,7 @@ const UserContainer = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('/api/account/userinfo', {
+                const response = await api('/api/account/userinfo', {
                     credentials: 'include',
                 });
 
@@ -31,7 +32,7 @@ const UserContainer = () => {
     }, []);
 
     const handleLogout = async () => {
-        await fetch('/api/account/logout', {
+        await api('/api/account/logout', {
             method: 'POST',
             credentials: 'include',
         });

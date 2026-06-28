@@ -1,9 +1,11 @@
+import { api } from "../api";
+
 const API_URL = "/api/nexus";
 
 const NexusService = {
     async getNexusCollections(userId) {
         try {
-            const response = await fetch(`/api/Nexus/collections?userId=${userId}`, {
+            const response = await api(`/api/Nexus/collections?userId=${userId}`, {
                 method: 'GET',
                 credentials: 'include', // Include credentials if needed
             });
@@ -24,7 +26,7 @@ const NexusService = {
 
     getUserBooks: async (userId) => {
         try {
-            const response = await fetch(`${API_URL}/books/${userId}`);
+            const response = await api(`${API_URL}/books/${userId}`);
             if (!response.ok) throw new Error("Failed to fetch user books.");
             return await response.json();
         } catch (error) {
@@ -35,7 +37,7 @@ const NexusService = {
 
     getUserMovies: async (userId) => {
         try {
-            const response = await fetch(`${API_URL}/movies/${userId}`);
+            const response = await api(`${API_URL}/movies/${userId}`);
             if (!response.ok) throw new Error("Failed to fetch user movies.");
             return await response.json();
         } catch (error) {
@@ -46,7 +48,7 @@ const NexusService = {
 
     getUserGames: async (userId) => {
         try {
-            const response = await fetch(`${API_URL}/games/${userId}`);
+            const response = await api(`${API_URL}/games/${userId}`);
             if (!response.ok) throw new Error("Failed to fetch user games.");
             return await response.json();
         } catch (error) {
@@ -57,7 +59,7 @@ const NexusService = {
 
     addBookToNexus: async (userId, book) => {
         try {
-            const response = await fetch(`${API_URL}/add/book/${userId}`, {
+            const response = await api(`${API_URL}/add/book/${userId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -73,7 +75,7 @@ const NexusService = {
 
     addMovieToNexus: async (userId, movie) => {
         try {
-            const response = await fetch(`${API_URL}/add/movie/${userId}`, {
+            const response = await api(`${API_URL}/add/movie/${userId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -89,7 +91,7 @@ const NexusService = {
 
     addGameToNexus: async (userId, game) => {
         try {
-            const response = await fetch(`${API_URL}/add/game/${userId}`, {
+            const response = await api(`${API_URL}/add/game/${userId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -106,7 +108,7 @@ const NexusService = {
 
     removeBookFromNexus: async (userId, bookId) => {
         try {
-            const response = await fetch(`/api/Nexus/remove/book/${userId}/${bookId}`, {
+            const response = await api(`/api/Nexus/remove/book/${userId}/${bookId}`, {
                 method: "DELETE",
                 credentials: 'include',
             });
@@ -119,7 +121,7 @@ const NexusService = {
 
     async removeMovieFromNexus(userId, movieId) {
         try {
-            const response = await fetch(`/api/Nexus/remove/movie/${userId}/${movieId}`, {
+            const response = await api(`/api/Nexus/remove/movie/${userId}/${movieId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -135,7 +137,7 @@ const NexusService = {
 
     removeGameFromNexus: async (userId, gameId) => {
         try {
-            const response = await fetch(`/api/Nexus/remove/game/${userId}/${gameId}`, {
+            const response = await api(`/api/Nexus/remove/game/${userId}/${gameId}`, {
                 method: "DELETE",
                 credentials: 'include',
             });

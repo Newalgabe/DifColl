@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { api } from "./api";
 import MainPage from "./pages/MainPage";
 import UserContainer from "./components/UserContainer";
 import Navbar from "./components/Navbar";
@@ -20,7 +21,7 @@ const App = () => {
 
     const fetchUserId = async () => {
       try {
-        const response = await fetch('/api/account/userinfo', {
+        const response = await api('/api/account/userinfo', {
           method: 'GET',
           credentials: 'include',
         });
@@ -39,7 +40,7 @@ const App = () => {
   }, []);
 
   const handleLogout = async () => {
-    await fetch('/api/account/logout', { method: 'POST', credentials: 'include' });
+    await api('/api/account/logout', { method: 'POST', credentials: 'include' });
     setUserId(null);
     setUser(null);
     window.location.href = '/login';
