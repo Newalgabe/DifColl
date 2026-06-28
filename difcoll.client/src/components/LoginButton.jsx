@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
+import { API_BASE } from '../api';
 
 const LoginButton = ({ provider, logo }) => {
     const handleLogin = () => {
-        // Redirect to the login endpoint with the chosen provider
-        window.location.href = `/api/account/login?provider=${provider}`;
+        window.location.href = `${API_BASE}/api/account/login?provider=${provider}`;
     };
 
     return (

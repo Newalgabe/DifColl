@@ -19,14 +19,15 @@ namespace DifCol.Controllers
     public class AccountController : Controller
     {
 
-        private readonly IWebHostEnvironment _environment; // Add this field to store environment information
+        private readonly IWebHostEnvironment _environment;
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        // Inject IWebHostEnvironment in the constructor
-        public AccountController(IWebHostEnvironment environment, ApplicationDbContext context)
+        public AccountController(IWebHostEnvironment environment, ApplicationDbContext context, IConfiguration configuration)
         {
             _environment = environment;
             _context = context;
+            _configuration = configuration;
         }
 
 
@@ -42,9 +43,11 @@ namespace DifCol.Controllers
                 _ => throw new ArgumentException("Unsupported provider") // Handle unsupported providers
             };
 
+            var frontendUrl = _configuration.GetValue<string>("FrontendUrl") ?? "/";
+
             return Challenge(new AuthenticationProperties
             {
-                RedirectUri = "/"
+                RedirectUri = frontendUrl
             }, authenticationScheme);
         }
 
