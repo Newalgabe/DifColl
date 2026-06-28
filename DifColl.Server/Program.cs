@@ -5,6 +5,7 @@ using DifColl.Server.Repositories; // Make sure to include the namespace for you
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,6 +86,12 @@ builder.Services.AddScoped<INexusCollectionRepository, NexusCollectionRepository
 // Register your NexusCollectionService
 builder.Services.AddScoped<INexusCollectionService, NexusCollectionService>();
 
+// Trust Render's load balancer for X-Forwarded-Proto (HTTPS)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 var app = builder.Build();
 
 // Enable Swagger UI only in development mode
@@ -97,6 +104,9 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = "swagger"; // Swagger UI available at /swagger
     });
 }
+
+// Respect X-Forwarded-Proto from Render's load balancer so OAuth callback URLs use https
+app.UseForwardedHeaders();
 
 // Enable CORS policy for cross-origin requests from frontend
 app.UseCors("AllowFrontend");
