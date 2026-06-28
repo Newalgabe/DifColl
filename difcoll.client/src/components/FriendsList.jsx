@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaUserPlus, FaUserTimes, FaBook } from "react-icons/fa";
+import { FaUserPlus, FaUserTimes, FaBook, FaUserFriends } from "react-icons/fa";
 import { api } from '../api';
 import './FriendsList.css';
 
@@ -275,7 +275,11 @@ const FriendsList = () => {
                         </div>
                     ))
                 ) : (
-                    <p>No friends added yet.</p>
+                    <div className="empty-state">
+                        <FaUserFriends className="empty-state-icon" />
+                        <h3>No friends yet</h3>
+                        <p>Share your user ID with friends to connect and explore each other's collections!</p>
+                    </div>
                 )}
             </div>
 

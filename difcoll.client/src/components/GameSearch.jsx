@@ -1,7 +1,11 @@
 // GameSearch.jsx
 import { useState, useEffect } from 'react';
-import { FaGamepad, FaTimes } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaGamepad, FaTimes, FaSearch } from 'react-icons/fa';
 import { api } from '../api';
+import { useFocusTrap } from '../hooks/useFocusTrap';
+import SearchCard, { renderStars } from './SearchCard';
+import './Card.css';
 import './GameSearch.css';
 
 const GameSearch = () => {
@@ -327,7 +331,8 @@ const GameSearch = () => {
         handleRelatedGames(game);
     };
 
-    // Function to display toast notifications
+    const modalRef = useFocusTrap(!!selectedGame, () => setSelectedGame(null));
+
     const showToast = (message, type = 'success') => {
         setToastMessage(message);
         setToastType(type);
@@ -430,57 +435,42 @@ const GameSearch = () => {
             {!loading && !error && searched && games.length === 0 && (
                 <div className="empty-state">
                     <FaGamepad className="empty-state-icon" />
-                    <h3>No games found</h3>
-                    <p>Try a different search term or genre</p>
+                    <h3>No games match your search</h3>
+                    <p>Try adjusting your search term or genre above</p>
+                    <div className="empty-state-actions">
+                        <button onClick={() => { setQuery(''); setGenre(''); handleSearch('', 1, '', ''); }} className="btn-secondary">
+                            <FaSearch /> Clear & Try Again
+                        </button>
+                    </div>
                 </div>
             )}
 
             {/* Search Results */}
             <div className="results-container">
-                {games.map((game) => (
-                    <article key={`${game.id}-${game.name}`} className="game-card">
-                        <img
-                            src={game.backgroundImage}
-                            alt={game.name}
-                            className="game-image"
-                        />
-                        <div className="game-details">
-                            <h3>{highlightQuery(game.name, query)}</h3>
-                            {game.released && <p><strong>Released:</strong> {game.released}</p>}
-                            {game.rating && (
-                                <p className="rating-row"><span className="stars">{Array.from({ length: 5 }, (_, i) => i < Math.round(game.rating / 2) ? <span key={i} className="star-filled">★</span> : <span key={i} className="star-empty">☆</span>)}</span> <span className="rating-value">{game.rating.toFixed(1)} / 5</span></p>
-                            )}
-                            {game.genres && (
-                                <div className="genre-badges">
-                                    {game.genres.split(', ').slice(0, 3).map((g, i) => (
-                                        <span key={i} className="genre-badge">{g}</span>
-                                    ))}
-                                </div>
-                            )}
-                            {game.developer && <p><strong>Developer:</strong> {game.developer}</p>}
-                            {game.publisher && <p><strong>Publisher:</strong> {game.publisher}</p>}
-                            {game.description && <p className="description">{game.description.slice(0, 150)}...</p>}
+                {games.map((game) => {
+                    const metadata = [
+                        game.released ? { label: 'Released', value: game.released } : null,
+                        game.developer ? { label: 'Developer', value: game.developer } : null,
+                        game.publisher ? { label: 'Publisher', value: game.publisher } : null,
+                    ].filter(Boolean);
 
-                            <div className="actions">
-                                <button
-                                    onClick={() => handleAddToCollection(game)}
-                                    className="add-button"
-                                >
-                                    Add to Collection
-                                </button>
-                                <button onClick={() => handleBookmark(game)} className="bookmark-button">
-                                    Bookmark
-                                </button>
-                                <button onClick={() => handleShare(game)} className="share-button">
-                                    Share
-                                </button>
-                                <button onClick={() => handleViewDetails(game)} className="details-button">
-                                    View Details
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                ))}
+                    return (
+                        <SearchCard
+                            key={`${game.id}-${game.name}`}
+                            image={game.backgroundImage || 'https://via.placeholder.com/300x450?text=No+Image'}
+                            alt={game.name}
+                            title={highlightQuery(game.name, query)}
+                            metadata={metadata}
+                            genres={game.genres}
+                            rating={game.rating ? game.rating : null}
+                            ratingValue={game.rating ? `${game.rating.toFixed(1)} / 5` : null}
+                            onAddToCollection={() => handleAddToCollection(game)}
+                            onBookmark={() => handleBookmark(game)}
+                            onShare={() => handleShare(game)}
+                            onViewDetails={() => handleViewDetails(game)}
+                        />
+                    );
+                })}
             </div>
 
 
@@ -505,7 +495,7 @@ const GameSearch = () => {
 
             {selectedGame && (
                 <div className="modal" onClick={() => setSelectedGame(null)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} ref={modalRef} role="dialog" aria-modal="true" aria-label={selectedGame.name}>
                         <button onClick={() => setSelectedGame(null)} className="close-modal">X</button>
                         <h3>{selectedGame.name}</h3>
                         {selectedGame.released && (
@@ -531,18 +521,18 @@ const GameSearch = () => {
                         </a>
 
                         {/* Related Games */}
-                        <div className="related-games-container">
+                        <div className="related-container">
                             <h3>Related Games</h3>
                             {relatedGames.length > 0 ? (
-                                <div className="related-games-list">
+                                <div className="related-list">
                                     {relatedGames.map((game) => (
-                                        <div key={game.id} className="related-game-card" onClick={() => handleRelatedGameClick(game)}>
+                                        <div key={game.id} className="related-card" onClick={() => handleRelatedGameClick(game)}>
                                             <img
                                                 src={game.backgroundImage || 'https://via.placeholder.com/100x150?text=No+Image'}
                                                 alt={game.name}
-                                                className="related-game-image"
+                                                className="related-card-image"
                                             />
-                                            <div className="related-game-info">
+                                            <div className="related-card-info">
                                                 <h4>{highlightQuery(game.name, query)}</h4>
                                                 {game.released && <p>{game.released}</p>}
                                             </div>

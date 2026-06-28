@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import './MainPage.css';
 import { FaBook, FaUsers, FaStar, FaChartBar, FaUsersCog, FaFilm, FaGamepad, FaSearch } from 'react-icons/fa';
+import AnimatedCounter from '../components/AnimatedCounter';
 
 const MainPage = () => {
     const testimonials = [
@@ -21,17 +22,20 @@ const MainPage = () => {
     const statistics = [
         {
             icon: <FaUsersCog />,
-            number: "1.2K",
+            target: 1.2,
+            suffix: 'K',
             label: "Active Users"
         },
         {
             icon: <FaChartBar />,
-            number: "500K",
+            target: 500,
+            suffix: 'K',
             label: "Collections Managed"
         },
         {
             icon: <FaStar />,
-            number: "10K",
+            target: 10,
+            suffix: 'K',
             label: "Positive Reviews"
         },
     ];
@@ -94,7 +98,7 @@ const MainPage = () => {
                         <div className="stat-card" key={index} data-aos="zoom-in" data-aos-delay={index * 200}>
                             <div className="stat-icon">{stat.icon}</div>
                             <div className="stat-info">
-                                <h3>{stat.number}</h3>
+                                <h3><AnimatedCounter target={stat.target} suffix={stat.suffix} /></h3>
                                 <p>{stat.label}</p>
                             </div>
                         </div>

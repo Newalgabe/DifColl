@@ -114,11 +114,7 @@
   font-size: 22px;
 }
 
-@media (max-width: 768px) {
-  .navbar {
-    padding: 0 16px;
-  }
-
+@media (max-width: 900px) {
   .navbar-links {
     display: none;
     position: absolute;
@@ -140,9 +136,36 @@
   .navbar-links a {
     padding: 12px 16px;
     width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 
   .navbar-mobile-toggle {
     display: block;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-toggle-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .navbar-user-btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 12px;
+  }
+
+  .navbar-user-name {
+    display: none;
   }
 }

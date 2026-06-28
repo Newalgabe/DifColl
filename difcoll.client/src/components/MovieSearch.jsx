@@ -1,7 +1,11 @@
 // MovieSearch.jsx
 import { useState, useEffect } from 'react';
-import { FaFilm, FaTimes } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaFilm, FaTimes, FaSearch } from 'react-icons/fa';
 import { api } from '../api';
+import { useFocusTrap } from '../hooks/useFocusTrap';
+import SearchCard, { renderStars } from './SearchCard';
+import './Card.css';
 import './MovieSearch.css';
 
 
@@ -336,6 +340,8 @@ const MovieSearch = () => {
         handleRelatedMovies(movie);
     };
 
+    const modalRef = useFocusTrap(!!selectedMovie, () => setSelectedMovie(null));
+
     // Function to display toast notifications
     const showToast = (message, type = 'success') => {
         setToastMessage(message);
@@ -414,57 +420,45 @@ const MovieSearch = () => {
             {!loading && !error && searched && movies.length === 0 && (
                 <div className="empty-state">
                     <FaFilm className="empty-state-icon" />
-                    <h3>No movies found</h3>
-                    <p>Try a different search term or genre</p>
+                    <h3>No movies match your search</h3>
+                    <p>Try adjusting your search term or genre above</p>
+                    <div className="empty-state-actions">
+                        <button onClick={() => { setQuery(''); setGenre(''); handleSearch('', 1, 'relevance', ''); }} className="btn-secondary">
+                            <FaSearch /> Clear & Try Again
+                        </button>
+                    </div>
                 </div>
             )}
 
             {/* Search Results */}
             <div className="results-container">
-                {movies.map((movie) => (
-                    <article key={`${movie.id}-${movie.title}`} className="movie-card">
-                        <img
-                            src={movie.posterPath}
+                {movies.map((movie) => {
+                    const posterPath = movie.posterPath
+                        ? `https://image.tmdb.org/t/p/w342${movie.posterPath}`
+                        : 'https://via.placeholder.com/300x450?text=No+Image';
+
+                    const metadata = [
+                        movie.releaseDate ? { label: 'Release Date', value: movie.releaseDate } : null,
+                        movie.directors ? { label: 'Directors', value: movie.directors } : null,
+                    ].filter(Boolean);
+
+                    return (
+                        <SearchCard
+                            key={`${movie.id}-${movie.title}`}
+                            image={posterPath}
                             alt={movie.title}
-                            className="movie-image"
+                            title={highlightQuery(movie.title, query)}
+                            metadata={metadata}
+                            genres={movie.genres}
+                            rating={movie.rating ? movie.rating / 2 : null}
+                            ratingValue={movie.rating ? `${movie.rating.toFixed(1)} / 10` : null}
+                            onAddToCollection={() => handleAddToCollection(movie)}
+                            onBookmark={() => handleBookmark(movie)}
+                            onShare={() => handleShare(movie)}
+                            onViewDetails={() => handleViewDetails(movie)}
                         />
-                        <div className="movie-details">
-                            <h3>{highlightQuery(movie.title, query)}</h3>
-                            {movie.releaseDate && <p><strong>Release Date:</strong> {movie.releaseDate}</p>}
-                            {movie.genres && (
-                                <div className="genre-badges">
-                                    {movie.genres.split(', ').slice(0, 3).map((g, i) => (
-                                        <span key={i} className="genre-badge">{g}</span>
-                                    ))}
-                                </div>
-                            )}
-                            {movie.directors && <p><strong>Directors:</strong> {movie.directors}</p>}
-                            {movie.overview && <p className="overview">{movie.overview.slice(0, 150)}...</p>}
-
-                            {movie.rating && (
-                                <p className="rating-row"><span className="stars">{Array.from({ length: 5 }, (_, i) => i < Math.round(movie.rating / 2) ? <span key={i} className="star-filled">★</span> : <span key={i} className="star-empty">☆</span>)}</span> <span className="rating-value">{movie.rating.toFixed(1)} / 10</span></p>
-                            )}
-
-                            <div className="actions">
-                                <button
-                                    onClick={() => handleAddToCollection(movie)}
-                                    className="add-button"
-                                >
-                                    Add to Collection
-                                </button>
-                                <button onClick={() => handleBookmark(movie)} className="bookmark-button">
-                                    Bookmark
-                                </button>
-                                <button onClick={() => handleShare(movie)} className="share-button">
-                                    Share
-                                </button>
-                                <button onClick={() => handleViewDetails(movie)} className="details-button">
-                                    View Details
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Pagination Controls */}
@@ -489,7 +483,7 @@ const MovieSearch = () => {
             {/* Movie Details Modal */}
             {selectedMovie && (
                 <div className="modal" onClick={() => setSelectedMovie(null)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} ref={modalRef} role="dialog" aria-modal="true" aria-label={selectedMovie.title}>
                         <button onClick={() => setSelectedMovie(null)} className="close-modal">X</button>
                         <h3>{selectedMovie.title}</h3>
                         {selectedMovie.releaseDate && (
@@ -509,18 +503,18 @@ const MovieSearch = () => {
                         </a>
 
                         {/* Related Movies */}
-                        <div className="related-movies-container">
+                        <div className="related-container">
                             <h3>Related Movies</h3>
                             {relatedMovies.length > 0 ? (
-                                <div className="related-movies-list">
+                                <div className="related-list">
                                     {relatedMovies.map((movie) => (
-                                        <div key={movie.id} className="related-movie-card" onClick={() => handleRelatedMovieClick(movie)}>
+                                        <div key={movie.id} className="related-card" onClick={() => handleRelatedMovieClick(movie)}>
                                             <img
                                                 src={movie.posterPath || 'https://via.placeholder.com/100x150?text=No+Image'}
                                                 alt={movie.title}
-                                                className="related-movie-image"
+                                                className="related-card-image"
                                             />
-                                            <div className="related-movie-info">
+                                            <div className="related-card-info">
                                                 <h4>{movie.title}</h4>
                                                 {movie.releaseDate && <p>{movie.releaseDate}</p>}
                                             </div>

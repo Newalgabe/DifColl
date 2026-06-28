@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
-import { FaBook, FaStar, FaStarHalfAlt, FaRegStar, FaTimes } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaBook, FaTimes, FaSearch } from 'react-icons/fa';
 import { api } from '../api';
+import { useFocusTrap } from '../hooks/useFocusTrap';
+import SearchCard, { renderStars } from './SearchCard';
+import './Card.css';
 import './BookSearch.css';
 
 const BookSearch = () => {
@@ -326,25 +330,14 @@ const BookSearch = () => {
         handleRelatedBooks(book);
     };
 
+    const modalRef = useFocusTrap(!!selectedBook, () => setSelectedBook(null));
+
     const showToast = (message, type = 'success') => {
         setToastMessage(message);
         setToastType(type);
         setTimeout(() => {
             setToastMessage('');
         }, 3000);
-    };
-
-    const renderStars = (rating) => {
-        if (!rating) return null;
-        const full = Math.floor(rating);
-        const half = rating - full >= 0.5;
-        const stars = [];
-        for (let i = 0; i < 5; i++) {
-            if (i < full) stars.push(<FaStar key={i} className="star-filled" />);
-            else if (i === full && half) stars.push(<FaStarHalfAlt key={i} className="star-filled" />);
-            else stars.push(<FaRegStar key={i} className="star-empty" />);
-        }
-        return <span className="stars">{stars}</span>;
     };
 
     return (
@@ -406,8 +399,13 @@ const BookSearch = () => {
             {!loading && !error && searched && books.length === 0 && (
                 <div className="empty-state">
                     <FaBook className="empty-state-icon" />
-                    <h3>No books found</h3>
-                    <p>Try a different search term or category</p>
+                    <h3>No books match your search</h3>
+                    <p>Try adjusting your search term or category above</p>
+                    <div className="empty-state-actions">
+                        <button onClick={() => { setQuery(''); setCategory(''); handleSearch(0); }} className="btn-secondary">
+                            <FaSearch /> Clear & Try Again
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -417,54 +415,28 @@ const BookSearch = () => {
 
                     const bookImage = imageLinks?.thumbnail?.replace('http://', 'https://').replace('zoom=1', 'zoom=2') || 'https://via.placeholder.com/300x450?text=No+Image+Available';
 
-                    return (
-                        <article key={`${book.id}-${title}`} className="book-card">
-                            <img
-                                src={bookImage}
-                                alt={title}
-                                className="book-image"
-                            />
-                            <div className="book-details">
-                                <h3>{highlightQuery(title, query)}</h3>
-                                {authors && <p><strong>Author(s):</strong> {authors.join(', ')}</p>}
-                                {publishedDate && <p><strong>Published:</strong> {publishedDate}</p>}
-                                {publisher && <p><strong>Publisher:</strong> {publisher}</p>}
-                                {pageCount && <p><strong>Pages:</strong> {pageCount}</p>}
-                                {book.volumeInfo.averageRating ? (
-                                    <p className="rating-row">{renderStars(book.volumeInfo.averageRating)} <span className="rating-value">{book.volumeInfo.averageRating.toFixed(1)}</span></p>
-                                ) : null}
-                                {ratings[book.id] ? (
-                                    <p className="rating-row">{renderStars(ratings[book.id])} <span className="rating-value">User: {ratings[book.id].toFixed(1)}</span></p>
-                                ) : null}
-                                {language && <p><strong>Language:</strong> {language}</p>}
-                                {book.volumeInfo.categories && book.volumeInfo.categories.length > 0 && (
-                                    <div className="genre-badges">
-                                        {book.volumeInfo.categories.slice(0, 3).map((cat, i) => (
-                                            <span key={i} className="genre-badge">{cat}</span>
-                                        ))}
-                                    </div>
-                                )}
-                                {description && <p className="description">{description.slice(0, 150)}...</p>}
+                    const metadata = [
+                        authors?.length ? { label: 'Author(s)', value: authors.join(', ') } : null,
+                        publishedDate ? { label: 'Published', value: publishedDate } : null,
+                        publisher ? { label: 'Publisher', value: publisher } : null,
+                        pageCount ? { label: 'Pages', value: pageCount } : null,
+                    ].filter(Boolean);
 
-                                <div className="actions">
-                                    <button
-                                        onClick={() => handleAddToCollection(book)}
-                                        className="add-button"
-                                    >
-                                        Add to Collection
-                                    </button>
-                                    <button onClick={() => handleBookmark(book)} className="bookmark-button">
-                                        Bookmark
-                                    </button>
-                                    <button onClick={() => handleShare(book)} className="share-button">
-                                        Share
-                                    </button>
-                                    <button onClick={() => handleViewDetails(book)} className="details-button">
-                                        View Details
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
+                    return (
+                        <SearchCard
+                            key={`${book.id}-${title}`}
+                            image={bookImage}
+                            alt={title}
+                            title={highlightQuery(title, query)}
+                            metadata={metadata}
+                            genres={book.volumeInfo.categories?.join(', ')}
+                            rating={book.volumeInfo.averageRating}
+                            ratingValue={book.volumeInfo.averageRating?.toFixed(1)}
+                            onAddToCollection={() => handleAddToCollection(book)}
+                            onBookmark={() => handleBookmark(book)}
+                            onShare={() => handleShare(book)}
+                            onViewDetails={() => handleViewDetails(book)}
+                        />
                     );
                 })}
             </div>
@@ -488,7 +460,7 @@ const BookSearch = () => {
 
             {selectedBook && (
                 <div className="modal" onClick={() => setSelectedBook(null)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} ref={modalRef} role="dialog" aria-modal="true" aria-label={selectedBook.volumeInfo.title}>
                         <button onClick={() => setSelectedBook(null)} className="close-modal">X</button>
                         <h3>{selectedBook.volumeInfo.title}</h3>
                         {selectedBook.volumeInfo.authors && (
@@ -527,18 +499,18 @@ const BookSearch = () => {
                             </a>
                         )}
 
-                        <div className="related-books-container">
+                        <div className="related-container">
                             <h3>Related Books</h3>
                             {relatedBooks.length > 0 ? (
-                                <div className="related-books-list">
+                                <div className="related-list">
                                     {relatedBooks.map((book) => (
-                                        <div key={book.id} className="related-book-card" onClick={() => handleRelatedBookClick(book)}>
+                                        <div key={book.id} className="related-card" onClick={() => handleRelatedBookClick(book)}>
                                             <img
                                                 src={book.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/100'}
                                                 alt={book.volumeInfo.title}
-                                                className="related-book-image"
+                                                className="related-card-image"
                                             />
-                                            <div className="related-book-info">
+                                            <div className="related-card-info">
                                                 <h4>{book.volumeInfo.title}</h4>
                                                 {book.volumeInfo.authors && <p>by {book.volumeInfo.authors.join(', ')}</p>}
                                             </div>

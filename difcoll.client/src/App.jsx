@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { api } from "./api";
@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 const App = () => {
   const [userId, setUserId] = useState(null);
   const [user, setUser] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     AOS.init({ duration: 800, easing: "ease-out-cubic", once: true });
@@ -53,15 +54,17 @@ const App = () => {
   return (
     <div style={{ paddingTop: '64px' }}>
       <Navbar userId={userId} onLogout={handleLogout} user={user} />
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/login" element={<UserContainer />} />
-        <Route path="/search-books" element={<BookSearch />} />
-        <Route path="/search-movies" element={<MovieSearch />} />
-        <Route path="/search-games" element={<GameSearch />} />
-        <Route path="/my-nexus" element={<MyNexus userId={userId} />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="page-transition" key={location.pathname}>
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/login" element={<UserContainer />} />
+          <Route path="/search-books" element={<BookSearch />} />
+          <Route path="/search-movies" element={<MovieSearch />} />
+          <Route path="/search-games" element={<GameSearch />} />
+          <Route path="/my-nexus" element={<MyNexus userId={userId} />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </div>
   );
 };

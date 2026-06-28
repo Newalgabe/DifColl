@@ -356,3 +356,60 @@
     padding: 24px;
   }
 }
+
+@media (max-width: 480px) {
+  .hero-text h1 {
+    font-size: 28px;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+  }
+
+  .hero-section {
+    padding: 40px 12px;
+  }
+
+  .search-section h2,
+  .features-section h2,
+  .testimonials-section h2 {
+    font-size: 26px;
+  }
+
+  .search-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .search-buttons .btn-primary {
+    width: 100%;
+    max-width: 280px;
+    min-height: 48px;
+  }
+
+  .statistics-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-card {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .features-container {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonials-container {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-card {
+    padding: 28px 20px;
+  }
+
+  .overlay-content h2 {
+    font-size: 28px;
+  }
+}

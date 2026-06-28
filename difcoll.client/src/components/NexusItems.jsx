@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import NexusService from './NexusService';
 import PropTypes from 'prop-types';
 import './MyNexus.css';
 // Import Font Awesome icons
-import { FaList, FaTh, FaStar, FaRegStar } from 'react-icons/fa';
+import { FaList, FaTh, FaStar, FaRegStar, FaBook, FaFilm, FaGamepad, FaLayerGroup } from 'react-icons/fa';
 
 
 
@@ -155,7 +156,16 @@ const NexusItems = ({ userId }) => {
 
             {/* Display items based on view mode */}
             {sortedItems.length === 0 ? (
-                <p>No items found.</p>
+                <div className="empty-state">
+                    <FaLayerGroup className="empty-state-icon" />
+                    <h3>Your collection is empty</h3>
+                    <p>Start building your Nexus! Search for books, movies, or games to add.</p>
+                    <div className="empty-state-actions">
+                        <Link to="/search-books" className="btn-primary"><FaBook /> Search Books</Link>
+                        <Link to="/search-movies" className="btn-primary"><FaFilm /> Search Movies</Link>
+                        <Link to="/search-games" className="btn-primary"><FaGamepad /> Search Games</Link>
+                    </div>
+                </div>
             ) : (
                 viewMode === 'catalog' ? (
                     <div className="nexus-items-grid">
