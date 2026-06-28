@@ -29,7 +29,7 @@ export default defineConfig({
         }
     },
     build: {
-        outDir: path.resolve(__dirname, '../DifColl.Server/wwwroot'),
+        outDir: 'dist',
         emptyOutDir: true
     },
     server: isDev ? (() => {
